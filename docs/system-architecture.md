@@ -1,6 +1,6 @@
-# HD-FARMS: System Architecture & Design
+# HD-FARM: System Architecture & Design
 
-This document describes the complete system architecture, data flow, and integration patterns for HD-FARMS livestock management platform.
+This document describes the complete system architecture, data flow, and integration patterns for HD-FARM livestock management platform.
 
 ---
 
@@ -66,6 +66,7 @@ This document describes the complete system architecture, data flow, and integra
 ## 2. Multi-Tenancy Model & Data Scoping
 
 ### Tenant Hierarchy
+
 ```
 Company (SaaS customer)
   ├── Farm 1
@@ -79,39 +80,48 @@ Company (SaaS customer)
 ```
 
 ### JWT Token Structure
+
 Every authenticated request carries:
+
 ```typescript
 {
-  userId: string;          // UUID
-  companyId: string;       // UUID — REQUIRED for all queries
-  farmId: string;          // UUID — REQUIRED for all queries
+  userId: string; // UUID
+  companyId: string; // UUID — REQUIRED for all queries
+  farmId: string; // UUID — REQUIRED for all queries
   role: 'admin' | 'manager' | 'worker' | 'vet';
-  iat: number;             // Issued at
-  exp: number;             // Expires in 24 hours
+  iat: number; // Issued at
+  exp: number; // Expires in 24 hours
 }
 ```
 
 ### Query Scoping (MANDATORY)
+
 **Every database query MUST filter by `companyId` AND `farmId`:**
 
 ```typescript
 // ✗ BAD — exposes cross-tenant data
-const animals = await db.select()
+const animals = await db
+  .select()
   .from(animals_table)
   .where(eq(animals_table.farmId, req.user.farmId));
 
 // ✓ GOOD — full tenant isolation
-const animals = await db.select()
+const animals = await db
+  .select()
   .from(animals_table)
-  .where(and(
-    eq(animals_table.companyId, req.user.companyId),
-    eq(animals_table.farmId, req.user.farmId),
-    isNull(animals_table.deletedAt) // Soft delete filter
-  ));
+  .where(
+    and(
+      eq(animals_table.companyId, req.user.companyId),
+      eq(animals_table.farmId, req.user.farmId),
+      isNull(animals_table.deletedAt) // Soft delete filter
+    )
+  );
 ```
 
 ### Row-Level Security (RLS) — Phase 2
+
 Phase 2 will add PostgreSQL RLS policies to enforce tenant isolation at the database layer:
+
 ```sql
 -- Enable RLS on all tables
 ALTER TABLE animals ENABLE ROW LEVEL SECURITY;
@@ -190,6 +200,7 @@ CREATE POLICY animals_tenant_policy ON animals
 ```
 
 ### Route Naming Convention
+
 ```
 GET    /api/v1/{resource}              → List (with pagination)
 GET    /api/v1/{resource}/{id}         → Get single
@@ -200,6 +211,7 @@ POST   /api/v1/{resource}/{id}/action  → Custom action (e.g., status change)
 ```
 
 ### Pagination (Cursor-Based)
+
 ```typescript
 // Request
 GET /api/v1/animals?limit=20&cursor=uuid-of-last-item
@@ -222,21 +234,25 @@ GET /api/v1/animals?limit=20&cursor=uuid-of-last-item
 ### Fastify Plugins (Cross-Cutting Concerns)
 
 **Plugin: jwt.ts**
+
 - Registers `@fastify/jwt` with secret from `JWT_SECRET`
 - Provides `req.jwtVerify()` method
 - Handles token expiry (24h)
 
 **Plugin: auth.ts**
+
 - Decorates `authenticate` hook (wraps jwtVerify)
 - Decorates `requireRole(roles[])` hook (RBAC check)
 - Attaches `req.user` object
 
 **Plugin: db.ts**
+
 - Initializes Drizzle client
 - Decorates `app.db` for use in routes
 - Connection pooling (postgres.js)
 
 **Plugin: error-handler.ts**
+
 - Catches all route errors
 - Formats AppError instances
 - Logs errors with context (userId, farmId)
@@ -249,38 +265,46 @@ GET /api/v1/animals?limit=20&cursor=uuid-of-last-item
 ### Schema Organization (Drizzle)
 
 **schema/tenancy.ts**
+
 - `companies` (id, name, subscription_tier, created_at)
 - `farms` (id, company_id, name, location, animal_capacity, created_at)
 - `zones` (id, farm_id, name, zone_type, description)
 - `pens` (id, zone_id, name, capacity, current_animal_count)
 
 **schema/auth.ts**
+
 - `users` (id, email, password_hash, name, phone)
 - `user_farm_roles` (user_id, farm_id, role, assigned_at)
 
 **schema/animals.ts**
+
 - `animals` (id, company_id, farm_id, pen_id, name, species, status, qr_code, type_metadata, created_at, updated_at, deleted_at)
 - `batches` (id, farm_id, species, start_date, expected_end_date, initial_count, status)
 - `animal_batches` (animal_id, batch_id, joined_at, left_at)
 
 **schema/config.ts** (read-only lookup tables)
+
 - `animal_types` (species, label, default_weight, lifespan_days)
 - `vaccine_types` (id, name, species, recommended_age_days, interval_days)
 - `feed_types` (id, name, species, calories_per_kg, cost_per_kg)
 - `disease_types` (id, name, species, contagious_flag, mortality_rate)
 
 **schema/health.ts**
+
 - `health_records` (id, animal_id, company_id, farm_id, status, notes, recorded_by, created_at)
 - `disease_records` (id, animal_id, disease_type_id, onset_date, status, created_by)
 - `treatment_records` (id, disease_record_id, treatment_type, start_date, end_date, outcome, cost)
 - `vaccination_records` (id, animal_id, vaccine_type_id, admin_date, next_due_date, admin_by)
 
 **schema/ops.ts**
+
 - `feeding_records` (id, pen_id, company_id, farm_id, feed_type_id, quantity_kg, cost, recorded_date, recorded_by)
 - `reproduction_events` (id, animal_id, event_type, date, details_jsonb, created_by, created_at)
 
 ### Soft Delete Pattern
+
 All tables with user/business data have `deleted_at` column (timestamp, nullable):
+
 ```sql
 SELECT * FROM animals
 WHERE company_id = $1 AND farm_id = $2 AND deleted_at IS NULL;
@@ -293,7 +317,9 @@ DELETE FROM animals WHERE id = $1;
 ```
 
 ### Indexes Strategy
+
 **Every table has indexes on:**
+
 1. Primary key (UUID)
 2. Foreign keys (company_id, farm_id)
 3. Common filter columns (status, deleted_at)
@@ -311,27 +337,31 @@ pgTable('animals', { ... }, (table) => ({
 ```
 
 ### JSONB for Species-Specific Metadata
+
 Instead of separate columns per species, use JSONB `type_metadata`:
+
 ```typescript
 type_metadata: {
   heo: {
     littleSize: number;
     weanAge: number;
     pregnancyDays: number;
-  };
+  }
   gà: {
     eggProductionRate: number;
     molePeriodDays: number;
-  };
+  }
   bò: {
     milkYieldLitersPerDay: number;
     calvingInterval: number;
-  };
+  }
 }
 ```
 
 ### UUID Primary Keys (Not Sequences)
+
 All tables use UUID v4 as primary key:
+
 ```sql
 CREATE TABLE animals (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -346,28 +376,30 @@ CREATE TABLE animals (
 ## 5. QR Code System
 
 ### QR Code Generation Flow
+
 ```
 1. Create Animal
    ├─ Generate UUID for animal (e.g., "a1b2c3d4-...")
    ├─ Store in animals.qr_code column
-   ├─ Generate QR code image: encoding("hdfarms://animal/a1b2c3d4-...")
+   ├─ Generate QR code image: encoding("hdfarm://animal/a1b2c3d4-...")
    └─ Display on animal detail page (web admin)
 
 2. Mobile QR Scan
    ├─ User taps FAB → Camera opens
    ├─ expo-camera scans QR code
-   ├─ Extract deep link: "hdfarms://animal/a1b2c3d4-..."
+   ├─ Extract deep link: "hdfarm://animal/a1b2c3d4-..."
    ├─ Expo Router navigates to: app/animal-detail/{uuid}
    └─ API call: GET /api/v1/animals/a1b2c3d4-...
 ```
 
 ### Deep Linking (Expo)
+
 ```typescript
 // app/_layout.tsx
 import * as Linking from 'expo-linking';
 
 const linking: LinkingOptions<RootStackParamList> = {
-  prefixes: ['hdfarms://', 'https://hdfarms.app'],
+  prefixes: ['hdfarm://', 'https://hdfarm.app'],
   config: {
     screens: {
       'animal-detail': 'animal/:uuid',
@@ -387,6 +419,7 @@ export default function RootLayout() {
 ```
 
 ### QR Code Library
+
 - **Web (Next.js):** `qrcode.react` library
 - **Mobile (Expo):** `expo-camera` + `react-native-qrcode-svg` for display
 
@@ -395,6 +428,7 @@ export default function RootLayout() {
 ## 6. Authentication Flow
 
 ### Login Sequence
+
 ```
 1. User submits credentials (email + password)
    POST /api/v1/auth/login
@@ -428,12 +462,15 @@ export default function RootLayout() {
 ```
 
 ### Token Expiry (24 hours)
+
 - No refresh tokens (Phase 1 MVP)
 - Users must re-login after 24 hours
 - Phase 2: Consider refresh token strategy
 
 ### Role-Based Access Control (RBAC)
+
 Each endpoint decorated with `requireRole(roles)`:
+
 ```typescript
 app.get(
   '/api/v1/animals',
@@ -449,6 +486,7 @@ app.get(
 ## 7. Frontend Architecture
 
 ### Next.js App Router Structure
+
 ```
 app/
 ├── layout.tsx              (Root layout, providers)
@@ -476,11 +514,13 @@ app/
 ```
 
 ### Server Components by Default
+
 - Fetch data in server components
 - Use `<Suspense>` boundaries for slow data
 - Minimal client components (buttons, forms)
 
 ### Mutations via Server Actions
+
 ```typescript
 // app/animals/actions.ts
 'use server';
@@ -497,7 +537,9 @@ export async function createAnimalAction(formData: FormData) {
 ```
 
 ### Client-Side State (Minimal)
+
 Only for UI state (modals, forms, filters):
+
 ```typescript
 'use client';
 
@@ -526,6 +568,7 @@ export function AnimalFilterForm() {
 ## 8. Mobile Architecture
 
 ### Expo Router v3 Layout
+
 ```
 app/
 ├── _layout.tsx                    (Root with navigation)
@@ -551,6 +594,7 @@ app/
 ```
 
 ### Bottom Tab Bar Navigation
+
 ```
 ┌─────────────────────────────────────────┐
 │  Home  │  Animals  │  [QR FAB]  │ ...   │
@@ -563,6 +607,7 @@ app/
 ```
 
 ### QR Scanner Flow
+
 ```
 1. User taps FAB (QR icon, 56px circle)
 
@@ -576,7 +621,7 @@ app/
 3. User points at QR code
 
 4. expo-camera.scanFromURLAsync() scans
-   └─ Returns: "hdfarms://animal/uuid"
+   └─ Returns: "hdfarm://animal/uuid"
 
 5. Expo Router navigates → Animal detail screen
    ├─ Fetch: GET /api/v1/animals/{uuid}
@@ -595,6 +640,7 @@ app/
 ```
 
 ### Quick Action Buttons (Post-Scan)
+
 ```typescript
 const quickActions = [
   { icon: 'heartbeat', label: 'Health Check', route: 'health-check' },
@@ -617,7 +663,7 @@ services:
   postgres:
     image: postgres:16-alpine
     ports:
-      - "5432:5432"
+      - '5432:5432'
     environment:
       POSTGRES_DB: hd_farms
       POSTGRES_USER: dev
@@ -628,9 +674,9 @@ services:
   pgadmin:
     image: dpage/pgadmin4:latest
     ports:
-      - "5050:80"
+      - '5050:80'
     environment:
-      PGADMIN_DEFAULT_EMAIL: dev@hd-farms.local
+      PGADMIN_DEFAULT_EMAIL: dev@hd-farm.local
       PGADMIN_DEFAULT_PASSWORD: dev
 
 volumes:
@@ -638,10 +684,11 @@ volumes:
 ```
 
 ### Environment Setup
+
 ```bash
 # 1. Clone and install dependencies
 git clone <repo>
-cd hd-farms
+cd hd-farm
 pnpm install
 
 # 2. Copy env template
@@ -665,6 +712,7 @@ pnpm dev
 ```
 
 ### Environment Variables Template
+
 ```bash
 # .env.example
 DATABASE_URL=postgresql://dev:dev@localhost:5432/hd_farms
@@ -677,6 +725,7 @@ NODE_ENV=development
 ## 10. Deployment Architecture (Future)
 
 ### Cloud Infrastructure (Phase 2+)
+
 ```
 ┌─────────────────────────────────────────┐
 │         Vercel (Web Frontend)           │
@@ -712,27 +761,32 @@ NODE_ENV=development
 ## 11. Security Architecture
 
 ### Transport Security
+
 - HTTPS only in production (TLS 1.2+)
 - Certificate pinning (mobile app — Phase 2)
 - HSTS header (web)
 
 ### Authentication Security
+
 - JWT secret ≥256 bits, stored in environment only
 - JWT signed with HS256 (symmetric)
 - Token expiry: 24 hours
 - Refresh token strategy: Phase 2+ (consider HS256 rotation)
 
 ### Data Security
+
 - Passwords: argon2id hashing (never stored plaintext)
 - Database encryption: TLS in transit, at-rest encryption on cloud (RDS)
 - Soft delete: never hard delete user/animal data
 
 ### Access Control
+
 - Role-based: admin, manager, worker, vet
 - Tenant isolation: every query scoped by companyId + farmId
 - RLS policies (Phase 2): PostgreSQL policies enforce at database layer
 
 ### Input Validation
+
 - All user input validated via Yup before DB writes
 - HTML sanitization for text fields with user content
 - SQL injection prevention: parameterized queries (Drizzle handles)
@@ -742,17 +796,20 @@ NODE_ENV=development
 ## 12. Monitoring & Observability (Phase 2+)
 
 ### Logging Strategy
+
 - API errors logged with context: userId, farmId, route, error message
 - Database queries: slow query log (>1s) monitoring
 - Mobile crashes: captured via Sentry
 
 ### Metrics to Track
+
 - API response time (p50, p95, p99)
 - Error rates by endpoint
 - Database connection pool utilization
 - Server CPU/memory usage
 
 ### Tools (TBD)
+
 - ELK Stack (Elasticsearch, Logstash, Kibana) or
 - Datadog or
 - New Relic

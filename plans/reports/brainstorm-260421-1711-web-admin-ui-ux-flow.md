@@ -1,4 +1,4 @@
-# Web Admin UI/UX Flow — HD-FARMS
+# Web Admin UI/UX Flow — HD-FARM
 
 **Date:** 2026-04-21 | **Stack:** Next.js 14 App Router + shadcn/ui + Tailwind
 
@@ -93,6 +93,7 @@
 ```
 
 **Component breakdown:**
+
 - 4 summary cards (shadcn `Card`) — total, sick count, vaccine today, active batches
 - Alert list (click → navigate to animal) — query: `vaccination_records.next_due_at <= today` + `animals.status IN (sick, quarantine)`
 - Zone cards — capacity bar + sick badge
@@ -129,6 +130,7 @@
 **Bulk actions:** Đổi trạng thái / Gán lứa / In QR / Xuất Excel
 
 **Filter behavior:**
+
 - URL params: `/animals?zone=A&status=sick&type=pig`
 - Cursor-based pagination (không dùng offset — 5000+ records)
 - Debounced search (300ms)
@@ -186,16 +188,17 @@
 
 **6 tabs chi tiết:**
 
-| Tab | Nội dung |
-|-----|---------|
+| Tab       | Nội dung                                                |
+| --------- | ------------------------------------------------------- |
 | Tổng quan | Thông tin cơ bản, stats nhanh, timeline sự kiện gần đây |
-| Sức khỏe | Line chart cân nặng + bảng lịch sử cân, BCS |
-| Vaccine | Timeline dọc: ✅ đã tiêm / ⏳ sắp tiêm / ⚠️ quá hạn |
-| Bệnh án | Bệnh hiện tại + lịch sử + treatments |
-| Thức ăn | Bar chart tiêu thụ theo ngày + FCR rolling 7 ngày |
-| Sinh sản | Timeline sự kiện: phối giống → thai → sinh → cai sữa |
+| Sức khỏe  | Line chart cân nặng + bảng lịch sử cân, BCS             |
+| Vaccine   | Timeline dọc: ✅ đã tiêm / ⏳ sắp tiêm / ⚠️ quá hạn     |
+| Bệnh án   | Bệnh hiện tại + lịch sử + treatments                    |
+| Thức ăn   | Bar chart tiêu thụ theo ngày + FCR rolling 7 ngày       |
+| Sinh sản  | Timeline sự kiện: phối giống → thai → sinh → cai sữa    |
 
 **"Đổi trạng thái" flow:**
+
 ```
 Click [🔄 Đổi trạng thái]
   → Modal: chọn status mới + note bắt buộc nếu đổi sang Bệnh/Cách ly
@@ -204,6 +207,7 @@ Click [🔄 Đổi trạng thái]
 ```
 
 **"➕ Thêm" dropdown:**
+
 ```
 ├── Ghi cân nặng
 ├── Ghi tiêm vaccine
@@ -273,6 +277,7 @@ Click [🔄 Đổi trạng thái]
 ```
 
 **FCR badge logic:**
+
 ```
 FCR < 2.5  → 🟢 Xuất sắc
 FCR 2.5-3  → 🟡 Tốt

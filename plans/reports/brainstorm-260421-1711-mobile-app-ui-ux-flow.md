@@ -1,4 +1,4 @@
-# Mobile App UI/UX Flow — HD-FARMS
+# Mobile App UI/UX Flow — HD-FARM
 
 **Date:** 2026-04-21 | **Stack:** Expo (React Native) | **Users:** Worker · Manager · Vet
 
@@ -423,6 +423,7 @@ Khác nhau theo role:
 ## Core User Flows
 
 ### Flow 1: Worker nhập cân hàng ngày
+
 ```
 Mở app
   → Home: thấy "3 con cần cân hôm nay"
@@ -435,6 +436,7 @@ Mở app
 ```
 
 ### Flow 2: Vet ghi bệnh
+
 ```
 Scan QR
   → Bottom sheet: tap [🤒 Bệnh]
@@ -447,6 +449,7 @@ Scan QR
 ```
 
 ### Flow 3: Manager kiểm tra cuối ngày
+
 ```
 Home → xem tổng quan khu
   → Tap Alerts → review 5 mục chưa xử lý
@@ -456,6 +459,7 @@ Home → xem tổng quan khu
 ```
 
 ### Flow 4: Tiêm vaccine theo alert
+
 ```
 Alerts tab → thấy "Heo #A-012 tiêm FMD hôm nay"
   → Tap [Scan QR]
@@ -470,14 +474,14 @@ Alerts tab → thấy "Heo #A-012 tiêm FMD hôm nay"
 
 ## UX Principles Mobile
 
-| Nguyên tắc | Cách áp dụng |
-|-----------|-------------|
-| **Scan first** | QR scanner là action quan trọng nhất — nút to nhất, tab giữa |
-| **3-tap rule** | Scan → chọn action → submit = 3 bước tối đa |
+| Nguyên tắc              | Cách áp dụng                                                  |
+| ----------------------- | ------------------------------------------------------------- |
+| **Scan first**          | QR scanner là action quan trọng nhất — nút to nhất, tab giữa  |
+| **3-tap rule**          | Scan → chọn action → submit = 3 bước tối đa                   |
 | **Pre-fill thông minh** | Ngày = hôm nay, vaccine = loại sắp hạn, khu = khu được assign |
-| **Confirmation toast** | Sau mỗi lưu: toast nhỏ "✓ Đã lưu" — không modal |
-| **Thumb zone** | Action buttons ở 2/3 dưới màn hình — tránh vùng trên khó chạm |
-| **Role-aware** | Worker thấy form đơn giản; Vet thấy thêm diagnosis fields |
+| **Confirmation toast**  | Sau mỗi lưu: toast nhỏ "✓ Đã lưu" — không modal               |
+| **Thumb zone**          | Action buttons ở 2/3 dưới màn hình — tránh vùng trên khó chạm |
+| **Role-aware**          | Worker thấy form đơn giản; Vet thấy thêm diagnosis fields     |
 
 ---
 

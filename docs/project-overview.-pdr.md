@@ -1,8 +1,8 @@
-# HD-FARMS: Product Development Requirements (PDR)
+# HD-FARM: Product Development Requirements (PDR)
 
 ## Executive Summary
 
-**HD-FARMS** is a comprehensive multi-tenant livestock management platform designed for large-scale farms managing 5,000+ animals across multiple zones, species, and operational locations. The system provides real-time health tracking, vaccination management, feeding optimization, disease reporting, and breeding event management through integrated web and mobile interfaces.
+**HD-FARM** is a comprehensive multi-tenant livestock management platform designed for large-scale farms managing 5,000+ animals across multiple zones, species, and operational locations. The system provides real-time health tracking, vaccination management, feeding optimization, disease reporting, and breeding event management through integrated web and mobile interfaces.
 
 **Project Duration:** 45 calendar days  
 **Target Launch:** Phase 2 complete (both core + advanced features)  
@@ -13,7 +13,9 @@
 ## 1. Business Context
 
 ### Problem Statement
+
 Large-scale livestock operations lack centralized, real-time visibility into:
+
 - Individual animal health status and medical history
 - Vaccination schedules and compliance
 - Feed consumption and feed conversion ratios (FCR)
@@ -21,6 +23,7 @@ Large-scale livestock operations lack centralized, real-time visibility into:
 - Breeding events and reproduction cycles
 
 ### Market Scope
+
 - **Geographic:** Vietnam-focused (Vietnamese language support, metrics)
 - **Scale:** 5,000+ animals per farm; 10+ zones per farm
 - **Species:** Hogs (heo), poultry (gà), cattle (bò) — multi-species same platform
@@ -30,13 +33,13 @@ Large-scale livestock operations lack centralized, real-time visibility into:
 
 ## 2. User Roles & Permissions
 
-| Role | Scope | Permissions | Use Case |
-|---|---|---|---|
-| **Admin** (Super) | Cross-company | Manage companies, users, audit logs, billing | System operator |
-| **Admin** (Farm) | Single farm | All features, user management, settings | Farm owner/director |
-| **Manager** | Single farm | View all zones, animal CRUD, health/vaccine, reports | Farm operations manager |
-| **Worker** | Single zone | Quick actions (feeding, health check), QR scan | Daily pen ops |
-| **Vet** | Single farm | Health records, disease reports, treatments | On-farm veterinarian |
+| Role              | Scope         | Permissions                                          | Use Case                |
+| ----------------- | ------------- | ---------------------------------------------------- | ----------------------- |
+| **Admin** (Super) | Cross-company | Manage companies, users, audit logs, billing         | System operator         |
+| **Admin** (Farm)  | Single farm   | All features, user management, settings              | Farm owner/director     |
+| **Manager**       | Single farm   | View all zones, animal CRUD, health/vaccine, reports | Farm operations manager |
+| **Worker**        | Single zone   | Quick actions (feeding, health check), QR scan       | Daily pen ops           |
+| **Vet**           | Single farm   | Health records, disease reports, treatments          | On-farm veterinarian    |
 
 **Isolation:** JWT payload: `{ userId, companyId, farmId, role }` — every query scoped by `companyId` + `farmId`
 
@@ -45,52 +48,61 @@ Large-scale livestock operations lack centralized, real-time visibility into:
 ## 3. Core Feature Modules
 
 ### Module 1: Multi-Tenancy & Auth
+
 - Company → Farm → Zone → Pen → Animal hierarchy
 - JWT authentication (24h expiry, HS256, no refresh tokens — MVP)
 - Role-based access control (RBAC) enforced per endpoint
 - Soft delete (never hard delete user/animal data)
 
 ### Module 2: Animal Lifecycle
+
 - Create/update animals with species type (heo, gà, bò)
 - Track: ID, name, DOB, sex, status, pen location, batch assignment
-- QR code per animal (UUID-based, generated on creation, deep link: `hdfarms://animal/{uuid}`)
+- QR code per animal (UUID-based, generated on creation, deep link: `hdfarm://animal/{uuid}`)
 - Bulk import via CSV (web admin only)
 
 ### Module 3: Health Status & Tracking
+
 - Real-time health status: Healthy | Monitoring | Sick | Quarantine | Recovered | Dead | Sold
 - Health records: date, status, notes, updated_by, timestamp
 - Quick status change actions from mobile (QR scan + tap)
 
 ### Module 4: Vaccination Management
+
 - Vaccine types (species-specific)
 - Vaccination records: animal, vaccine, date, tech, notes
 - Alerts: overdue vaccinations (configurable threshold)
 - Batch vaccination tracker (mark multiple animals at once)
 
 ### Module 5: Disease & Treatment
+
 - Disease types catalog
 - Disease records: animal, disease, onset_date, description, status
 - Treatment records: disease, treatment_type, date, duration, outcome
 - Medical history timeline per animal
 
 ### Module 6: Feeding & FCR
+
 - Feed types catalog (by species)
 - Feeding records: pen, date, feed_type, quantity, cost
 - FCR calculation: (total feed per batch) / (weight gain per batch)
 - Monthly feed usage reports
 
 ### Module 7: Batch (Lứa) Management
+
 - Logical grouping of animals (herd, generation, cohort)
 - Track batch lifecycle: creation → growth → sale/slaughter
 - Batch-level analytics: average weight, mortality rate, FCR
 
 ### Module 8: Reproduction Events
+
 - Event types: mating, pregnancy detection, farrowing/birth, weaning
 - Pedigree tracking: sire + dam per animal
 - Expected due dates + farrowing records
 - Genetic lineage reports
 
 ### Module 9: Advanced Dashboards & Reports
+
 - KPI summary: total animals, health distribution, vaccine compliance, mortality
 - Charts: health status over time, FCR trends, disease frequency
 - Export: PDF reports (health, vaccines, feed costs, batch reports)
@@ -100,6 +112,7 @@ Large-scale livestock operations lack centralized, real-time visibility into:
 ## 4. Functional Requirements
 
 ### 4.1 API Requirements
+
 - RESTful endpoints only (no GraphQL — MVP)
 - Standard response format:
   - Lists: `{ data: [...], meta: { count, page, limit } }`
@@ -109,6 +122,7 @@ Large-scale livestock operations lack centralized, real-time visibility into:
 - All endpoints tenant-scoped (filter by `companyId` from JWT)
 
 ### 4.2 Web Admin Requirements
+
 - Server Components by default (Next.js 14 App Router)
 - Data fetches in server components; mutations in server actions
 - Responsive: mobile-first (sm:, md:, lg: breakpoints)
@@ -118,6 +132,7 @@ Large-scale livestock operations lack centralized, real-time visibility into:
 - Charts: Recharts (KPI cards, line/bar charts)
 
 ### 4.3 Mobile Requirements
+
 - Expo Router v3 file-based routing
 - Bottom tab bar: Home | Animals | [QR FAB] | Alerts | Profile
 - QR Scanner: expo-camera + custom viewfinder overlay
@@ -126,6 +141,7 @@ Large-scale livestock operations lack centralized, real-time visibility into:
 - Offline support: local cache (Phase 2+)
 
 ### 4.4 Database Requirements
+
 - PostgreSQL 16 (Docker Compose local, Cloud TBD)
 - Drizzle ORM (code-first schema)
 - One schema file per domain (animals.ts, health.ts, etc.)
@@ -137,22 +153,23 @@ Large-scale livestock operations lack centralized, real-time visibility into:
 
 ## 5. Non-Functional Requirements
 
-| Requirement | Target | Rationale |
-|---|---|---|
-| **API Performance (p95)** | <200ms | Real-time mobile interactions |
-| **Mobile Response (QR scan)** | <500ms | Smooth UX after scan |
-| **Database Scalability** | 5,000+ animals/farm | No pagination limits on internal queries |
-| **Concurrency** | 100+ concurrent users/farm | Peak farm activity |
-| **Data Retention** | Permanent (soft delete) | Compliance + historical analysis |
-| **TypeScript Strictness** | `"strict": true` | Type safety, zero `any` |
-| **Code Coverage** | ≥70% unit + integration tests | Reliability |
-| **Availability (MVP)** | Online-only (no offline) | Simplified data sync |
+| Requirement                   | Target                        | Rationale                                |
+| ----------------------------- | ----------------------------- | ---------------------------------------- |
+| **API Performance (p95)**     | <200ms                        | Real-time mobile interactions            |
+| **Mobile Response (QR scan)** | <500ms                        | Smooth UX after scan                     |
+| **Database Scalability**      | 5,000+ animals/farm           | No pagination limits on internal queries |
+| **Concurrency**               | 100+ concurrent users/farm    | Peak farm activity                       |
+| **Data Retention**            | Permanent (soft delete)       | Compliance + historical analysis         |
+| **TypeScript Strictness**     | `"strict": true`              | Type safety, zero `any`                  |
+| **Code Coverage**             | ≥70% unit + integration tests | Reliability                              |
+| **Availability (MVP)**        | Online-only (no offline)      | Simplified data sync                     |
 
 ---
 
 ## 6. Technical Constraints
 
 ### Stack Constraints
+
 - **Node.js:** ≥20.x (ES2024 features)
 - **pnpm:** ≥9.x (workspace management)
 - **Turbo:** ≥2.x (monorepo builds)
@@ -160,6 +177,7 @@ Large-scale livestock operations lack centralized, real-time visibility into:
 - **Expo SDK:** ≥51.x (latest stable)
 
 ### Implementation Constraints
+
 - TypeScript strict mode always (`"strict": true`)
 - No `any` type — use `unknown` + type guards
 - argon2id for password hashing (never bcrypt)
@@ -173,6 +191,7 @@ Large-scale livestock operations lack centralized, real-time visibility into:
 ## 7. Success Criteria by Phase
 
 ### Phase 1 (Phases 1-7: ~20 days)
+
 - [ ] Monorepo fully functional (all 3 apps boot)
 - [ ] Auth system: login/logout, JWT verify, RBAC middleware
 - [ ] Core CRUD APIs complete: animals, zones, pens
@@ -183,6 +202,7 @@ Large-scale livestock operations lack centralized, real-time visibility into:
 - **Validation:** All unit + integration tests pass; >70% coverage
 
 ### Phase 2 (Phases 8-12: ~25 days)
+
 - [ ] Disease/treatment records complete
 - [ ] Batch management CRUD + batch-level analytics
 - [ ] Feeding records + FCR calculation

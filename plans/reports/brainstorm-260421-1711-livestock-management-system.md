@@ -1,4 +1,4 @@
-# Brainstorm Report: HD-FARMS Livestock Management System
+# Brainstorm Report: HD-FARM Livestock Management System
 
 **Date:** 2026-04-22 | **Status:** Finalized (v4 — added Pen/Chuồng layer)
 
@@ -7,6 +7,7 @@
 ## Problem Statement
 
 Xây dựng hệ thống quản lý chăn nuôi chuyên nghiệp cho công ty đa quốc gia và đa chi nhánh farm, mỗi farm lớn (> 5000 vật nuôi, > 10 khu) gồm:
+
 - Web admin quản lý toàn diện vòng đời vật nuôi
 - Mobile app với QR scan + 1-tap quick forms để nhập liệu nhanh
 - Đa loại vật nuôi (heo, gà, bò...) cùng một platform
@@ -15,22 +16,22 @@ Xây dựng hệ thống quản lý chăn nuôi chuyên nghiệp cho công ty đ
 
 ## Requirements Confirmed
 
-| Area | Decision |
-|------|----------|
-| Scale | > 5000 animals/farm, > 10 zones/farm, nhiều chuồng/zone |
-| Tenancy | Đa quốc gia, đa chi nhánh farm, bắt buộc login |
-| Connectivity | Online only |
-| Stack | Full JS/TS (Fastify + Next.js + Expo) |
-| Mobile input | QR scan → 1-tap quick forms |
-| Notifications | MVP: in-app alerts; post-MVP: push |
-| Deployment | TBD |
+| Area          | Decision                                                |
+| ------------- | ------------------------------------------------------- |
+| Scale         | > 5000 animals/farm, > 10 zones/farm, nhiều chuồng/zone |
+| Tenancy       | Đa quốc gia, đa chi nhánh farm, bắt buộc login          |
+| Connectivity  | Online only                                             |
+| Stack         | Full JS/TS (Fastify + Next.js + Expo)                   |
+| Mobile input  | QR scan → 1-tap quick forms                             |
+| Notifications | MVP: in-app alerts; post-MVP: push                      |
+| Deployment    | TBD                                                     |
 
 ---
 
 ## Architecture Decision: Monolith Monorepo
 
 ```
-hd-farms/                          ← Turborepo root
+hd-farm/                          ← Turborepo root
 ├── apps/
 │   ├── api/                       ← Fastify + TypeScript (REST)
 │   ├── web/                       ← Next.js 14 App Router
@@ -44,20 +45,20 @@ hd-farms/                          ← Turborepo root
 
 ## Tech Stack
 
-| Layer | Technology | Why |
-|-------|-----------|-----|
-| Monorepo | Turborepo + pnpm | 3x nhanh hơn Nx, ít config |
-| Backend | Node.js + Fastify + TS | 2x nhanh hơn Express, schema-based validation tích hợp |
-| Validation | Yup | Dùng chung web/mobile/api, fluent API, async validation |
-| Database | **PostgreSQL** | Relational, JSONB cho flexible fields |
-| ORM | Drizzle | 4-5x nhanh hơn Prisma, TypeScript-first |
-| Web Admin | Next.js 14 (App Router) | SSR, performance |
-| UI Library | shadcn/ui + Tailwind | Component sẵn, customizable |
-| Web Charts | Recharts | React chart library |
-| Mobile | Expo (React Native) | expo-camera built-in |
-| Mobile Charts | Victory Native | Charts cho RN |
-| Auth | JWT + bcrypt | Multi-farm aware, scope token theo company/farm |
-| QR | uuid + qrcode | Deep link: `hdfarms://animal/{uuid}` |
+| Layer         | Technology              | Why                                                     |
+| ------------- | ----------------------- | ------------------------------------------------------- |
+| Monorepo      | Turborepo + pnpm        | 3x nhanh hơn Nx, ít config                              |
+| Backend       | Node.js + Fastify + TS  | 2x nhanh hơn Express, schema-based validation tích hợp  |
+| Validation    | Yup                     | Dùng chung web/mobile/api, fluent API, async validation |
+| Database      | **PostgreSQL**          | Relational, JSONB cho flexible fields                   |
+| ORM           | Drizzle                 | 4-5x nhanh hơn Prisma, TypeScript-first                 |
+| Web Admin     | Next.js 14 (App Router) | SSR, performance                                        |
+| UI Library    | shadcn/ui + Tailwind    | Component sẵn, customizable                             |
+| Web Charts    | Recharts                | React chart library                                     |
+| Mobile        | Expo (React Native)     | expo-camera built-in                                    |
+| Mobile Charts | Victory Native          | Charts cho RN                                           |
+| Auth          | JWT + bcrypt            | Multi-farm aware, scope token theo company/farm         |
+| QR            | uuid + qrcode           | Deep link: `hdfarm://animal/{uuid}`                     |
 
 ---
 
@@ -261,26 +262,28 @@ GET             /reports/batch-performance?batchId=
 ## Phased Implementation Plan
 
 ### Phase 1 — Core (~20 ngày)
-| Task | Days |
-|------|------|
-| Monorepo setup + DB schema + Auth | 3 |
-| Animal + Zone + Type CRUD (API) | 3 |
-| QR generation + Web Admin UI | 3 |
-| Mobile: Expo setup + QR scan + Animal Detail | 4 |
-| Health status + quick status change | 2 |
-| Vaccination schedule + records + alerts | 3 |
-| Weight records + trend chart | 2 |
+
+| Task                                         | Days |
+| -------------------------------------------- | ---- |
+| Monorepo setup + DB schema + Auth            | 3    |
+| Animal + Zone + Type CRUD (API)              | 3    |
+| QR generation + Web Admin UI                 | 3    |
+| Mobile: Expo setup + QR scan + Animal Detail | 4    |
+| Health status + quick status change          | 2    |
+| Vaccination schedule + records + alerts      | 3    |
+| Weight records + trend chart                 | 2    |
 
 **Deliverable Phase 1:** Hệ thống cơ bản vận hành được — scan QR, xem thông tin, ghi cân, tiêm vaccine, theo dõi sức khỏe.
 
 ### Phase 2 — Advanced (~25-30 ngày)
-| Task | Days |
-|------|------|
-| Disease records + Treatment + Medical history | 5 |
-| Batch/Lứa management + batch stats | 5 |
-| Feeding records + FCR calculation | 6 |
-| Reproduction events (multi-species via JSONB) | 7 |
-| Advanced dashboard + charts | 5 |
+
+| Task                                          | Days |
+| --------------------------------------------- | ---- |
+| Disease records + Treatment + Medical history | 5    |
+| Batch/Lứa management + batch stats            | 5    |
+| Feeding records + FCR calculation             | 6    |
+| Reproduction events (multi-species via JSONB) | 7    |
+| Advanced dashboard + charts                   | 5    |
 
 **Deliverable Phase 2:** Hệ thống chuyên nghiệp đầy đủ — FCR, sinh sản, lứa nuôi, bệnh án.
 
@@ -290,13 +293,13 @@ GET             /reports/batch-performance?batchId=
 
 ## Risks & Mitigations
 
-| Risk | Mitigation |
-|------|-----------|
-| Multi-species reproduction logic phức tạp | JSONB metadata + event_type enum — flexible, không cần separate tables |
-| Worker không nhập feeding hàng ngày → FCR vô nghĩa | UX 1-tap, batch input cho cả khu, dashboard show "thiếu dữ liệu" warning |
-| 5000+ records → slow queries | Cursor pagination + composite indexes |
-| QR bị hỏng/mất | Backup lookup qua số hiệu + zone name |
-| Status transition sai (healthy → sold mà không qua cân) | Soft rules: warn khi status change bất thường, không hard block |
+| Risk                                                    | Mitigation                                                               |
+| ------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Multi-species reproduction logic phức tạp               | JSONB metadata + event_type enum — flexible, không cần separate tables   |
+| Worker không nhập feeding hàng ngày → FCR vô nghĩa      | UX 1-tap, batch input cho cả khu, dashboard show "thiếu dữ liệu" warning |
+| 5000+ records → slow queries                            | Cursor pagination + composite indexes                                    |
+| QR bị hỏng/mất                                          | Backup lookup qua số hiệu + zone name                                    |
+| Status transition sai (healthy → sold mà không qua cân) | Soft rules: warn khi status change bất thường, không hard block          |
 
 ---
 

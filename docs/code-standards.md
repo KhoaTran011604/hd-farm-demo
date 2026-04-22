@@ -1,4 +1,4 @@
-# HD-FARMS: Code Standards & Implementation Guidelines
+# HD-FARM: Code Standards & Implementation Guidelines
 
 Every file, function, and API endpoint must follow these standards. **This is not optional.** These rules enable code reviews, onboarding, and maintainability across all 12 phases.
 
@@ -7,23 +7,27 @@ Every file, function, and API endpoint must follow these standards. **This is no
 ## 1. File Organization & Naming
 
 ### File Naming Convention
+
 - **All files:** kebab-case (lowercase, hyphens for word separation)
 - **JavaScript/TypeScript:** `.ts`, `.tsx` (never `.js`)
 - **Imports:** ordered as (1) third-party → (2) internal packages → (3) local
 - **Barrel exports:** every module exports via `index.ts`
 
 **Examples:**
+
 ```
 Good:   animal-service.ts, health-record.ts, user-auth.ts
 Bad:    animalService.ts, HealthRecord.ts, UserAuth.ts
 ```
 
 ### File Size Constraint
+
 - **Maximum per file:** 200 lines (including comments, imports, exports)
 - **Action when exceeded:** Split into focused modules immediately
 - **Example split:** 400-line service → split into `{domain}-read.service.ts` + `{domain}-write.service.ts`
 
 ### Barrel Exports (index.ts)
+
 Every module/package must have `index.ts` exporting public symbols:
 
 ```typescript
@@ -41,6 +45,7 @@ export { animalService } from './animal.service.js';
 ## 2. TypeScript Standards
 
 ### Strict Mode (Always)
+
 ```json
 {
   "compilerOptions": {
@@ -57,9 +62,12 @@ export { animalService } from './animal.service.js';
 ```
 
 ### No `any` — Use `unknown` + Type Guards
+
 ```typescript
 // Bad
-const handle = (data: any) => { data.property; };
+const handle = (data: any) => {
+  data.property;
+};
 
 // Good
 const handle = (data: unknown) => {
@@ -70,6 +78,7 @@ const handle = (data: unknown) => {
 ```
 
 ### Explicit Return Types on Public Functions
+
 ```typescript
 // Bad
 export const getUserById = (id: string) => {
@@ -83,6 +92,7 @@ export const getUserById = (id: string): Promise<User | null> => {
 ```
 
 ### Type vs Interface
+
 - **Use `type`** for object shapes, unions, tuples:
   ```typescript
   type Animal = { id: string; name: string; status: HealthStatus };
@@ -97,14 +107,15 @@ export const getUserById = (id: string): Promise<User | null> => {
   ```
 
 ### Import Order
+
 ```typescript
 // 1. Third-party
 import { FastifyInstance } from 'fastify';
 import { schema } from 'yup';
 
 // 2. Internal packages
-import { Animal } from '@hd-farms/shared/types';
-import { db } from '@hd-farms/db';
+import { Animal } from '@hd-farm/shared/types';
+import { db } from '@hd-farm/db';
 
 // 3. Local modules
 import { animalService } from './animal.service';
@@ -116,6 +127,7 @@ import { validateAnimal } from './animal.schema';
 ## 3. API Layer (Fastify)
 
 ### Module Pattern
+
 Every domain has exactly 3 files:
 
 ```
@@ -126,6 +138,7 @@ apps/api/src/modules/{domain}/
 ```
 
 ### Route Handler Pattern
+
 ```typescript
 // animals.routes.ts
 import { FastifyInstance } from 'fastify';
@@ -137,7 +150,7 @@ export const animalRoutes = async (app: FastifyInstance) => {
     '/api/v1/animals',
     {
       schema: { body: animalSchema.create().describe('Create animal') },
-      onRequest: [app.authenticate, app.requireRole('manager')]
+      onRequest: [app.authenticate, app.requireRole('manager')],
     },
     async (req, res) => {
       const validated = await animalSchema.create().validate(req.body);
@@ -151,28 +164,32 @@ export const animalRoutes = async (app: FastifyInstance) => {
 ```
 
 ### Yup Schema in Routes
+
 ```typescript
 // animal.schema.ts
 import * as Yup from 'yup';
 
 export const animalSchema = {
-  create: () => Yup.object().shape({
-    name: Yup.string().required(),
-    species: Yup.string().oneOf(['heo', 'gà', 'bò']).required(),
-    penId: Yup.string().uuid().required(),
-  }),
-  update: () => Yup.object().shape({
-    name: Yup.string().optional(),
-    status: Yup.string().optional(),
-  }),
+  create: () =>
+    Yup.object().shape({
+      name: Yup.string().required(),
+      species: Yup.string().oneOf(['heo', 'gà', 'bò']).required(),
+      penId: Yup.string().uuid().required(),
+    }),
+  update: () =>
+    Yup.object().shape({
+      name: Yup.string().optional(),
+      status: Yup.string().optional(),
+    }),
 };
 ```
 
 ### Service Layer Pattern
+
 ```typescript
 // animal.service.ts
-import { db } from '@hd-farms/db';
-import type { User } from '@hd-farms/shared/types';
+import { db } from '@hd-farm/db';
+import type { User } from '@hd-farm/shared/types';
 
 export const animalService = {
   async create(input: CreateAnimalInput, user: User) {
@@ -197,6 +214,7 @@ export const animalService = {
 ```
 
 ### Response Shape (Consistent)
+
 ```typescript
 // Single resource
 { data: { id: '...', name: '...', ... } }
@@ -215,6 +233,7 @@ export const animalService = {
 ```
 
 ### Error Handling (AppError)
+
 ```typescript
 // plugins/error-handler.ts
 export class AppError extends Error {
@@ -244,6 +263,7 @@ try {
 ```
 
 ### Tenant Isolation (REQUIRED)
+
 **Every query must scope by `companyId` AND `farmId`:**
 
 ```typescript
@@ -266,7 +286,7 @@ import jwt from '@fastify/jwt';
 
 export default fp(async (app) => {
   app.register(jwt, { secret: process.env.JWT_SECRET });
-  
+
   app.decorate('authenticate', async (req, res) => {
     try {
       await req.jwtVerify();
@@ -288,6 +308,7 @@ export default fp(async (app) => {
 ## 4. Database Layer (Drizzle ORM)
 
 ### Schema File Organization
+
 One domain per file in `packages/db/src/schema/`:
 
 ```
@@ -302,6 +323,7 @@ schema/
 ```
 
 ### Schema Code-First Pattern
+
 ```typescript
 // schema/animals.ts
 import { pgTable, uuid, text, timestamp, jsonb } from 'drizzle-orm/pg-core';
@@ -322,6 +344,7 @@ export const animals = pgTable('animals', {
 ```
 
 ### Migrations (Auto-Generated, Never Manual)
+
 ```bash
 # Generate migration from schema changes
 pnpm db:generate
@@ -336,36 +359,36 @@ pnpm db:migrate
 **Rule:** Never manually edit migration files — always regenerate from schema changes.
 
 ### Indexes on Foreign Keys & Filters
+
 ```typescript
-export const animals = pgTable('animals', {
-  // ... columns
-}, (table) => ({
-  companyFarmIdx: index('animals_company_farm_idx').on(
-    table.companyId,
-    table.farmId
-  ),
-  statusIdx: index('animals_status_idx').on(table.status),
-  deletedAtIdx: index('animals_deleted_at_idx').on(table.deletedAt),
-}));
+export const animals = pgTable(
+  'animals',
+  {
+    // ... columns
+  },
+  (table) => ({
+    companyFarmIdx: index('animals_company_farm_idx').on(table.companyId, table.farmId),
+    statusIdx: index('animals_status_idx').on(table.status),
+    deletedAtIdx: index('animals_deleted_at_idx').on(table.deletedAt),
+  })
+);
 ```
 
 ### Soft Delete Pattern
+
 ```typescript
 // Always filter out soft-deleted records
-const activeAnimals = await db.select()
+const activeAnimals = await db
+  .select()
   .from(animals)
-  .where(and(
-    eq(animals.farmId, farmId),
-    isNull(animals.deletedAt)
-  ));
+  .where(and(eq(animals.farmId, farmId), isNull(animals.deletedAt)));
 
 // Soft delete: update deletedAt
-await db.update(animals)
-  .set({ deletedAt: new Date() })
-  .where(eq(animals.id, id));
+await db.update(animals).set({ deletedAt: new Date() }).where(eq(animals.id, id));
 ```
 
 ### JSONB for Species-Specific Fields
+
 ```typescript
 // Avoid adding columns for each species variant
 type_metadata JSONB:
@@ -381,6 +404,7 @@ type_metadata JSONB:
 ## 5. Frontend Layer (Next.js App Router)
 
 ### Server Components by Default
+
 ```typescript
 // app/animals/page.tsx — Server Component
 import { getAnimals } from '@/lib/animals';
@@ -392,6 +416,7 @@ export default async function AnimalsPage() {
 ```
 
 ### Mutations via Server Actions
+
 ```typescript
 // app/animals/actions.ts
 'use server';
@@ -407,6 +432,7 @@ export async function createAnimalAction(input: CreateAnimalInput) {
 ```
 
 ### Client Components (Minimal, Explicit)
+
 ```typescript
 'use client';
 
@@ -426,6 +452,7 @@ export function CreateAnimalForm() {
 ```
 
 ### shadcn Components + Tailwind Only
+
 ```typescript
 // BAD: inline styles
 <div style={{ color: 'red', padding: '16px' }}>Error</div>
@@ -442,6 +469,7 @@ import { Button } from '@/components/ui/button';
 ```
 
 ### Responsive Mobile-First
+
 ```typescript
 // BAD: desktop-first
 <div className="md:hidden">Mobile</div>
@@ -458,6 +486,7 @@ import { Button } from '@/components/ui/button';
 ```
 
 ### Component Variants via CVA
+
 ```typescript
 // components/ui/badge.tsx
 import { cva } from 'class-variance-authority';
@@ -485,6 +514,7 @@ export function Badge({ status = 'healthy' }) {
 ## 6. Mobile Layer (Expo React Native)
 
 ### Expo Router v3 File-Based Routing
+
 ```
 app/
 ├── (auth)/
@@ -499,6 +529,7 @@ app/
 ```
 
 ### Camera Permissions (Always Request)
+
 ```typescript
 // app/qr-scanner.tsx
 import * as Permissions from 'expo-permissions';
@@ -522,6 +553,7 @@ export default function QRScanner() {
 ```
 
 ### Touch Targets ≥ 44x44px
+
 ```typescript
 // BAD: 32px touch target
 <TouchableOpacity style={{ width: 32, height: 32 }} />
@@ -534,6 +566,7 @@ export default function QRScanner() {
 ```
 
 ### Platform-Specific Files (Last Resort)
+
 ```
 Only use .ios.tsx / .android.tsx when behavior truly diverges:
 
@@ -547,6 +580,7 @@ import { Platform } from 'react-native';
 ```
 
 ### Bottom Sheet Post-Scan
+
 ```typescript
 // Use React Native Bottom Sheet library
 import BottomSheet from '@gorhom/bottom-sheet';
@@ -565,6 +599,7 @@ import BottomSheet from '@gorhom/bottom-sheet';
 ## 7. Shared Package (packages/shared)
 
 ### Types Only (No Logic)
+
 ```typescript
 // types/animal.ts
 export type Animal = {
@@ -588,6 +623,7 @@ export type HealthStatus =
 ```
 
 ### Yup Validators (Reused by API, Web, Mobile)
+
 ```typescript
 // schemas/animal.ts
 import * as Yup from 'yup';
@@ -619,6 +655,7 @@ try {
 ```
 
 ### Constants (No Business Logic)
+
 ```typescript
 // constants/species.ts
 export const ANIMAL_SPECIES = ['heo', 'gà', 'bò'] as const;
@@ -644,6 +681,7 @@ export const HEALTH_STATUSES = [
 ## 8. Security Standards
 
 ### Password Hashing (argon2id, Never bcrypt)
+
 ```typescript
 import argon2 from 'argon2';
 
@@ -660,6 +698,7 @@ const isValid = await argon2.verify(passwordHash, plaintext);
 ```
 
 ### JWT Secret from Environment Only
+
 ```typescript
 // plugins/jwt.ts
 export default fp(async (app) => {
@@ -674,6 +713,7 @@ JWT_SECRET=<CHANGE_ME_IN_PRODUCTION>
 ```
 
 ### Never Commit .env
+
 ```bash
 # .gitignore
 .env
@@ -682,6 +722,7 @@ JWT_SECRET=<CHANGE_ME_IN_PRODUCTION>
 ```
 
 ### Sanitize User Input via Yup Before DB Writes
+
 ```typescript
 // ALWAYS validate before insert/update
 const validated = await animalSchema.create().validate(req.body);
@@ -692,6 +733,7 @@ await db.animals.insert(validated);
 ```
 
 ### Input Sanitization (XSS Prevention)
+
 ```typescript
 // For text fields stored in JSONB, always sanitize
 import sanitizeHtml from 'sanitize-html';
@@ -707,6 +749,7 @@ const sanitized = sanitizeHtml(userInput, {
 ## 9. Error Handling & Logging
 
 ### Try-Catch Async Handlers
+
 ```typescript
 async (req, res) => {
   try {
@@ -723,10 +766,11 @@ async (req, res) => {
     });
     throw new AppError('Internal server error', 500);
   }
-}
+};
 ```
 
 ### Never Expose Stack Traces in Production
+
 ```typescript
 // Bad in production
 return { error: error.stack };
@@ -741,25 +785,27 @@ return { statusCode: 500, message: 'Internal server error' };
 ## 10. Testing Standards
 
 ### Unit Tests (Service Layer)
+
 ```typescript
 // animal.service.test.ts
 describe('animalService', () => {
   it('should create animal with tenant scope', async () => {
     const user: User = { id: '1', companyId: 'c1', farmId: 'f1', role: 'manager' };
     const result = await animalService.create(input, user);
-    
+
     expect(result.companyId).toBe('c1');
     expect(result.farmId).toBe('f1');
   });
 
   it('should not return soft-deleted animals', async () => {
     const animals = await animalService.getByFarm(farmId, user);
-    expect(animals.every(a => a.deletedAt === null)).toBe(true);
+    expect(animals.every((a) => a.deletedAt === null)).toBe(true);
   });
 });
 ```
 
 ### Integration Tests (API Routes + Real DB)
+
 ```typescript
 // Use real PostgreSQL test database
 describe('POST /api/v1/animals', () => {
@@ -778,11 +824,13 @@ describe('POST /api/v1/animals', () => {
 ```
 
 ### Coverage Target
+
 - **Minimum:** 70% (unit + integration combined)
 - **Run before commit:** `pnpm test --coverage`
 - **Do not merge:** if coverage drops
 
 ### Snapshot Tests (Mobile)
+
 ```typescript
 // key screen snapshots only
 it('renders AnimalDetailScreen', () => {
@@ -809,6 +857,7 @@ docs: update API documentation
 ```
 
 **Rules:**
+
 - Lowercase description
 - Imperative mood ("add" not "added")
 - No period at end
@@ -836,18 +885,18 @@ Before merging any PR:
 
 ## 13. Naming Conventions
 
-| Element              | Convention                | Example               |
-|----------------------|---------------------------|-----------------------|
-| Files (components)   | kebab-case                | transaction-form.tsx  |
-| Files (utils)        | kebab-case                | api-response.ts       |
-| Components           | PascalCase                | TransactionForm       |
-| Functions            | camelCase                 | createTransaction     |
-| Constants            | SCREAMING_SNAKE           | MAX_FILE_SIZE         |
-| Types/Interfaces     | PascalCase with I prefix  | ITransaction          |
-| Enums                | PascalCase                | TransactionType       |
-| Database collections | snake_case plural         | transactions          |
-| API routes           | kebab-case                | /api/v1/bank-accounts |
-| Query keys           | camelCase with Keys suffix| transactionKeys       |
+| Element              | Convention                 | Example               |
+| -------------------- | -------------------------- | --------------------- |
+| Files (components)   | kebab-case                 | transaction-form.tsx  |
+| Files (utils)        | kebab-case                 | api-response.ts       |
+| Components           | PascalCase                 | TransactionForm       |
+| Functions            | camelCase                  | createTransaction     |
+| Constants            | SCREAMING_SNAKE            | MAX_FILE_SIZE         |
+| Types/Interfaces     | PascalCase with I prefix   | ITransaction          |
+| Enums                | PascalCase                 | TransactionType       |
+| Database collections | snake_case plural          | transactions          |
+| API routes           | kebab-case                 | /api/v1/bank-accounts |
+| Query keys           | camelCase with Keys suffix | transactionKeys       |
 
 ---
 

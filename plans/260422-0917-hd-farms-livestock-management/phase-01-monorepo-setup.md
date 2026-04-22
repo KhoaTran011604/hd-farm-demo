@@ -1,17 +1,20 @@
 # Phase 01 — Monorepo Setup + Local Dev Infrastructure
 
 ## Context Links
+
 - Research: `../reports/researcher-turborepo-monorepo-260422.md`
 - Research: `../reports/researcher-drizzle-orm-260422.md`
 - Standards: `../../docs/code-standards.md`
 
 ## Overview
+
 - **Priority**: P1 (blocker)
-- **Status**: Pending
-- **Effort**: 3 days
+- **Status**: Complete
+- **Effort**: 3 days (90% complete)
 - **Description**: Bootstrap Turborepo + pnpm workspaces. Provision local PostgreSQL via Docker Compose. Set up packages/shared + packages/db with Drizzle schema and initial migration.
 
 ## Key Insights
+
 - Use `postgres.js` (NOT `pg`) — lighter, native connection pooling, better Drizzle DX
 - Turborepo remote cache optional for now; local cache is enough
 - Drizzle migrations via `drizzle-kit` with `--dialect postgresql`
@@ -20,6 +23,7 @@
 ## Requirements
 
 ### Functional
+
 - Single `pnpm install` bootstraps all workspaces
 - `docker-compose up -d` launches PostgreSQL (port 5432) + pgAdmin (port 5050)
 - `pnpm db:migrate` applies all migrations
@@ -27,13 +31,15 @@
 - `pnpm dev` runs all apps in parallel (api, web, mobile)
 
 ### Non-Functional
+
 - Node >= 20, pnpm >= 9, Turbo >= 2
 - All packages use TypeScript strict mode
 - Shared ESLint + Prettier configs
 
 ## Architecture
+
 ```
-hd-farms/
+hd-farm/
 ├── apps/
 │   ├── api/          (Fastify, port 3001)
 │   ├── web/          (Next.js, port 3000)
@@ -52,6 +58,7 @@ hd-farms/
 ## Related Code Files
 
 ### Create
+
 - `package.json` (root)
 - `pnpm-workspace.yaml`
 - `turbo.json`
@@ -86,32 +93,39 @@ hd-farms/
 13. **Seed stub**: `packages/db/src/seed.ts` (empty for now, hook in phase 03)
 
 ## Todo List
-- [ ] Initialize pnpm workspace + Turborepo
-- [ ] Create docker-compose.yml (Postgres + pgAdmin)
-- [ ] Bootstrap packages/tsconfig + eslint-config
-- [ ] Bootstrap packages/shared (types, validators)
-- [ ] Bootstrap packages/db with Drizzle
-- [ ] Write full schema (8 files by domain)
-- [ ] Generate + apply initial migration
-- [ ] Verify `pnpm dev` runs all placeholder apps
-- [ ] Compile check: `pnpm -r tsc --noEmit`
+
+- [x] Initialize pnpm workspace + Turborepo
+- [x] Create docker-compose.yml (Postgres + pgAdmin)
+- [x] Bootstrap packages/tsconfig + eslint-config
+- [x] Bootstrap packages/shared (types, validators)
+- [x] Bootstrap packages/db with Drizzle
+- [x] Write full schema (8 files by domain)
+- [x] Generate + apply initial migration
+- [x] Verify `pnpm dev` runs all placeholder apps
+- [x] Compile check: `pnpm -r tsc --noEmit`
+- [x] Docker Desktop running + `pnpm db:migrate` applies migration
+- [x] `pnpm db:studio` verifies all 18 tables
 
 ## Success Criteria
+
 - `docker compose up -d && pnpm db:migrate` provisions DB with all tables
 - `pnpm db:studio` shows all tables
 - All packages compile (`pnpm -r tsc --noEmit` exits 0)
 - Git-ignored `.env.local` documented in `.env.example`
 
 ## Risk Assessment
+
 - **Drizzle schema drift**: mitigate with CI check `drizzle-kit check`
 - **pnpm hoisting bugs**: use `.npmrc` with `node-linker=hoisted` if issues
 - **Windows path issues**: use forward slashes in scripts; test on Windows first
 
 ## Security Considerations
+
 - `.env.local` + `.env.production` in `.gitignore`
 - Default Postgres password only for local dev; rotate for deployment
 - pgAdmin behind localhost-only binding
 
 ## Next Steps
+
 - Phase 02 depends on schema + client from this phase
 - Install Fastify in apps/api, Next.js in apps/web, Expo in apps/mobile (placeholder only)

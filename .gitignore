@@ -3,4 +3,35 @@ __pycache__/
 *.pyc
 .venv/
 *.npy
+
+# Environment
 .env
+.env.local
+.env.*.local
+.env.production
+
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+.next/
+.expo/
+.turbo/
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Drizzle
+migrations/meta/

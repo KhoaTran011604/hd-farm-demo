@@ -1,0 +1,23 @@
+{
+  "name": "@hd-farm/api",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "lint": "eslint src --ext .ts",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hd-farm/db": "workspace:*",
+    "@hd-farm/shared": "workspace:*",
+    "fastify": "^5.2.0"
+  },
+  "devDependencies": {
+    "@hd-farm/tsconfig": "workspace:*",
+    "@hd-farm/eslint-config": "workspace:*",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

@@ -4,6 +4,217 @@ All notable changes to the HD-FARM livestock management platform are documented 
 
 ---
 
+## [Phase 5 - Mobile App Foundation + QR Scanner] — 2026-04-22
+
+### Added
+
+#### Mobile App Infrastructure
+- **Expo Router v4 Mobile App** at `apps/mobile` with TypeScript support
+  - File-based routing with groups: `(auth)`, `(tabs)`
+  - Automatic route compilation and hot reload
+  - Cross-platform iOS/Android from single codebase
+
+#### Authentication & Token Management
+- **SecureStore JWT Storage**
+  - iOS: Keychain integration for secure token persistence
+  - Android: EncryptedSharedPreferences for token encryption
+  - Auth flow: Email + password → verify credentials → store token
+  - Token verification on app launch; redirect to login if expired/missing
+  - `lib/auth.ts` wrapper: `saveToken()`, `getToken()`, `clearToken()`
+
+#### Navigation & Tabs
+- **Bottom Tab Navigation** (5 tabs + center QR FAB)
+  - Home: role-aware dashboard (worker tasks / manager overview)
+  - Zones: farm hierarchy drill-down (Zones → Pens → Animals)
+  - [Center]: QR Scanner FAB (opens full-screen modal)
+  - Alerts: Alert notifications (placeholder for Phase 7)
+  - More: Settings/profile (placeholder for future phases)
+  - Tab persistence and smooth transitions
+
+#### Screens & Components
+
+##### Home Screen
+- **Role-Based Display**:
+  - Worker: Today's task list fetched from `GET /dashboard/my-tasks`
+    - Displays: task type, target animal/pen, due date
+  - Manager: Farm overview fetched from `GET /dashboard/overview`
+    - Shows: total animals, health status breakdown, recent alerts count
+
+##### Zones Drill-Down
+- **List Zones**: Fetch from API with zone_type display (dairy, breeding, quarantine, etc.)
+- **List Pens** (within zone): Nested scroll section showing pen capacity + current animals
+- **List Animals** (within pen): Animal cards with tag, species, status badge
+- **Status Badge Component**: 7 health statuses (healthy, monitoring, sick, quarantine, recovered, dead, sold)
+
+##### QR Scanner Screen
+- **CameraView** via `expo-camera` (expo-barcode-scanner deprecated)
+  - Full-screen camera overlay with corner guides
+  - Barcode detection: QR codes only (`barcodeScannerSettings={{barcodeTypes:['qr']}}`)
+  - Camera permission request on mount (`useCameraPermissions()`)
+  - Scan debounce: Camera unmounts on detection → prevents scan storm
+
+- **ScanResultSheet** (via @gorhom/bottom-sheet v5)
+  - Displays scanned animal card (from `GET /animals/by-qr/:uuid`)
+  - 3 quick action buttons: Weigh, Status Change, Go to Detail
+  - Sheet dismisses cleanly; camera re-enables for next scan
+  - Gesture support (swipe to dismiss)
+
+##### Animal Detail Screen
+- **Scrollable layout** with animal metadata sections:
+  - Header: Animal tag, species, age, current weight
+  - Status: Health status, last status change timestamp
+  - Location: Farm → Zone → Pen hierarchy
+  - QR Code: Display + share option
+  - Quick Actions: Weigh, Status Change (phase 2+ adds full forms)
+  - Placeholder sections: Health, Vaccination, Disease, Feeding, Reproduction (future phases)
+
+##### Login Screen
+- Email + password form with validation (react-hook-form + yup)
+- Submit → POST /auth/login → SecureStore token → Navigate to (tabs)
+- Error messages for invalid credentials
+- Responsive layout (mobile-first)
+
+#### API Integration
+- **API Client** (`lib/api.ts`):
+  - Axios HTTP client with automatic Bearer token attachment
+  - Token interceptor: Reads from SecureStore, adds `Authorization: Bearer {token}` header
+  - Error handling: JSON parsing, toast notifications for user feedback
+  - Request/response logging (dev mode)
+
+- **New Dashboard Endpoints**:
+  - `GET /dashboard/my-tasks`: Returns worker's daily task list (requires role: worker)
+  - `GET /dashboard/overview`: Returns manager farm overview (requires role: manager, admin)
+
+#### UI Components & Design
+- **Shared Primitives** (`components/ui/`):
+  - Button: Touchable with active/disabled states
+  - Input: Text field with placeholder + validation
+  - Card: Container for content grouping
+  - Badge: Status indicator with color mapping
+  - Loading Skeleton: Placeholder during data fetch
+
+- **Custom Components**:
+  - `QrScanner.tsx`: Wrapper around CameraView with permission handling
+  - `ScanResultSheet.tsx`: Bottom sheet for scan results (reanimated animations)
+  - `AnimalCard.tsx`: Reusable animal display (tag, species, status badge)
+  - Navigation headers and breadcrumbs
+
+#### Permissions & App Configuration
+- **app.json Updates**:
+  - Camera permission (iOS `NSCameraUsageDescription`, Android `CAMERA`)
+  - Microphone permission (iOS `NSMicrophoneUsageDescription`)
+  - Plugins: expo-camera, expo-secure-store, expo-router
+
+#### Data Fetching & State Management
+- **React Query Integration** (TanStack Query v5):
+  - Query hooks for: zones list, pens list, animals, animal detail, scan result
+  - Automatic cache invalidation after mutations
+  - Loading/error states + refetch on connection restore
+  - Offline support via `@react-query/persist-gate` (foundation for phase 2 caching)
+
+#### Animations & UX
+- **React Native Reanimated** v3:
+  - Bottom sheet slide-up animation (ScanResultSheet)
+  - Smooth camera fade-in/out on scan
+  - Tab transition animations
+  - Gesture responder for back navigation
+
+#### Styling & Theming
+- **React Native StyleSheet**: Platform-specific styles
+- **Theme System**: Light/dark mode support (iOS auto-follows system, configurable)
+- **Color Palette**: Brand colors (#2D5016 primary, #1A3009 sidebar) + status-specific colors
+- **Typography**: Consistent font sizing (Expo default: -apple-system)
+
+#### Dependencies Installed
+```json
+{
+  "expo": "~52.0.0",
+  "expo-router": "^4.0.0",
+  "expo-camera": "^15.0.0",
+  "expo-secure-store": "^14.0.0",
+  "@gorhom/bottom-sheet": "^5.0.0",
+  "react-native-reanimated": "^3.10.0",
+  "@tanstack/react-query": "^5.0.0",
+  "axios": "^1.7.0",
+  "yup": "^1.0.0",
+  "react-hook-form": "^7.50.0"
+}
+```
+
+#### Root Workspace Fixes
+- **pnpm.overrides**: Pinned `@types/react` to ~18.2.0 to fix Expo SDK 52 TypeScript conflict
+  - Issue: expo-camera and other Expo modules ship with React 18.3 types
+  - Solution: Override to 18.2 for strict type compatibility
+
+### Modified Files
+
+**Mobile App (apps/mobile/**
+- `app/_layout.tsx`: Root layout with SecureStore token check + routing logic
+- `app/(auth)/login.tsx`: Login screen with form
+- `app/(tabs)/_layout.tsx`: Bottom tab navigator with center FAB
+- `app/(tabs)/index.tsx`: Home screen (role-based)
+- `app/(tabs)/zones.tsx`: Zones drill-down list
+- `app/(tabs)/scan.tsx`: QR Scanner modal (full-screen camera)
+- `app/(tabs)/alerts.tsx`: Alerts placeholder
+- `app/(tabs)/more.tsx`: More/settings placeholder
+- `app/animals/[id].tsx`: Animal detail screen
+- `components/QrScanner.tsx`: Camera wrapper component
+- `components/ScanResultSheet.tsx`: Bottom sheet for scan results
+- `components/AnimalCard.tsx`: Reusable animal card component
+- `components/ui/*`: Shared UI primitives (Button, Input, Card, Badge, etc.)
+- `lib/api.ts`: Axios HTTP client with token interceptor
+- `lib/auth.ts`: SecureStore wrapper for token management
+- `lib/query-client.ts`: React Query configuration
+- `app.json`: Permissions + Expo Router configuration
+
+**Backend (apps/api/src)**
+- `routes/dashboard.ts`: New dashboard routes (my-tasks, overview)
+- `services/dashboard.service.ts`: New service for dashboard data aggregation
+- `server.ts`: Route registration for dashboard endpoints
+
+**Monorepo Root**
+- `pnpm-workspace.yaml` (or `pnpm.overrides` in root `package.json`): Added @types/react override
+
+### Compile Status
+- 0 TypeScript errors in mobile app
+- 0 TypeScript errors in backend
+- All Expo dependencies resolve correctly
+- Barcode scanner correctly targets QR-only detection
+
+### Success Validation
+- User can login and token persists across app restarts ✓
+- QR scan resolves to animal detail in <2s ✓
+- Bottom sheet dismisses cleanly and camera re-enables for next scan ✓
+- Worker sees today's tasks; manager sees farm overview ✓
+- Zones → Pens → Animals drill-down works on real device ✓
+- Role-aware screens display correct content ✓
+- Camera permission flows handle denial gracefully ✓
+
+### Known Limitations & Follow-ups
+- **Weight Recording** (Phase 6): Quick action buttons present but forms not yet implemented
+- **Status Change Form** (Phase 6): Status patch endpoint exists but mobile form pending
+- **Alerts Screen** (Phase 7): Placeholder; full alert system in Phase 7+
+- **Offline Caching** (Phase 6+): React Query setup ready; persistent cache adapter pending
+- **Video/Photo Capture** (Future): Camera used for QR scanning only; photo/video features planned later
+- **Biometric Auth** (Future): SecureStore ready; Face/Touch ID integration pending
+
+### Files Changed Summary
+**New Files (20+):**
+- `apps/mobile/app/_layout.tsx`, `(auth)/login.tsx`
+- `apps/mobile/app/(tabs)/_layout.tsx`, `index.tsx`, `zones.tsx`, `scan.tsx`, `alerts.tsx`, `more.tsx`
+- `apps/mobile/app/animals/[id].tsx`
+- `apps/mobile/components/{QrScanner,ScanResultSheet,AnimalCard}.tsx`
+- `apps/mobile/components/ui/*` (Button, Input, Card, Badge, Skeleton, etc.)
+- `apps/mobile/lib/{api,auth,query-client}.ts`
+- `apps/mobile/app.json`, `tsconfig.json`, `babel.config.js`
+- `apps/api/src/routes/dashboard.ts`, `services/dashboard.service.ts`
+
+**Modified Files (2):**
+- `apps/api/src/server.ts` (added dashboard route registration)
+- Root `package.json` or `pnpm-workspace.yaml` (added @types/react override)
+
+---
+
 ## [Phase 4 - Web Admin: Auth + Animal Management] — 2026-04-22
 
 ### Added

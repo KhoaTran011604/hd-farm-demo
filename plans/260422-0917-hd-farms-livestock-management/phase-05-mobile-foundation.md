@@ -6,7 +6,7 @@
 
 ## Overview
 - **Priority**: P1
-- **Status**: Pending
+- **Status**: Complete
 - **Effort**: 4 days
 - **Description**: Expo (React Native) bottom-tab app. Auth flow with SecureStore. Home (role-based), Zones list, QR Scanner (FAB), Animal Detail.
 
@@ -94,18 +94,18 @@ apps/mobile/
 15. **Manual test on device + compile check**
 
 ## Todo List
-- [ ] Expo scaffold + router v3
-- [ ] Install camera + bottom-sheet + reanimated
-- [ ] SecureStore auth flow
-- [ ] Login screen
-- [ ] Tabs layout with center FAB
-- [ ] Home (role-based)
-- [ ] Zones drill-down list
-- [ ] QR Scanner with CameraView
-- [ ] ScanResultSheet + quick actions
-- [ ] Animal detail screen
-- [ ] API: /dashboard/my-tasks + /overview
-- [ ] Test on iOS + Android
+- [x] Expo scaffold + router v3
+- [x] Install camera + bottom-sheet + reanimated
+- [x] SecureStore auth flow
+- [x] Login screen
+- [x] Tabs layout with center FAB
+- [x] Home (role-based)
+- [x] Zones drill-down list
+- [x] QR Scanner with CameraView
+- [x] ScanResultSheet + quick actions
+- [x] Animal detail screen
+- [x] API: /dashboard/my-tasks + /overview
+- [x] Test on iOS + Android
 
 ## Success Criteria
 - Login persists across app restart

@@ -11,6 +11,7 @@ import farmsRoutes from './modules/tenancy/farms-routes.js';
 import zonesRoutes from './modules/tenancy/zones-routes.js';
 import pensRoutes from './modules/tenancy/pens-routes.js';
 import animalsRoutes from './modules/animals/animals-routes.js';
+import dashboardRoutes from './modules/dashboard/dashboard-routes.js';
 
 export async function buildServer() {
   const app = Fastify({ logger: process.env['NODE_ENV'] !== 'test' });
@@ -36,6 +37,7 @@ export async function buildServer() {
   await app.register(zonesRoutes);
   await app.register(pensRoutes);
   await app.register(animalsRoutes);
+  await app.register(dashboardRoutes);
 
   return app;
 }

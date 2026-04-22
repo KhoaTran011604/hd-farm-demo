@@ -16,6 +16,7 @@
     "@hd-farm/db": "workspace:*",
     "@hd-farm/shared": "workspace:*",
     "argon2": "^0.44.0",
+    "dotenv": "^16.4.7",
     "fastify": "^5.2.0",
     "fastify-plugin": "^5.1.0"
   },

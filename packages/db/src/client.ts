@@ -1,10 +1,8 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from './schema/index';
-import dotenv from 'dotenv'
-dotenv.config()
 
-const url = 'postgresql://postgre:postgre@localhost:5432/hdfarm';
+const url = process.env['DATABASE_URL'];
 if (!url) throw new Error('DATABASE_URL is not set');
 
 // Connection pool — max 10 connections

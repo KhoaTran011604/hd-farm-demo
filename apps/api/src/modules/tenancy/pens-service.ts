@@ -25,7 +25,7 @@ export async function listPens(db: Database, companyId: string, zoneId: string) 
     deletedAt: pens.deletedAt,
     currentCount: sql<number>`(
       SELECT COUNT(*)::int FROM animals
-      WHERE pen_id = ${pens.id} AND deleted_at IS NULL
+      WHERE pen_id = pens.id AND deleted_at IS NULL
     )`,
   }).from(pens)
     .where(and(eq(pens.zoneId, zoneId), eq(pens.companyId, companyId), isNull(pens.deletedAt)));

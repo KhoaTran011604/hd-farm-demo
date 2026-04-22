@@ -31,7 +31,10 @@ async function fetchJson<T>(url: string): Promise<T> {
 export function AnimalForm(): React.JSX.Element {
   const router = useRouter();
   const { toast } = useToast();
-  const form = useForm<AnimalFormValues>({ resolver: yupResolver(schema) });
+  const form = useForm<AnimalFormValues>({
+    resolver: yupResolver(schema),
+    defaultValues: { name: '', species: undefined, farmId: '', zoneId: '', penId: '', qrCode: '' },
+  });
 
   const farmId = form.watch('farmId');
   const zoneId = form.watch('zoneId');

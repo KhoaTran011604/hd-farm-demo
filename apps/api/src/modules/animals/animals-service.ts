@@ -91,7 +91,7 @@ async function enrichWithPenZone(db: Database, animal: typeof animals.$inferSele
     }
   }
 
-  return { animal, pen, zone };
+  return { ...animal, pen, zone };
 }
 
 export async function createAnimal(

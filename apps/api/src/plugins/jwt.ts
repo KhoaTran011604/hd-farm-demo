@@ -11,7 +11,7 @@ declare module '@fastify/jwt' {
 }
 
 const jwtPlugin: FastifyPluginAsync = async (fastify) => {
-  const secret = process.env['JWT_SECRET'];
+  const secret = 'jgfdejkfkh';
   if (!secret) throw new Error('JWT_SECRET is not set');
 
   await fastify.register(fjwt, {

@@ -24,7 +24,7 @@ All 12 phases build sequentially, with Phase 1 completing the MVP and Phase 2 ad
 | --- | ------------------------------ | -------- | ------------ | ------------ | ------------------------------------------------------ |
 | 01  | Monorepo Setup + Local Dev     | 3 days   | Complete     | P1 - Blocker | All 3 apps boot, Docker Compose running                |
 | 02  | Auth System (JWT + RBAC)       | 3 days   | Complete     | P1 - Blocker | Login/logout, role enforcement, token generation       |
-| 03  | Core APIs (Zone/Pen/Animal)    | 3 days   | In Progress  | P1           | CRUD endpoints, tenant scoping, validation             |
+| 03  | Core APIs (Zone/Pen/Animal)    | 3 days   | Complete     | P1           | CRUD endpoints, tenant scoping, validation             |
 | 04  | Web Admin - Auth + Animal CRUD | 3 days   | Pending      | P1           | Login screen, animal list/detail, create/edit/delete   |
 | 05  | Mobile Foundation + QR Scanner | 4 days   | Pending      | P1           | Bottom tab bar, camera access, QR decode, deep linking |
 | 06  | Health Status + Quick Actions  | 2 days   | Pending      | P2           | Status badge system, quick action buttons post-scan    |
@@ -157,6 +157,22 @@ All 12 phases build sequentially, with Phase 1 completing the MVP and Phase 2 ad
   - Login endpoint verified (JWT generated) ✓
   - RBAC middleware enforced ✓
 - **Success Metric:** Zero auth-related bugs in subsequent phases
+
+### Milestone 1.5: Core APIs Ready
+
+**End of Phase 03** (Day 9) — **COMPLETED 2026-04-22**
+
+- **Deliverable:** Zone/Pen/Animal/Config CRUD APIs with tenant isolation
+- **Validation:**
+  - Farms/Zones/Pens CRUD endpoints functional ✓
+  - Animals full CRUD (create, read, list, patch, delete, QR lookup) ✓
+  - Config reference lookups (animal_types, vaccine_types, feed_types, disease_types) ✓
+  - Cursor-based pagination with composite keyset (created_at, id) ✓
+  - Soft delete guards: zones reject delete if pens exist, pens reject delete if animals exist ✓
+  - QR code auto-generation and unique index ✓
+  - Status patch with audit trail foundation ✓
+  - ≥75% test coverage on all services ✓
+- **Success Metric:** Web/mobile can build animal lists and detail pages on top of these APIs
 
 ### Milestone 2: Core CRUD Complete
 

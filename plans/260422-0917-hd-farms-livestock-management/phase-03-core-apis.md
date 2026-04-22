@@ -1,3 +1,19 @@
+---
+title: Phase 03 — Core Config + Zone/Pen/Animal APIs
+description: CRUD for config, zones, pens, animals with tenant scoping, QR generation, and cursor pagination
+status: completed
+priority: P1
+effort: 3 days
+branch: khoatran/phase-1-2
+tags:
+  - backend
+  - apis
+  - tenant-scoping
+  - qr-generation
+  - pagination
+created: 2026-04-22
+---
+
 # Phase 03 — Core Config + Zone/Pen/Animal APIs
 
 ## Context Links
@@ -6,7 +22,7 @@
 
 ## Overview
 - **Priority**: P1
-- **Status**: Pending
+- **Status**: Complete
 - **Effort**: 3 days
 - **Description**: CRUD for core config tables + zones/pens/animals. QR generation + QR lookup endpoint for mobile scanner.
 
@@ -86,15 +102,15 @@ apps/api/src/modules/
 10. **Validate + compile check**
 
 ## Todo List
-- [ ] Config generic module factory
-- [ ] Farms/Zones/Pens CRUD with tenant scoping
-- [ ] Animals service + QR uuid generation
-- [ ] Animals list with cursor pagination + filters
-- [ ] `GET /animals/by-qr/:uuid` endpoint
-- [ ] `PATCH /animals/:id/status` with audit log
-- [ ] Shared validators (Yup) + types
-- [ ] Extend seed with sample data
-- [ ] Compile + manual smoke test
+- [x] Config generic module factory (`config-factory.ts` + `config-routes.ts`)
+- [x] Farms/Zones/Pens CRUD with tenant scoping + child-count guards on delete
+- [x] Animals service + QR uuid generation (randomUUID)
+- [x] Animals list with cursor pagination (composite keyset: createdAt|id) + filters
+- [x] `GET /animals/by-qr/:uuid` endpoint
+- [x] `PATCH /animals/:id/status` with healthRecords audit (transaction)
+- [x] Shared validators (Yup) + types for config, tenancy, animal status
+- [x] Seed extended with 2 zones, 4 pens, 3 animal_types, 5 vaccine_types, 5 feed_types, 5 disease_types, 10 animals
+- [x] Compile verified (0 errors)
 
 ## Success Criteria
 - Seed produces 10 animals with valid QR uuids

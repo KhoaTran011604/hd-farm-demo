@@ -144,19 +144,24 @@ CREATE POLICY animals_tenant_policy ON animals
 The API is built with Fastify 5 and the following plugin layers:
 
 ```
-┌────────────────────────────────────────────────┐
-│ Fastify 5 Server (server.ts)                   │
-├────────────────────────────────────────────────┤
-│ 1. @fastify/cors (WEB_ORIGIN, MOBILE_ORIGIN)  │
-│ 2. @fastify/helmet (security headers)          │
-│ 3. db plugin (Drizzle + postgres.js)           │
-│ 4. jwt plugin (@fastify/jwt + HS256)           │
-│ 5. error-handler (AppError → JSON response)    │
-├────────────────────────────────────────────────┤
-│ Modules:                                       │
-│ ├─ /auth (login, JWT generation)              │
-│ └─ /users (user management, RBAC)              │
-└────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────┐
+│ Fastify 5 Server (server.ts)                    │
+├─────────────────────────────────────────────────┤
+│ 1. @fastify/cors (WEB_ORIGIN, MOBILE_ORIGIN)    │
+│ 2. @fastify/helmet (security headers)            │
+│ 3. db plugin (Drizzle + postgres.js)             │
+│ 4. jwt plugin (@fastify/jwt + HS256)             │
+│ 5. error-handler (AppError → JSON response)      │
+├─────────────────────────────────────────────────┤
+│ Modules (Phase 1-3):                            │
+│ ├─ /auth (login, JWT generation, logout)        │
+│ ├─ /users (user management, RBAC)               │
+│ ├─ /farms (farm CRUD, tenant scoped)            │
+│ ├─ /zones (zone CRUD, delete guards)            │
+│ ├─ /pens (pen CRUD, capacity tracking)          │
+│ ├─ /animals (full CRUD, QR lookup, pagination)  │
+│ └─ /config (animal/vaccine/feed/disease types)  │
+└─────────────────────────────────────────────────┘
 ```
 
 ### Plugin Details
@@ -314,36 +319,108 @@ GET /api/v1/animals?limit=20&cursor=uuid-of-last-item
 - Logs errors with context (userId, farmId)
 - Never exposes stack traces in production
 
+### API Modules (Phase 1-3)
+
+**Module: /auth** (Fastify routes + AuthService)
+- `POST /api/v1/auth/login`: JWT generation with user profile
+- `GET /api/v1/auth/me`: Current authenticated user from token
+- Service: `AuthService` handles login logic, password verification, token generation
+
+**Module: /users** (Fastify routes + UsersService)
+- `GET /api/v1/users`: List users (admin-only, company-scoped)
+- `POST /api/v1/users`: Create user (admin-only)
+- `PATCH /api/v1/users/:id`: Update user (admin-only)
+- `DELETE /api/v1/users/:id`: Soft delete user (admin-only)
+- Service: `UsersService` manages CRUD with tenant isolation (companyId filter)
+
+**Module: /farms** (Phase 3, Fastify routes + FarmsService)
+- `POST /api/v1/farms`: Create farm (company-scoped)
+- `GET /api/v1/farms`: List farms (company-scoped, paginated)
+- `GET /api/v1/farms/:id`: Get farm detail
+- `PATCH /api/v1/farms/:id`: Update farm
+- `DELETE /api/v1/farms/:id`: Soft delete farm (guard: fails if zones exist)
+- Service: `FarmsService` implements CRUD + child-count checks
+
+**Module: /zones** (Phase 3, Fastify routes + ZonesService)
+- `POST /api/v1/zones`: Create zone (zone_type: dairy, breeding, quarantine, etc.)
+- `GET /api/v1/zones`: List zones (farm + company-scoped)
+- `GET /api/v1/zones/:id`: Get zone detail (includes pen count)
+- `PATCH /api/v1/zones/:id`: Update zone
+- `DELETE /api/v1/zones/:id`: Soft delete zone (guard: fails if pens exist)
+- Service: `ZonesService` manages zone hierarchy + delete guards
+
+**Module: /pens** (Phase 3, Fastify routes + PensService)
+- `POST /api/v1/pens`: Create pen (capacity, zone_id)
+- `GET /api/v1/pens`: List pens (zone + farm + company-scoped, includes current_animal_count)
+- `GET /api/v1/pens/:id`: Get pen detail + animal roster
+- `PATCH /api/v1/pens/:id`: Update pen (capacity, metadata)
+- `DELETE /api/v1/pens/:id`: Soft delete pen (guard: fails if animals exist)
+- Service: `PensService` tracks current animal count + enforces capacity
+
+**Module: /animals** (Phase 3, Fastify routes + AnimalsService)
+- `POST /api/v1/animals`: Create animal (UUID → QR code auto-generation)
+- `GET /api/v1/animals`: List animals (cursor-based pagination, filters: species, status, zone_id, pen_id)
+- `GET /api/v1/animals/:id`: Get animal detail (includes metadata, health_status, qr_code)
+- `GET /api/v1/animals/qr/:qr_code`: Lookup by QR code (mobile deep link target)
+- `PATCH /api/v1/animals/:id`: Update animal (name, pen_id, metadata)
+- `PATCH /api/v1/animals/:id/status`: Change health_status (with audit trail)
+- `DELETE /api/v1/animals/:id`: Soft delete animal
+- Service: `AnimalsService` implements full CRUD, QR code handling, cursor pagination, status audit
+
+**Module: /config** (Phase 3, Fastify routes + ConfigService — read-only)
+- `GET /api/v1/config/animal-types`: List animal type catalog (species, label, metadata)
+- `GET /api/v1/config/vaccine-types`: List vaccine types (species-specific)
+- `GET /api/v1/config/feed-types`: List feed types (species-specific, cost/calories)
+- `GET /api/v1/config/disease-types`: List disease types (contagious flag, mortality rate)
+- Service: `ConfigService` generic factory pattern for all config lookups (company-scoped)
+
 ---
 
 ## 4. Database Schema & Design
 
 ### Schema Organization (Drizzle)
 
-**schema/tenancy.ts**
+**schema/tenancy.ts** (Phase 3 updates)
 
 - `companies` (id, name, subscription_tier, created_at)
 - `farms` (id, company_id, name, location, animal_capacity, created_at)
-- `zones` (id, farm_id, name, zone_type, description)
-- `pens` (id, zone_id, name, capacity, current_animal_count)
+  - Indices: (company_id, id), farm_id
+- `zones` (id, farm_id, name, zone_type, description, deleted_at)
+  - Indices: (farm_id, company_id), deleted_at
+  - DELETE guard: fails if child pens exist
+- `pens` (id, zone_id, name, capacity, current_animal_count, deleted_at)
+  - Indices: (zone_id, farm_id), deleted_at
+  - Tracks current_animal_count for capacity validation
+  - DELETE guard: fails if child animals exist
 
 **schema/auth.ts**
 
 - `users` (id, email, password_hash, name, phone)
 - `user_farm_roles` (user_id, farm_id, role, assigned_at)
 
-**schema/animals.ts**
+**schema/animals.ts** (Phase 3 full CRUD + QR)
 
-- `animals` (id, company_id, farm_id, pen_id, name, species, status, qr_code, type_metadata, created_at, updated_at, deleted_at)
+- `animals` (id, company_id, farm_id, pen_id, name, species, health_status, qr_code UNIQUE, type_metadata JSONB, created_at, updated_at, deleted_at)
+  - Indices: (pen_id, farm_id), (company_id, farm_id), health_status, deleted_at, UNIQUE(qr_code)
+  - health_status: healthy, monitoring, sick, quarantine, recovered, dead, sold
+  - qr_code: UUID stored for deep linking (hdfarm://animal/{uuid})
+  - type_metadata: Species-specific fields (e.g., heo: littleSize, pregnancyDays; bò: milkYield)
 - `batches` (id, farm_id, species, start_date, expected_end_date, initial_count, status)
+  - Schema ready for Phase 4, not yet linked to animals
 - `animal_batches` (animal_id, batch_id, joined_at, left_at)
+  - Schema ready for Phase 4
 
-**schema/config.ts** (read-only lookup tables)
+**schema/config.ts** (Phase 3, read-only reference data — company-scoped)
 
-- `animal_types` (species, label, default_weight, lifespan_days)
-- `vaccine_types` (id, name, species, recommended_age_days, interval_days)
-- `feed_types` (id, name, species, calories_per_kg, cost_per_kg)
-- `disease_types` (id, name, species, contagious_flag, mortality_rate)
+- `animal_types` (id, company_id, species, label, default_weight_kg, lifespan_days, metadata_schema JSONB)
+  - Lookup: Species catalog (heo, bò, gà, etc.) with species-specific defaults
+- `vaccine_types` (id, company_id, species, name, recommended_age_days, interval_days, description)
+  - Lookup: Vaccination schedules per species (e.g., heo: initial vaccine at 5 days)
+- `feed_types` (id, company_id, species, name, calories_per_kg, cost_per_kg, description)
+  - Lookup: Feed nutritional info and cost tracking (species-specific)
+- `disease_types` (id, company_id, species, name, contagious_flag, mortality_rate_percent, description)
+  - Lookup: Disease registry with severity (contagious=true for outbreak tracking)
+- All tables have Index: (company_id) — tenant-scoped reference data
 
 **schema/health.ts**
 

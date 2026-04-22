@@ -6,6 +6,11 @@ import jwtPlugin from './plugins/jwt.js';
 import { errorHandler } from './plugins/error-handler.js';
 import authRoutes from './modules/auth/auth-routes.js';
 import usersRoutes from './modules/users/users-routes.js';
+import configRoutes from './modules/config/config-routes.js';
+import farmsRoutes from './modules/tenancy/farms-routes.js';
+import zonesRoutes from './modules/tenancy/zones-routes.js';
+import pensRoutes from './modules/tenancy/pens-routes.js';
+import animalsRoutes from './modules/animals/animals-routes.js';
 
 export async function buildServer() {
   const app = Fastify({ logger: process.env['NODE_ENV'] !== 'test' });
@@ -26,6 +31,11 @@ export async function buildServer() {
 
   await app.register(authRoutes);
   await app.register(usersRoutes);
+  await app.register(configRoutes);
+  await app.register(farmsRoutes);
+  await app.register(zonesRoutes);
+  await app.register(pensRoutes);
+  await app.register(animalsRoutes);
 
   return app;
 }

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HD-FARMS — Đàn vật nuôi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Be Vietnam Pro',sans-serif;background:#F8FAF5;color:#1A2E0A;display:flex;min-height:100vh;font-size:14px}
+
+/* SIDEBAR (shared) */
+.sidebar{width:240px;min-height:100vh;background:#1A3009;display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;bottom:0;z-index:50}
+.sidebar-logo{height:64px;display:flex;align-items:center;padding:0 20px;gap:10px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sidebar-logo-icon{width:36px;height:36px;background:#7CB518;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.sidebar-logo-text{color:white;font-size:16px;font-weight:700}
+.sidebar-logo-sub{color:#C5E09B;font-size:10px}
+.sidebar-nav{flex:1;padding:12px 8px}
+.nav-group-label{color:rgba(197,224,155,.5);font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;padding:12px 12px 4px}
+.nav-item{display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border-radius:8px;cursor:pointer;color:#C5E09B;font-size:13.5px;font-weight:500;margin-bottom:2px}
+.nav-item:hover{background:rgba(255,255,255,.08)}
+.nav-item.active{background:#2D5016;color:white}
+.nav-item svg{width:18px;height:18px;flex-shrink:0}
+.nav-divider{border:none;border-top:1px solid rgba(255,255,255,.08);margin:8px 0}
+.sidebar-bottom{padding:12px 8px;border-top:1px solid rgba(255,255,255,.1)}
+.user-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px}
+.avatar{width:32px;height:32px;border-radius:50%;background:#4A7C2F;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:700;flex-shrink:0}
+.user-info{flex:1}
+.user-name{color:white;font-size:12.5px;font-weight:600}
+.user-role{color:#C5E09B;font-size:11px}
+
+/* MAIN */
+.main{margin-left:240px;flex:1;display:flex;flex-direction:column}
+.header{height:64px;background:white;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:40}
+.breadcrumb{display:flex;align-items:center;gap:6px;color:#9CA3AF;font-size:13px;flex:1}
+.breadcrumb-current{color:#1A2E0A;font-weight:600}
+.breadcrumb svg{width:14px;height:14px}
+.header-actions{display:flex;align-items:center;gap:8px}
+.icon-btn{width:36px;height:36px;border-radius:8px;border:1px solid #E5E7EB;background:white;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.icon-btn svg{width:18px;height:18px;color:#4B5563}
+.header-avatar{width:36px;height:36px;border-radius:50%;background:#2D5016;display:flex;align-items:center;justify-content:center;color:white;font-size:13px;font-weight:700}
+.page{padding:24px;display:flex;flex-direction:column;gap:16px}
+.page-header{display:flex;align-items:center;justify-content:space-between}
+.page-title{font-size:20px;font-weight:700}
+.page-subtitle{font-size:13px;color:#9CA3AF;margin-top:2px}
+.btn-primary{height:40px;padding:0 16px;background:#2D5016;color:white;border:none;border-radius:8px;font-size:13.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit}
+.btn-primary svg{width:16px;height:16px}
+
+/* FILTER BAR */
+.filter-bar{background:white;border-radius:12px;border:1px solid #E5E7EB;padding:14px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.search-wrap{position:relative;flex:1;min-width:200px}
+.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:#9CA3AF}
+.search-input{width:100%;height:38px;padding:0 12px 0 34px;border:1px solid #E5E7EB;border-radius:8px;font-size:13.5px;font-family:inherit;color:#1A2E0A;background:#F8FAF5}
+.search-input:focus{outline:none;border-color:#4A7C2F;box-shadow:0 0 0 3px rgba(74,124,47,.1)}
+.select-filter{height:38px;padding:0 10px;border:1px solid #E5E7EB;border-radius:8px;font-size:13px;color:#4B5563;background:white;cursor:pointer;font-family:inherit}
+.filter-divider{width:1px;height:24px;background:#E5E7EB}
+.btn-export{height:38px;padding:0 14px;border:1px solid #E5E7EB;background:white;border-radius:8px;font-size:13px;color:#4B5563;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit}
+.btn-export svg{width:15px;height:15px}
+
+/* BULK ACTION BAR */
+.bulk-bar{background:#2D5016;border-radius:8px;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.bulk-count{color:white;font-size:13px;font-weight:600}
+.bulk-actions{display:flex;gap:8px;margin-left:auto}
+.bulk-btn{height:34px;padding:0 14px;border-radius:6px;border:none;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit}
+.bulk-btn.danger{background:#DC2626;color:white}
+.bulk-btn.secondary{background:rgba(255,255,255,.15);color:white;border:1px solid rgba(255,255,255,.25)}
+
+/* TABLE */
+.table-wrap{background:white;border-radius:12px;border:1px solid #E5E7EB;overflow:hidden}
+.table-toolbar{padding:14px 20px;border-bottom:1px solid #F3F4F6;display:flex;align-items:center;justify-content:space-between}
+.table-count{font-size:13px;color:#9CA3AF;font-weight:500}
+.table-actions{display:flex;gap:8px}
+table{width:100%;border-collapse:collapse}
+thead tr{background:#F8FAF5;border-bottom:1px solid #E5E7EB}
+th{padding:0 16px;height:44px;text-align:left;font-size:12px;font-weight:600;color:#6B7280;white-space:nowrap}
+th.sortable{cursor:pointer}
+th.sortable:hover{color:#1A2E0A}
+.sort-icon{display:inline-flex;flex-direction:column;margin-left:4px;gap:1px;vertical-align:middle}
+.sort-icon svg{width:8px;height:8px;color:#D1D5DB}
+.sort-icon svg.active{color:#2D5016}
+th.check-col{width:48px;padding:0 12px}
+tbody tr{border-bottom:1px solid #F9FAFB;transition:background .1s;cursor:pointer}
+tbody tr:hover{background:#F8FAF5}
+tbody tr:last-child{border-bottom:none}
+td{padding:0 16px;height:48px;font-size:13.5px;vertical-align:middle}
+td.check-col{width:48px;padding:0 12px}
+.cb{width:16px;height:16px;border-radius:4px;border:1.5px solid #D1D5DB;cursor:pointer;accent-color:#2D5016}
+.animal-id{font-family:'Be Vietnam Pro',monospace;font-size:12.5px;font-weight:600;color:#2D5016}
+.animal-name{font-weight:600;color:#1A2E0A}
+.animal-sub{font-size:11.5px;color:#9CA3AF}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.badge-dot{width:6px;height:6px;border-radius:50%}
+.badge-healthy{background:#DCFCE7;color:#16A34A}
+.badge-healthy .badge-dot{background:#16A34A}
+.badge-monitoring{background:#FEF3C7;color:#D97706}
+.badge-monitoring .badge-dot{background:#D97706}
+.badge-sick{background:#FEE2E2;color:#DC2626}
+.badge-sick .badge-dot{background:#DC2626}
+.badge-quarantine{background:#FFEDD5;color:#EA580C}
+.badge-quarantine .badge-dot{background:#EA580C}
+.badge-recovered{background:#DBEAFE;color:#2563EB}
+.badge-recovered .badge-dot{background:#2563EB}
+.weight-cell{font-weight:600;color:#1A2E0A}
+.weight-delta{font-size:11px;font-weight:500}
+.weight-delta.up{color:#16A34A}
+.weight-delta.down{color:#DC2626}
+.zone-chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600;background:#F0FDF4;color:#2D5016}
+.row-action{color:#9CA3AF;cursor:pointer;padding:6px;border-radius:6px}
+.row-action:hover{background:#F3F4F6;color:#1A2E0A}
+
+/* PAGINATION */
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-top:1px solid #F3F4F6}
+.page-info{font-size:13px;color:#9CA3AF}
+.page-controls{display:flex;align-items:center;gap:4px}
+.page-btn{width:34px;height:34px;border-radius:6px;border:1px solid #E5E7EB;background:white;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;font-weight:500;color:#4B5563;font-family:inherit}
+.page-btn:hover{border-color:#4A7C2F;color:#2D5016}
+.page-btn.active{background:#2D5016;color:white;border-color:#2D5016}
+.page-btn svg{width:14px;height:14px}
+.page-size{font-size:13px;color:#9CA3AF;display:flex;align-items:center;gap:6px}
+.page-size select{height:32px;padding:0 8px;border:1px solid #E5E7EB;border-radius:6px;font-size:13px;font-family:inherit;color:#4B5563}
+
+.annotation{position:fixed;bottom:20px;right:20px;background:#1A3009;color:#C5E09B;font-size:11px;padding:8px 14px;border-radius:8px;opacity:.85}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-icon"><svg viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg></div>
+    <div><div class="sidebar-logo-text">HD-FARMS</div><div class="sidebar-logo-sub">Quản lý đàn vật nuôi</div></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group-label">Tổng quan</div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Tổng quan
+    </div>
+    <div class="nav-group-label">Quản lý</div>
+    <div class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Đàn vật nuôi
+    </div>
+    <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Lô/Đợt nuôi</div>
+    <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Khu vực</div>
+    <hr class="nav-divider">
+    <div class="nav-group-label">Sức khỏe</div>
+    <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Sức khỏe</div>
+    <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>Tiêm vaccine</div>
+    <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>Thức ăn</div>
+    <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Sinh sản</div>
+    <hr class="nav-divider">
+    <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Báo cáo</div>
+    <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>Cài đặt</div>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="user-row">
+      <div class="avatar">NT</div>
+      <div class="user-info"><div class="user-name">Nguyễn Thành</div><div class="user-role">Quản trị viên</div></div>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="header">
+    <div class="breadcrumb">
+      <span>HD-FARMS</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      <span class="breadcrumb-current">Đàn vật nuôi</span>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+      <div class="header-avatar">NT</div>
+    </div>
+  </header>
+
+  <div class="page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Đàn vật nuôi</div>
+        <div class="page-subtitle">1,248 con · 6 khu vực</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-primary" style="background:white;color:#4B5563;border:1px solid #E5E7EB">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+          Nhập Excel
+        </button>
+        <button class="btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Thêm vật nuôi
+        </button>
+      </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.35-4.35"/></svg>
+        <input class="search-input" type="text" placeholder="Tìm theo số hiệu, tên...">
+      </div>
+      <select class="select-filter"><option>Tất cả khu vực</option><option>Khu A</option><option>Khu B</option><option>Khu C</option><option>Khu D</option></select>
+      <select class="select-filter"><option>Tất cả loại</option><option>Heo thịt</option><option>Heo nái</option><option>Heo con</option></select>
+      <select class="select-filter"><option>Tất cả trạng thái</option><option>Khỏe mạnh</option><option>Theo dõi</option><option>Bệnh</option><option>Cách ly</option></select>
+      <select class="select-filter"><option>Tất cả lô</option><option>Lô A-2026-01</option><option>Lô B-2026-03</option></select>
+      <div class="filter-divider"></div>
+      <button class="btn-export">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        Xuất CSV
+      </button>
+    </div>
+
+    <!-- BULK ACTION BAR (visible when rows selected) -->
+    <div class="bulk-bar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>
+      <span class="bulk-count">3 con được chọn</span>
+      <div class="bulk-actions">
+        <button class="bulk-btn secondary">Chuyển khu vực</button>
+        <button class="bulk-btn secondary">Cập nhật trạng thái</button>
+        <button class="bulk-btn secondary">Ghi nhận vaccine</button>
+        <button class="bulk-btn danger">Xóa</button>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrap">
+      <div class="table-toolbar">
+        <span class="table-count">Hiển thị 1–20 trong 1,248 con</span>
+        <div class="table-actions">
+          <button class="btn-export" style="height:32px;font-size:12px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path d="M4 6h16M4 10h16M4 14h10"/></svg>
+            Cột hiển thị
+          </button>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th class="check-col"><input type="checkbox" class="cb" style="accent-color:#2D5016"></th>
+            <th class="sortable">#ID <span class="sort-icon"><svg viewBox="0 0 10 6" fill="currentColor"><path d="M5 0l5 6H0z"/></svg><svg viewBox="0 0 10 6" fill="currentColor" class="active"><path d="M5 6L0 0h10z"/></svg></span></th>
+            <th>Tên / Số hiệu</th>
+            <th>Khu vực</th>
+            <th>Loại</th>
+            <th>Trạng thái</th>
+            <th class="sortable">Cân nặng <span class="sort-icon"><svg viewBox="0 0 10 6" fill="currentColor" class="active"><path d="M5 0l5 6H0z"/></svg><svg viewBox="0 0 10 6" fill="currentColor"><path d="M5 6L0 0h10z"/></svg></span></th>
+            <th>Lần cân cuối</th>
+            <th style="width:48px"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="check-col"><input type="checkbox" class="cb" checked></td>
+            <td><span class="animal-id">A-003</span></td>
+            <td><div class="animal-name">Heo #A-003</div><div class="animal-sub">Lô A-2026-01</div></td>
+            <td><span class="zone-chip">Khu A</span></td>
+            <td>Heo thịt</td>
+            <td><span class="badge badge-healthy"><span class="badge-dot"></span>Khỏe mạnh</span></td>
+            <td><div class="weight-cell">87.4 kg</div><div class="weight-delta up">+1.2 kg</div></td>
+            <td>19/04/2026</td>
+            <td><span class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></span></td>
+          </tr>
+          <tr>
+            <td class="check-col"><input type="checkbox" class="cb" checked></td>
+            <td><span class="animal-id">A-012</span></td>
+            <td><div class="animal-name">Heo #A-012</div><div class="animal-sub">Lô A-2026-01</div></td>
+            <td><span class="zone-chip">Khu A</span></td>
+            <td>Heo thịt</td>
+            <td><span class="badge badge-sick"><span class="badge-dot"></span>Bệnh</span></td>
+            <td><div class="weight-cell">72.1 kg</div><div class="weight-delta down">-0.8 kg</div></td>
+            <td>20/04/2026</td>
+            <td><span class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></span></td>
+          </tr>
+          <tr>
+            <td class="check-col"><input type="checkbox" class="cb" checked></td>
+            <td><span class="animal-id">B-007</span></td>
+            <td><div class="animal-name">Heo nái #B-007</div><div class="animal-sub">Lô B-2026-03</div></td>
+            <td><span class="zone-chip" style="background:#FFF7ED;color:#C2410C">Khu B</span></td>
+            <td>Heo nái</td>
+            <td><span class="badge badge-monitoring"><span class="badge-dot"></span>Theo dõi</span></td>
+            <td><div class="weight-cell">142.5 kg</div><div class="weight-delta up">+0.5 kg</div></td>
+            <td>21/04/2026</td>
+            <td><span class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></span></td>
+          </tr>
+          <tr>
+            <td class="check-col"><input type="checkbox" class="cb"></td>
+            <td><span class="animal-id">D-002</span></td>
+            <td><div class="animal-name">Heo #D-002</div><div class="animal-sub">Lô A-2026-01</div></td>
+            <td><span class="zone-chip" style="background:#FFEDD5;color:#9A3412">Khu D</span></td>
+            <td>Heo thịt</td>
+            <td><span class="badge badge-quarantine"><span class="badge-dot"></span>Cách ly</span></td>
+            <td><div class="weight-cell">68.0 kg</div><div class="weight-delta down">-2.1 kg</div></td>
+            <td>20/04/2026</td>
+            <td><span class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></span></td>
+          </tr>
+          <tr>
+            <td class="check-col"><input type="checkbox" class="cb"></td>
+            <td><span class="animal-id">C-041</span></td>
+            <td><div class="animal-name">Heo con #C-041</div><div class="animal-sub">Lô C-2026-04</div></td>
+            <td><span class="zone-chip" style="background:#EFF6FF;color:#1D4ED8">Khu C</span></td>
+            <td>Heo con</td>
+            <td><span class="badge badge-recovered"><span class="badge-dot"></span>Hồi phục</span></td>
+            <td><div class="weight-cell">22.3 kg</div><div class="weight-delta up">+1.8 kg</div></td>
+            <td>22/04/2026</td>
+            <td><span class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></span></td>
+          </tr>
+          <tr style="opacity:.5">
+            <td class="check-col"><input type="checkbox" class="cb"></td>
+            <td><span class="animal-id">A-088</span></td>
+            <td><div class="animal-name">Heo #A-088</div><div class="animal-sub">Lô A-2025-12</div></td>
+            <td><span class="zone-chip">Khu A</span></td>
+            <td>Heo thịt</td>
+            <td><span class="badge" style="background:#F9FAFB;color:#9CA3AF"><span class="badge-dot" style="background:#9CA3AF"></span>Đã bán</span></td>
+            <td><div class="weight-cell">98.7 kg</div><div class="weight-delta">—</div></td>
+            <td>10/04/2026</td>
+            <td><span class="row-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></span></td>
+          </tr>
+          <!-- placeholder rows -->
+          <tr><td colspan="9" style="height:48px;background:#FAFAFA"></td></tr>
+          <tr><td colspan="9" style="height:48px"></td></tr>
+          <tr><td colspan="9" style="height:48px;background:#FAFAFA"></td></tr>
+        </tbody>
+      </table>
+
+      <!-- PAGINATION -->
+      <div class="pagination">
+        <div class="page-size">Hiển thị <select><option>20</option><option>50</option><option>100</option></select> hàng</div>
+        <div class="page-info">Trang 1 / 63</div>
+        <div class="page-controls">
+          <button class="page-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn" style="border:none;background:none;font-size:13px;color:#9CA3AF">…</button>
+          <button class="page-btn">63</button>
+          <button class="page-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="annotation">Wireframe — HD-FARMS Animal List v1.0</div>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HD-FARMS Mobile — Trang chủ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Be Vietnam Pro',sans-serif;background:#E5E7EB;display:flex;align-items:flex-start;justify-content:center;min-height:100vh;padding:24px;gap:24px}
+.device-frame{width:390px;min-height:844px;background:#F8FAF5;border-radius:44px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.25),0 0 0 12px #1A1A1A,0 0 0 14px #333;position:relative;display:flex;flex-direction:column}
+.status-bar{height:50px;background:#1A3009;display:flex;align-items:flex-end;justify-content:space-between;padding:0 20px 8px;flex-shrink:0}
+.status-time{color:white;font-size:15px;font-weight:700}
+.status-icons{display:flex;align-items:center;gap:5px}
+.status-icons svg{width:15px;height:15px;fill:white}
+
+/* APP HEADER */
+.app-header{background:#1A3009;padding:12px 20px 20px;flex-shrink:0}
+.greeting-row{display:flex;align-items:flex-start;justify-content:space-between}
+.greeting-sub{color:#C5E09B;font-size:12px;font-weight:500}
+.greeting-name{color:white;font-size:20px;font-weight:800;margin-top:2px}
+.greeting-date{color:#C5E09B;font-size:12px;margin-top:2px;opacity:.8}
+.header-avatar{width:42px;height:42px;border-radius:50%;background:#4A7C2F;border:2px solid #7CB518;display:flex;align-items:center;justify-content:center;color:white;font-size:15px;font-weight:700;flex-shrink:0}
+.notif-btn{position:relative}
+.notif-btn svg{width:22px;height:22px;stroke:white;fill:none;stroke-width:1.5}
+.notif-dot{position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:#DC2626;border-radius:50%;border:1.5px solid #1A3009}
+.zone-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.12);border-radius:20px;padding:5px 12px;margin-top:10px}
+.zone-pill svg{width:13px;height:13px;stroke:#7CB518;fill:none;stroke-width:1.5}
+.zone-pill span{color:#C5E09B;font-size:12px;font-weight:600}
+
+/* SCROLLABLE CONTENT */
+.scroll-content{flex:1;overflow-y:auto;padding:16px 16px 80px}
+
+/* SECTION */
+.section{margin-bottom:20px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.section-title{font-size:14px;font-weight:700;color:#1A2E0A}
+.section-action{font-size:12px;color:#4A7C2F;font-weight:600}
+
+/* TASK CARDS */
+.task-card{background:white;border-radius:12px;border:1px solid #E5E7EB;padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background .15s;min-height:44px}
+.task-card:hover{background:#F8FAF5}
+.task-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.task-icon svg{width:20px;height:20px;fill:none;stroke-width:1.5}
+.task-body{flex:1}
+.task-title{font-size:13.5px;font-weight:700;color:#1A2E0A}
+.task-desc{font-size:12px;color:#9CA3AF;margin-top:2px}
+.task-badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:12px;flex-shrink:0}
+.task-badge.urgent{background:#FEE2E2;color:#DC2626}
+.task-badge.today{background:#FEF3C7;color:#D97706}
+.task-badge.normal{background:#DCFCE7;color:#16A34A}
+.task-chevron{color:#D1D5DB;flex-shrink:0}
+.task-chevron svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2}
+
+/* QUICK INPUT */
+.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.quick-btn{background:white;border-radius:12px;border:1px solid #E5E7EB;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;min-height:80px;transition:background .15s,box-shadow .15s}
+.quick-btn:hover{background:#F8FAF5;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.quick-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.quick-icon svg{width:22px;height:22px;fill:none;stroke-width:1.5}
+.quick-label{font-size:12px;font-weight:700;color:#1A2E0A}
+
+/* FARM STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat-mini{background:white;border-radius:10px;padding:12px 14px;border:1px solid #E5E7EB}
+.stat-mini-label{font-size:11px;color:#9CA3AF;font-weight:500}
+.stat-mini-value{font-size:20px;font-weight:800;color:#1A2E0A;margin-top:2px}
+.stat-mini-sub{font-size:11px;margin-top:2px;font-weight:500}
+
+/* BOTTOM TAB BAR */
+.bottom-bar{position:absolute;bottom:0;left:0;right:0;height:80px;background:white;border-top:1px solid #E5E7EB;display:flex;align-items:flex-start;padding-top:8px;box-shadow:0 -4px 16px rgba(0,0,0,.06)}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding-top:4px;min-height:44px}
+.tab-item svg{width:22px;height:22px;fill:none;stroke:#9CA3AF;stroke-width:1.5}
+.tab-item.active svg{stroke:#2D5016}
+.tab-label{font-size:10px;color:#9CA3AF;font-weight:600}
+.tab-item.active .tab-label{color:#2D5016}
+.tab-fab{flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.fab-circle{width:56px;height:56px;border-radius:50%;background:#2D5016;display:flex;align-items:center;justify-content:center;margin-top:-20px;box-shadow:0 4px 16px rgba(45,80,22,.4),0 0 0 4px white}
+.fab-circle svg{width:26px;height:26px;fill:none;stroke:white;stroke-width:1.5}
+.fab-label{font-size:10px;color:#2D5016;font-weight:700;margin-top:4px}
+
+.annotation{position:fixed;bottom:8px;right:8px;background:#1A3009;color:#C5E09B;font-size:10px;padding:6px 10px;border-radius:6px;opacity:.85}
+</style>
+</head>
+<body>
+
+<div class="device-frame">
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <div class="status-time">8:30</div>
+    <div class="status-icons">
+      <svg viewBox="0 0 24 24"><path d="M1.5 8.5a13 13 0 0 1 21 0M5 12a10 10 0 0 1 14 0M8.5 15.5a6 6 0 0 1 7 0M12 19h.01"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
+      <svg viewBox="0 0 24 24"><rect x="2" y="7" width="18" height="11" rx="2"/><path d="M22 11v3"/></svg>
+    </div>
+  </div>
+
+  <!-- APP HEADER -->
+  <div class="app-header">
+    <div class="greeting-row">
+      <div>
+        <div class="greeting-sub">Chào buổi sáng</div>
+        <div class="greeting-name">Trần Văn Minh</div>
+        <div class="greeting-date">Thứ Tư, 22/04/2026</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="notif-btn">
+          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <div class="notif-dot"></div>
+        </div>
+        <div class="header-avatar">TM</div>
+      </div>
+    </div>
+    <div class="zone-pill">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <span>Khu A &amp; Khu B phụ trách</span>
+    </div>
+  </div>
+
+  <!-- SCROLLABLE -->
+  <div class="scroll-content">
+
+    <!-- TASKS TODAY -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">Cần làm hôm nay</div>
+        <div class="section-action">Xem tất cả</div>
+      </div>
+
+      <div class="task-card" style="border-color:#FEE2E2;background:#FFFAFA">
+        <div class="task-icon" style="background:#FEE2E2">
+          <svg viewBox="0 0 24 24" stroke="#DC2626"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+        </div>
+        <div class="task-body">
+          <div class="task-title">Tiêm vaccine FMD</div>
+          <div class="task-desc">38 con · Khu A &amp; Khu C · Quá hạn 2 ngày</div>
+        </div>
+        <span class="task-badge urgent">Quá hạn</span>
+        <div class="task-chevron"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+      </div>
+
+      <div class="task-card">
+        <div class="task-icon" style="background:#FEF3C7">
+          <svg viewBox="0 0 24 24" stroke="#D97706"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </div>
+        <div class="task-body">
+          <div class="task-title">Cân heo Khu B</div>
+          <div class="task-desc">12 con · Chuồng 2 &amp; 3</div>
+        </div>
+        <span class="task-badge today">Hôm nay</span>
+        <div class="task-chevron"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+      </div>
+
+      <div class="task-card">
+        <div class="task-icon" style="background:#DCFCE7">
+          <svg viewBox="0 0 24 24" stroke="#16A34A"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <div class="task-body">
+          <div class="task-title">Theo dõi heo #A-012</div>
+          <div class="task-desc">Kiểm tra nhiệt độ &amp; cho ăn riêng</div>
+        </div>
+        <span class="task-badge normal">Bình thường</span>
+        <div class="task-chevron"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+      </div>
+
+      <div class="task-card">
+        <div class="task-icon" style="background:#EFF6FF">
+          <svg viewBox="0 0 24 24" stroke="#2563EB"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>
+        </div>
+        <div class="task-body">
+          <div class="task-title">Cho ăn chiều — Khu A</div>
+          <div class="task-desc">64 con · 16:00</div>
+        </div>
+        <span class="task-badge today">16:00</span>
+        <div class="task-chevron"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+      </div>
+    </div>
+
+    <!-- QUICK INPUT -->
+    <div class="section">
+      <div class="section-title" style="margin-bottom:10px">Nhập nhanh</div>
+      <div class="quick-grid">
+        <div class="quick-btn">
+          <div class="quick-icon" style="background:#FEF3C7">
+            <svg viewBox="0 0 24 24" stroke="#D97706"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+          </div>
+          <div class="quick-label">Cân</div>
+        </div>
+        <div class="quick-btn">
+          <div class="quick-icon" style="background:#DBEAFE">
+            <svg viewBox="0 0 24 24" stroke="#2563EB"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+          </div>
+          <div class="quick-label">Vaccine</div>
+        </div>
+        <div class="quick-btn">
+          <div class="quick-icon" style="background:#DCFCE7">
+            <svg viewBox="0 0 24 24" stroke="#16A34A"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          </div>
+          <div class="quick-label">Cho ăn</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FARM STATS (Manager view) -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">Tổng quan trang trại</div>
+        <div class="section-action">Chi tiết</div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-mini">
+          <div class="stat-mini-label">Tổng đàn</div>
+          <div class="stat-mini-value">1,248</div>
+          <div class="stat-mini-sub" style="color:#16A34A">+2.4% tuần này</div>
+        </div>
+        <div class="stat-mini">
+          <div class="stat-mini-label">Đang bệnh</div>
+          <div class="stat-mini-value" style="color:#DC2626">14</div>
+          <div class="stat-mini-sub" style="color:#DC2626">+3 hôm nay</div>
+        </div>
+        <div class="stat-mini">
+          <div class="stat-mini-label">Vaccine hôm nay</div>
+          <div class="stat-mini-value" style="color:#D97706">38</div>
+          <div class="stat-mini-sub" style="color:#D97706">Chưa tiêm</div>
+        </div>
+        <div class="stat-mini">
+          <div class="stat-mini-label">Khu A đầy</div>
+          <div class="stat-mini-value">78%</div>
+          <div class="stat-mini-sub" style="color:#9CA3AF">312 / 400</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /scroll-content -->
+
+  <!-- BOTTOM TAB BAR -->
+  <div class="bottom-bar">
+    <div class="tab-item active">
+      <svg viewBox="0 0 24 24" style="stroke:#2D5016"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span class="tab-label" style="color:#2D5016">Trang chủ</span>
+    </div>
+    <div class="tab-item">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span class="tab-label">Đàn vật</span>
+    </div>
+    <div class="tab-fab">
+      <div class="fab-circle">
+        <svg viewBox="0 0 24 24"><path d="M3 7h3l2-3h8l2 3h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zM9 9a3 3 0 0 0 0 6 3 3 0 0 0 0-6zM3 3h4M17 3h4"/></svg>
+      </div>
+      <span class="fab-label">Quét QR</span>
+    </div>
+    <div class="tab-item">
+      <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="tab-label">Cảnh báo</span>
+    </div>
+    <div class="tab-item">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="tab-label">Hồ sơ</span>
+    </div>
+  </div>
+</div>
+
+<div class="annotation">Wireframe — HD-FARMS Mobile Home v1.0 · 390px</div>
+</body>
+</html>

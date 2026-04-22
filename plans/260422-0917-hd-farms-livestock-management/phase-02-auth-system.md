@@ -6,7 +6,7 @@
 
 ## Overview
 - **Priority**: P1
-- **Status**: Pending
+- **Status**: Complete
 - **Effort**: 3 days
 - **Description**: JWT auth + multi-tenant scoping + role-based access control. Users CRUD (admin-only).
 
@@ -85,15 +85,15 @@ apps/api/src/
 13. **Compile + lint check**
 
 ## Todo List
-- [ ] Install Fastify + plugins + argon2
-- [ ] Build password utility
-- [ ] Wire JWT plugin + auth hook
-- [ ] Implement auth routes (login, me)
-- [ ] Implement users CRUD (admin-scoped)
-- [ ] Write seed script with default admin
-- [ ] Write Yup validators in shared
-- [ ] Manual smoke test
-- [ ] Compile check
+- [x] Install Fastify + plugins + argon2
+- [x] Build password utility
+- [x] Wire JWT plugin + auth hook
+- [x] Implement auth routes (login, me)
+- [x] Implement users CRUD (admin-scoped)
+- [x] Write seed script with default admin
+- [x] Write Yup validators in shared
+- [x] Manual smoke test
+- [x] Compile check
 
 ## Success Criteria
 - Login returns valid JWT; `/auth/me` returns user

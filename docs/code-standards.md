@@ -235,32 +235,42 @@ export const animalService = {
 ### Error Handling (AppError)
 
 ```typescript
-// plugins/error-handler.ts
+// utils/errors.ts
 export class AppError extends Error {
   constructor(
-    message: string,
+    public override message: string,
     public statusCode: number = 500,
-    public context?: Record<string, unknown>
+    public code: string = 'INTERNAL_ERROR'
   ) {
     super(message);
+    this.name = 'AppError';
   }
 }
 
-// In routes: wrap async handlers
+// In routes: throw AppError (caught by global error-handler)
 try {
   const result = await animalService.create(input, req.user);
   return { data: result };
 } catch (error) {
   if (error instanceof AppError) throw error;
-  // Log with context
-  console.error('Animal creation failed', {
+  // Log and wrap in AppError
+  req.log.error({
     userId: req.user.id,
     farmId: req.user.farmId,
     error: error instanceof Error ? error.message : String(error),
   });
-  throw new AppError('Failed to create animal', 500);
+  throw new AppError('Failed to create animal', 500, 'CREATE_ANIMAL_ERROR');
 }
+
+// Global error handler catches all AppError instances
+// Response format: { error: 'CODE', message: 'Human-readable message' }
 ```
+
+**Error Handling Rules:**
+- Always throw `AppError` from service or route handlers
+- Never expose stack traces in response (error-handler filters by NODE_ENV)
+- Include `code` field for client-side error handling
+- Status codes: 400 (bad request), 401 (auth), 403 (forbidden), 404 (not found), 500 (server)
 
 ### Tenant Isolation (REQUIRED)
 
@@ -279,29 +289,68 @@ const animals = await db.animals.findMany({
 
 ### Fastify Plugins (Cross-Cutting Concerns)
 
+**Plugin: jwt.ts** - Registers @fastify/jwt
+
 ```typescript
-// plugins/auth.ts
 import fp from 'fastify-plugin';
-import jwt from '@fastify/jwt';
+import fjwt from '@fastify/jwt';
+import type { AuthTokenPayload } from '@hd-farm/shared';
 
-export default fp(async (app) => {
-  app.register(jwt, { secret: process.env.JWT_SECRET });
+declare module '@fastify/jwt' {
+  interface FastifyJWT {
+    payload: AuthTokenPayload;
+    user: AuthTokenPayload;
+  }
+}
 
-  app.decorate('authenticate', async (req, res) => {
-    try {
-      await req.jwtVerify();
-    } catch {
-      res.code(401).send({ statusCode: 401, message: 'Unauthorized' });
-    }
+const jwtPlugin: FastifyPluginAsync = async (fastify) => {
+  const secret = process.env['JWT_SECRET'];
+  if (!secret) throw new Error('JWT_SECRET is not set');
+
+  await fastify.register(fjwt, {
+    secret,
+    sign: { expiresIn: '24h' }, // HS256, 24-hour expiry
   });
+};
 
-  app.decorate('requireRole', (roles: string[]) => async (req, res) => {
-    if (!roles.includes(req.user.role)) {
-      res.code(403).send({ statusCode: 403, message: 'Forbidden' });
-    }
-  });
-});
+export default fp(jwtPlugin, { name: 'jwt' });
 ```
+
+**Plugin: auth.ts** - JWT verification + RBAC
+
+```typescript
+import { verifyToken, requireRole } from './plugins/auth';
+
+// Use as pre-handlers
+app.get(
+  '/api/v1/animals',
+  { onRequest: [verifyToken, requireRole('admin', 'manager')] },
+  async (req, res) => {
+    // req.user is now AuthTokenPayload with userId, companyId, farmId, role
+    return { data: animalService.list(req.user) };
+  }
+);
+```
+
+**Plugin: db.ts** - Drizzle + postgres.js connection pool
+
+```typescript
+import fp from 'fastify-plugin';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+
+const dbPlugin: FastifyPluginAsync = async (fastify) => {
+  const client = postgres(process.env['DATABASE_URL']!);
+  const db = drizzle(client);
+  fastify.decorate('db', db);
+};
+
+export default fp(dbPlugin, { name: 'db' });
+```
+
+**Plugin: error-handler.ts** - Global error handler
+
+Catches all errors and formats response. Throws AppError automatically wrapped.
 
 ---
 

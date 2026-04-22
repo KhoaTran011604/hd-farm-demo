@@ -10,13 +10,18 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@fastify/cors": "^11.2.0",
+    "@fastify/helmet": "^13.0.2",
+    "@fastify/jwt": "^10.0.0",
     "@hd-farm/db": "workspace:*",
     "@hd-farm/shared": "workspace:*",
-    "fastify": "^5.2.0"
+    "argon2": "^0.44.0",
+    "fastify": "^5.2.0",
+    "fastify-plugin": "^5.1.0"
   },
   "devDependencies": {
-    "@hd-farm/tsconfig": "workspace:*",
     "@hd-farm/eslint-config": "workspace:*",
+    "@hd-farm/tsconfig": "workspace:*",
     "tsx": "^4.19.0",
     "typescript": "^5.7.0"
   }

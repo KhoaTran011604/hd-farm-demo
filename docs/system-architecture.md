@@ -98,8 +98,10 @@ Every authenticated request carries:
 
 **Every database query MUST filter by `companyId` AND `farmId`:**
 
+This is enforced at the service layer. The JWT token guarantees both values are available on `req.user`:
+
 ```typescript
-// ✗ BAD — exposes cross-tenant data
+// ✗ BAD — exposes cross-tenant data (security breach)
 const animals = await db
   .select()
   .from(animals_table)
@@ -118,6 +120,8 @@ const animals = await db
   );
 ```
 
+**Design Guarantee:** JWT always includes `companyId` and `farmId`. Never trust request body for tenant scoping—always use values from `req.user`.
+
 ### Row-Level Security (RLS) — Phase 2
 
 Phase 2 will add PostgreSQL RLS policies to enforce tenant isolation at the database layer:
@@ -133,7 +137,51 @@ CREATE POLICY animals_tenant_policy ON animals
 
 ---
 
-## 3. API Layer Architecture
+## 3. API Layer Architecture (Fastify 5)
+
+### Fastify Plugin Stack
+
+The API is built with Fastify 5 and the following plugin layers:
+
+```
+┌────────────────────────────────────────────────┐
+│ Fastify 5 Server (server.ts)                   │
+├────────────────────────────────────────────────┤
+│ 1. @fastify/cors (WEB_ORIGIN, MOBILE_ORIGIN)  │
+│ 2. @fastify/helmet (security headers)          │
+│ 3. db plugin (Drizzle + postgres.js)           │
+│ 4. jwt plugin (@fastify/jwt + HS256)           │
+│ 5. error-handler (AppError → JSON response)    │
+├────────────────────────────────────────────────┤
+│ Modules:                                       │
+│ ├─ /auth (login, JWT generation)              │
+│ └─ /users (user management, RBAC)              │
+└────────────────────────────────────────────────┘
+```
+
+### Plugin Details
+
+**Plugin: jwt.ts**
+- Registers `@fastify/jwt` with `JWT_SECRET` environment variable
+- Signature: HS256 (symmetric, requires shared secret)
+- Token expiry: 24 hours (`expiresIn: '24h'`)
+- Payload: `{ userId, companyId, farmId, role }`
+
+**Plugin: auth.ts**
+- Exports `verifyToken()` hook: wraps `request.jwtVerify()`
+- Exports `requireRole(...roles)` factory: RBAC middleware
+- Throws `AppError` with 401 (invalid token) or 403 (insufficient role)
+
+**Plugin: db.ts**
+- Initializes Drizzle client from `DATABASE_URL`
+- Uses postgres.js for connection pooling
+- Decorates `app.db` for type-safe queries
+
+**Plugin: error-handler.ts**
+- Catches all route errors globally
+- Formats `AppError` instances to JSON
+- Logs with context: userId, farmId, route, error message
+- Never exposes stack traces in production
 
 ### Request Lifecycle
 
@@ -149,51 +197,59 @@ CREATE POLICY animals_tenant_policy ON animals
 ┌──────────────────────▼──────────────────────────────────────────┐
 │ 2. Fastify Request Handler                                      │
 │    • Route matching: POST /api/v1/animals                       │
-│    • Pre-handler hooks: [authenticate, requireRole('manager')]  │
+│    • Pre-handler hooks: [verifyToken, requireRole('manager')]   │
 └──────────────────────┬──────────────────────────────────────────┘
                        │
 ┌──────────────────────▼──────────────────────────────────────────┐
 │ 3. JWT Verification (Plugin: jwt.ts)                           │
-│    • Decode JWT → extract { userId, companyId, farmId, role }  │
-│    • Attach to req.user                                         │
-│    • If invalid: 401 Unauthorized                               │
+│    • Decode JWT with HS256 → extract { userId, companyId, ... }│
+│    • Attach to req.user via @fastify/jwt                        │
+│    • If invalid/expired: throw AppError(401)                    │
 └──────────────────────┬──────────────────────────────────────────┘
                        │
 ┌──────────────────────▼──────────────────────────────────────────┐
 │ 4. Role-Based Authorization (Plugin: auth.ts)                  │
 │    • Check req.user.role in allowed roles                       │
-│    • If not allowed: 403 Forbidden                              │
+│    • If not allowed: throw AppError(403)                        │
 └──────────────────────┬──────────────────────────────────────────┘
                        │
 ┌──────────────────────▼──────────────────────────────────────────┐
-│ 5. Input Validation (Schema: animal.schema.ts + Yup)           │
+│ 5. Input Validation (Schema: {domain}.schema.ts + Yup)         │
 │    • Validate req.body against Yup schema                       │
 │    • Type-safe validated data                                   │
-│    • If invalid: 400 Bad Request with error details             │
+│    • If invalid: throw AppError(400)                            │
 └──────────────────────┬──────────────────────────────────────────┘
                        │
 ┌──────────────────────▼──────────────────────────────────────────┐
-│ 6. Service Layer (animal.service.ts)                            │
+│ 6. Service Layer ({domain}.service.ts)                          │
 │    • animalService.create(validatedInput, req.user)             │
-│    • Scope all queries by req.user.companyId + req.user.farmId │
-│    • Business logic (validation, state transitions, etc.)       │
+│    • CRITICAL: Scope all queries by companyId + farmId          │
+│    • Business logic, state transitions, error handling          │
 └──────────────────────┬──────────────────────────────────────────┘
                        │
 ┌──────────────────────▼──────────────────────────────────────────┐
 │ 7. Database Layer (Drizzle + postgres.js)                      │
 │    • db.animals.insert({ ...data, companyId, farmId })         │
+│    • Connection pooling, parameterized queries                  │
 │    • Return created entity or throw AppError                    │
 └──────────────────────┬──────────────────────────────────────────┘
                        │
 ┌──────────────────────▼──────────────────────────────────────────┐
 │ 8. Response Formatting                                          │
 │    • Single: { data: {...} }                                   │
-│    • List: { data: [...], meta: { count, page, limit } }      │
+│    • List: { data: [...], meta: { count, nextCursor, ... } }  │
 │    • Error: { statusCode: 400, message: "..." }               │
 └──────────────────────┬──────────────────────────────────────────┘
                        │
 ┌──────────────────────▼──────────────────────────────────────────┐
-│ 9. HTTP Response (201 Created / 200 OK / 4xx / 5xx)            │
+│ 9. Global Error Handler (error-handler.ts)                      │
+│    • Catch AppError and log with context                        │
+│    • Format response, return to client                          │
+│    • Never expose implementation details                        │
+└──────────────────────┬──────────────────────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────────────────────┐
+│ 10. HTTP Response (201 Created / 200 OK / 4xx / 5xx)           │
 │    Content-Type: application/json                              │
 │    Body: { data: {...} }                                       │
 └─────────────────────────────────────────────────────────────────┘
@@ -427,59 +483,90 @@ export default function RootLayout() {
 
 ## 6. Authentication Flow
 
+### JWT Token Structure
+
+All authenticated requests carry a JWT token with payload:
+
+```typescript
+{
+  userId: string;      // UUID from users table
+  companyId: string;   // UUID from farms.company_id (tenant)
+  farmId: string;      // UUID from user_farm_roles.farm_id (scoping)
+  role: 'admin' | 'manager' | 'worker' | 'vet';
+  iat: number;         // Issued at (Unix timestamp)
+  exp: number;         // Expires in 24 hours (Unix timestamp)
+}
+```
+
+**Signature:** HS256 with `JWT_SECRET` environment variable  
+**Expiry:** 24 hours (configured in jwt plugin)  
+**Storage:** localStorage (web) or secure storage (mobile)
+
 ### Login Sequence
 
 ```
-1. User submits credentials (email + password)
+1. User submits credentials
    POST /api/v1/auth/login
    { email: "manager@farm.com", password: "..." }
 
-2. API:
-   ├─ Query: users WHERE email = $1
-   ├─ Verify: argon2.verify(hash, password)
-   ├─ If invalid: return 401 Unauthorized
+2. Auth Service (auth-service.ts):
+   ├─ Query: users WHERE email = $1 AND deleted_at IS NULL
+   ├─ Verify: argon2id.verify(password_hash, plaintext)
+   ├─ If mismatch: throw AppError(401, 'Invalid credentials')
    ├─ Query: user_farm_roles WHERE user_id = $1
-   ├─ Get: company_id from farm_id FK
-   ├─ Sign JWT:
-   │  {
-   │    userId: user.id,
-   │    companyId: farm.company_id,
-   │    farmId: farm.id,
-   │    role: user_farm_role.role,
-   │    iat: now(),
-   │    exp: now() + 24h
-   │  }
-   └─ Return: { data: { token, user: { id, name, role } } }
+   ├─ Get: companyId from farm → company_id FK
+   ├─ Sign JWT with payload above via fastify.jwt.sign()
+   └─ Return: { data: { token, user: { id, email, name, role } } }
 
-3. Client (Web/Mobile):
-   ├─ Store token in localStorage (web) or secure storage (mobile)
-   ├─ Attach to every request: Authorization: Bearer {token}
-   └─ On token expiry (24h): Redirect to login
+3. Client stores token:
+   ├─ localStorage.setItem('token', response.data.token) [web]
+   ├─ SecureStore.setItemAsync('token', ...) [mobile]
+   └─ Attach to all requests: Authorization: Bearer {token}
 
-4. Logout:
-   ├─ Clear token from storage
+4. Token Verification on Protected Route:
+   ├─ Middleware: verifyToken() calls request.jwtVerify()
+   ├─ If expired/invalid: throw AppError(401)
+   └─ request.user now contains decoded payload
+
+5. Role Check on Protected Route:
+   ├─ Middleware: requireRole('manager', 'admin')
+   ├─ If req.user.role not in allowed: throw AppError(403)
+   └─ Proceed to handler
+
+6. Logout:
+   ├─ Client: localStorage.removeItem('token') [web]
+   ├─ Client: SecureStore.deleteItemAsync('token') [mobile]
    └─ Redirect to login page
 ```
 
-### Token Expiry (24 hours)
+### Password Hashing
 
-- No refresh tokens (Phase 1 MVP)
-- Users must re-login after 24 hours
-- Phase 2: Consider refresh token strategy
+- Algorithm: **argon2id** (not bcrypt)
+- Library: `argon2` npm package
+- Configuration: library defaults (memoryCost: 19456, timeCost: 2, parallelism: 1)
+- Verification: `argon2.verify(hash, plaintext)` on login
 
 ### Role-Based Access Control (RBAC)
 
-Each endpoint decorated with `requireRole(roles)`:
+Each endpoint uses pre-handlers to enforce auth + roles:
 
 ```typescript
-app.get(
-  '/api/v1/animals',
-  {
-    onRequest: [app.authenticate, app.requireRole(['admin', 'manager', 'worker'])]
-  },
-  async (req, res) => { ... }
+// auth-routes.ts example
+app.get<{ Params: { userId: string } }>(
+  '/api/v1/auth/users/:userId',
+  { onRequest: [verifyToken, requireRole('admin', 'manager')] },
+  async (req, res) => {
+    // Only admin/manager can view user details
+    return { data: userService.getById(req.params.userId, req.user) };
+  }
 );
 ```
+
+Roles:
+- **admin:** Full system access, user management
+- **manager:** Farm-level management, CRUD operations
+- **worker:** Read + limited write (health checks, feeding)
+- **vet:** Health/disease/treatment records only
 
 ---
 
@@ -758,38 +845,72 @@ NODE_ENV=development
 
 ---
 
-## 11. Security Architecture
+## 11. Security Architecture (Phase 2)
 
 ### Transport Security
 
-- HTTPS only in production (TLS 1.2+)
-- Certificate pinning (mobile app — Phase 2)
-- HSTS header (web)
+- **Production:** HTTPS only (TLS 1.2+)
+- **Local Dev:** HTTP allowed via CORS origin whitelist
+- **CORS:** Configured in server.ts (WEB_ORIGIN, MOBILE_ORIGIN)
+- **Headers:** @fastify/helmet enables security headers (HSTS, CSP, etc.)
 
 ### Authentication Security
 
-- JWT secret ≥256 bits, stored in environment only
-- JWT signed with HS256 (symmetric)
-- Token expiry: 24 hours
-- Refresh token strategy: Phase 2+ (consider HS256 rotation)
+- **JWT Secret:** ≥256 bits, stored in `JWT_SECRET` env variable (never hardcoded)
+- **Signature:** HS256 (symmetric, shared secret)
+- **Expiry:** 24 hours (no refresh token in Phase 1 MVP)
+- **Token Payload:** includes userId, companyId, farmId, role (verified on every request)
+- **Verification:** @fastify/jwt plugin handles decode + expiry check
+- **Error:** Invalid/expired tokens return 401 Unauthorized (never expose JWT secret)
+
+### Password Security
+
+- **Algorithm:** argon2id (memory-hard, resistant to GPU attacks)
+- **Hashing:** On user creation/password reset via auth-service.ts
+- **Verification:** argon2.verify() on login (timing-safe comparison)
+- **Storage:** password_hash in users table (never plaintext)
+- **Transport:** HTTPS only to prevent credential interception
 
 ### Data Security
 
-- Passwords: argon2id hashing (never stored plaintext)
-- Database encryption: TLS in transit, at-rest encryption on cloud (RDS)
-- Soft delete: never hard delete user/animal data
+- **Database Encryption:** TLS in transit (postgres.js), at-rest on cloud (RDS TDE)
+- **Soft Delete:** deleted_at IS NULL on all queries (never hard delete)
+- **JSONB Fields:** No sensitive data stored without encryption (future: Phase 3)
+- **Connection Pooling:** postgres.js manages secure connections
 
 ### Access Control
 
-- Role-based: admin, manager, worker, vet
-- Tenant isolation: every query scoped by companyId + farmId
-- RLS policies (Phase 2): PostgreSQL policies enforce at database layer
+- **Role-Based (RBAC):** admin, manager, worker, vet
+  - Enforced via requireRole() middleware on every route
+  - Role checked after JWT verification
+  - No implicit grants—must be explicit in middleware
+- **Tenant Isolation:** Every service query filters by companyId + farmId
+  - Values sourced from req.user (JWT payload)
+  - Never trust request body for tenant scoping
+  - Code review mandatory: check all .where() clauses include both
+- **RLS Policies (Phase 2+):** PostgreSQL row-level security policies as defense-in-depth
+  - Set app.company_id + app.farm_id context before queries
+  - Enforce at database layer (backup if app layer fails)
 
 ### Input Validation
 
-- All user input validated via Yup before DB writes
-- HTML sanitization for text fields with user content
-- SQL injection prevention: parameterized queries (Drizzle handles)
+- **Yup Schemas:** All user input validated before DB writes
+  - Request body, params, query strings validated
+  - Type coercion + sanitization via Yup
+  - Custom validators for UUID, enum, etc.
+- **SQL Injection Prevention:** Drizzle ORM uses parameterized queries
+  - No string interpolation in WHERE clauses
+  - Database never receives unsanitized user input
+- **HTML/XSS Prevention:** Text fields sanitized via sanitize-html (future: Phase 2+)
+  - User content in JSONB fields requires explicit sanitization
+  - Never render user input as HTML without escaping
+
+### Pre-Commit & Environment
+
+- **.env files not committed:** Git ignores .env, .env.local, .env.*.local
+- **Secrets stored in environment:** DATABASE_URL, JWT_SECRET via process.env
+- **Production deployment:** Secrets injected via CI/CD (GitHub Actions, etc.)
+- **Test database:** Separate test DB for CI (never use production credentials)
 
 ---
 

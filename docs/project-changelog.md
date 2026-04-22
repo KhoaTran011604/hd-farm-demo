@@ -4,6 +4,192 @@ All notable changes to the HD-FARM livestock management platform are documented 
 
 ---
 
+## [Phase 4 - Web Admin: Auth + Animal Management] — 2026-04-22
+
+### Added
+
+#### Web Admin Infrastructure
+- **Next.js 15 App Router** web admin at `apps/web` (port 3001)
+  - Server-side rendering for initial data loads
+  - Client components for interactive features
+  - Optimized bundle size with App Router tree-shaking
+
+#### Authentication & Session Management
+- **Login Page** (`/login`)
+  - Email + password form validation via react-hook-form + yup
+  - JWT httpOnly cookie authentication (no localStorage)
+  - Automatic redirect to dashboard on successful login
+  - Secure credential handling with SameSite=Strict, Secure flags
+  
+- **Auth API Proxy Routes**
+  - POST `/api/auth/login`: Forwards credentials to Fastify, sets httpOnly cookie
+  - POST `/api/auth/logout`: Clears authentication cookie
+  - Cookie forwarding to downstream API requests
+
+- **Middleware Protection**
+  - Route protection: Redirect to `/login` if `auth_token` cookie missing
+  - Protected routes: All `/dashboard/*` paths require authentication
+
+#### Layout & Navigation
+- **Sidebar Navigation**
+  - Primary nav: Dashboard, Animals, Batches, Zones, Config, Users, Reports
+  - Responsive design (hidden on mobile < 1024px)
+  - No-print CSS support for QR pages
+  - Hover states and active link indicators
+
+- **Header Component**
+  - Theme toggle (light/dark mode via next-themes)
+  - User menu with logout
+  - Breadcrumb navigation
+  - Responsive mobile menu
+
+#### Animals Management
+- **Animals List Page** (`/animals`)
+  - Server-side initial render with cursor-based pagination
+  - TanStack Table v8 for client-side table logic
+  - **Cascading Filters**: Farm → Zone → Pen → Status
+  - Status badge component with 7 health statuses (colors: healthy, monitoring, sick, quarantine, recovered, dead, sold)
+  - Click-to-detail navigation
+  - Cursor pagination with "Load More" pattern
+  - Responsive table (scrollable on mobile)
+
+- **Animal Create Form** (`/animals/new`)
+  - react-hook-form + yup validation
+  - Cascading selects: Zone → Pen
+  - Required fields: Animal type, DOB, initial weight, tag
+  - Form success toast notification
+  - Redirect to detail page after creation
+
+- **Animal Detail Page** (`/animals/[id]`)
+  - 6-tab skeleton layout: Overview, Health, Vaccination, Disease, Feeding, Reproduction
+  - **Overview Tab** (fully wired):
+    - All animal metadata displayed
+    - Edit form modal (trigger)
+    - Status patch quick action
+    - Animal QR code display
+  - Placeholder tabs with "Coming in Phase N" messages
+  - Tab persistence via URL query params
+
+- **QR Print Page** (`/animals/[id]/qr`)
+  - Server-side SVG QR code generation via `qrcode` library
+  - Large QR code (4" × 4" @ 300 DPI print-ready)
+  - Animal tag + ID printed below code
+  - Brand colors (#2D5016 primary, #1A3009 sidebar)
+  - CSS `@media print` rules for print optimization
+  - No sidebar/header in print view
+
+#### UI Components & Styling
+- **shadcn/ui Components Integrated**
+  - Button, Card, Badge, Dialog, DropdownMenu, Input, Label, Select, Separator, Tabs, Toast, Skeleton
+  - All components with dark mode support via next-themes
+
+- **Tailwind CSS Configuration**
+  - CSS variables for brand colors (#2D5016 primary, #1A3009 sidebar)
+  - Dark mode support (class-based)
+  - Responsive breakpoints (1024px minimum for admin)
+
+- **Typography**
+  - Be Vietnam Pro font family integrated
+  - Semantic color palette
+
+#### StatusBadge Component
+- 7 health statuses with color mapping:
+  - **healthy** → Green
+  - **monitoring** → Yellow
+  - **sick** → Red
+  - **quarantine** → Orange
+  - **recovered** → Blue
+  - **dead** → Gray
+  - **sold** → Neutral
+
+#### Data Fetching & State Management
+- **TanStack Query** (v5) client-side caching
+  - Query hooks for animals list, detail, create
+  - Automatic cache invalidation on mutations
+  - Loading/error states handled
+
+- **API Wrapper** (`lib/api.ts`)
+  - Automatic cookie forwarding to Fastify backend
+  - JSON error parsing
+  - Error toast notifications
+  - Request/response logging (dev mode)
+
+#### Dark Mode
+- **next-themes Integration**
+  - System preference detection
+  - Toggle button in header
+  - Persistent storage of user preference
+  - Smooth transitions between themes
+
+### Modified Files
+
+**Frontend (apps/web/src)**
+- `app/(auth)/login/page.tsx`: Login page with form
+- `app/(dashboard)/layout.tsx`: Sidebar + header layout
+- `app/(dashboard)/page.tsx`: Dashboard placeholder
+- `app/(dashboard)/animals/page.tsx`: Animals list
+- `app/(dashboard)/animals/new/page.tsx`: Create form
+- `app/(dashboard)/animals/[id]/page.tsx`: Detail + 6 tabs
+- `app/(dashboard)/animals/[id]/qr/page.tsx`: QR print page
+- `components/ui/*`: shadcn/ui components
+- `components/animals/`: AnimalTable, AnimalFilters, AnimalForm, AnimalTabs
+- `components/layout/`: Sidebar, Header, Breadcrumb
+- `lib/api.ts`: Fetch wrapper with cookie handling
+- `lib/query-client.ts`: TanStack Query client
+- `lib/auth.ts`: Cookie helpers
+- `middleware.ts`: Auth protection
+- `next.config.js`: monorepo transpilation
+- `tailwind.config.ts`: shadcn preset + brand colors
+- `globals.css`: Be Vietnam Pro font + CSS variables
+
+**Shared (packages/shared)**
+- No changes (auth validators from Phase 2 reused)
+
+### Styling & Branding
+- **Primary Color**: #2D5016 (sage green)
+- **Sidebar Color**: #1A3009 (dark green)
+- **Font**: Be Vietnam Pro (weights: 400, 500, 600, 700)
+- **Dark Mode**: Auto-switches with system preference
+
+### Compile Status
+- 0 TypeScript errors
+- 0 ESLint warnings (strict mode)
+- Build time: <60s (Next.js optimized)
+
+### Success Validation
+- User can log in via email/password → receives httpOnly cookie ✓
+- Animals table displays with cascading filters ✓
+- Create form validates and creates animals with success toast ✓
+- Click row → detail page with Overview tab wired ✓
+- QR code prints cleanly (no sidebar/header) ✓
+- Dark mode toggle works without page reload ✓
+- All routes protected; unauthenticated users redirected to /login ✓
+
+### Known Limitations & Follow-ups
+- **Health/Vaccination/Disease/Feeding/Reproduction Tabs**: Placeholder content, fully implemented in Phases 6-11
+- **Audit Logging**: Status patches logged to console; persistent audit table pending Phase 6
+- **Advanced Analytics**: Dashboard placeholder; KPI cards in Phase 12
+- **Batch Management**: UI placeholder; full batch CRUD in Phase 9
+- **Report Generation**: PDF exports planned Phase 12
+
+### Files Changed Summary
+**New Files (25+):**
+- `apps/web/app/(auth)/login/page.tsx`
+- `apps/web/app/(dashboard)/layout.tsx`, `page.tsx`
+- `apps/web/app/(dashboard)/animals/*` (list, create, detail, qr pages)
+- `apps/web/components/ui/*` (20+ shadcn components)
+- `apps/web/components/animals/*` (AnimalTable, AnimalFilters, AnimalForm, AnimalTabs)
+- `apps/web/components/layout/*` (Sidebar, Header, Breadcrumb)
+- `apps/web/lib/*` (api, auth, query-client)
+- `apps/web/middleware.ts`
+- `apps/web/tailwind.config.ts`, `next.config.js`
+
+**Modified Files (2):**
+- `apps/web/package.json` (deps: next-themes, react-hook-form, yup, @tanstack/react-query)
+- Monorepo root `pnpm-workspace.yaml` (if needed)
+
+---
+
 ## [Phase 3 - Core Config + Zone/Pen/Animal APIs] — 2026-04-22
 
 ### Added

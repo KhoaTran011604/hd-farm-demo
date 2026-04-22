@@ -25,7 +25,7 @@ All 12 phases build sequentially, with Phase 1 completing the MVP and Phase 2 ad
 | 01  | Monorepo Setup + Local Dev     | 3 days   | Complete     | P1 - Blocker | All 3 apps boot, Docker Compose running                |
 | 02  | Auth System (JWT + RBAC)       | 3 days   | Complete     | P1 - Blocker | Login/logout, role enforcement, token generation       |
 | 03  | Core APIs (Zone/Pen/Animal)    | 3 days   | Complete     | P1           | CRUD endpoints, tenant scoping, validation             |
-| 04  | Web Admin - Auth + Animal CRUD | 3 days   | Pending      | P1           | Login screen, animal list/detail, create/edit/delete   |
+| 04  | Web Admin - Auth + Animal CRUD | 3 days   | Complete     | P1           | Login screen, animal list/detail, create/edit/delete   |
 | 05  | Mobile Foundation + QR Scanner | 4 days   | Pending      | P1           | Bottom tab bar, camera access, QR decode, deep linking |
 | 06  | Health Status + Quick Actions  | 2 days   | Pending      | P2           | Status badge system, quick action buttons post-scan    |
 | 07  | Vaccination System + Alerts    | 2 days   | Pending      | P2           | Vaccination records CRUD, overdue alerts, batch vacc   |
@@ -176,13 +176,13 @@ All 12 phases build sequentially, with Phase 1 completing the MVP and Phase 2 ad
 
 ### Milestone 2: Core CRUD Complete
 
-**End of Phase 04-05** (Day 13)
+**End of Phase 04-05** (Day 13) — **Phase 04 COMPLETED 2026-04-22**
 
 - **Deliverable:** Animal management on web + mobile
 - **Validation:**
-  - Web admin: list, create, edit, delete animals ✓
-  - Mobile: QR scan → animal detail ✓
-  - API: all CRUD endpoints tested (≥70% coverage) ✓
+  - Web admin: list, create, edit, delete animals ✓ (Phase 04 complete)
+  - Mobile: QR scan → animal detail (Phase 05 pending)
+  - API: all CRUD endpoints tested (≥70% coverage) ✓ (Phase 03)
 - **Success Metric:** Stakeholder sign-off on basic UI/UX
 
 ### Milestone 3: Animal Health Tracking Live

@@ -6,9 +6,9 @@
 
 ## Overview
 - **Priority**: P1
-- **Status**: Pending
+- **Status**: Complete
 - **Effort**: 3 days
-- **Description**: Next.js 14 App Router web admin with login, sidebar layout, animal list (table + filters + pagination), animal detail (6 tabs skeleton), animal create form, QR printing.
+- **Description**: Next.js 15 App Router web admin with login, sidebar layout, animal list (table + filters + pagination), animal detail (6 tabs skeleton), animal create form, QR printing.
 
 ## Key Insights
 - Use App Router server components for initial list render; client components only for interactive bits
@@ -102,16 +102,16 @@ apps/web/
 15. **Compile + manual test** — login → list → create → detail → print QR
 
 ## Todo List
-- [ ] Next.js + Tailwind + shadcn scaffold
-- [ ] Auth proxy routes + middleware
-- [ ] Sidebar + breadcrumb layout
-- [ ] Login page with Yup validation
-- [ ] Animals list + filters + pagination
-- [ ] Animals create form
-- [ ] Animals detail (6 tabs, Overview wired)
-- [ ] QR print page
-- [ ] Dark mode toggle
-- [ ] Compile + lint check
+- [x] Next.js + Tailwind + shadcn scaffold
+- [x] Auth proxy routes + middleware
+- [x] Sidebar + breadcrumb layout
+- [x] Login page with Yup validation
+- [x] Animals list + filters + pagination
+- [x] Animals create form
+- [x] Animals detail (6 tabs, Overview wired)
+- [x] QR print page
+- [x] Dark mode toggle
+- [x] Compile + lint check
 
 ## Success Criteria
 - Login → redirect to dashboard; logout clears cookie

@@ -42,7 +42,7 @@ Row-based: company → farm → zone → pen → animal. JWT scoped with `compan
 | 01  | [Monorepo Setup + Local Dev Infrastructure](./phase-01-monorepo-setup.md) | 3    | Pending |
 | 02  | [Auth System (JWT + RBAC)](./phase-02-auth-system.md)                     | 3    | Pending |
 | 03  | [Core Config + Zone/Pen/Animal APIs](./phase-03-core-apis.md)             | 3    | Pending |
-| 04  | [Web Admin - Auth + Animal Management](./phase-04-web-admin-animal.md)    | 3    | Pending |
+| 04  | [Web Admin - Auth + Animal Management](./phase-04-web-admin-animal.md)    | 3    | Complete |
 | 05  | [Mobile App Foundation + QR Scanner](./phase-05-mobile-foundation.md)     | 4    | Pending |
 | 06  | [Health Status + Quick Actions](./phase-06-health-quick-actions.md)       | 2    | Pending |
 | 07  | [Vaccination System + Alerts](./phase-07-vaccination-alerts.md)           | 2    | Pending |

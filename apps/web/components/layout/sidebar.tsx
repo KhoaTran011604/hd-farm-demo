@@ -1,0 +1,49 @@
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { BarChart3, Bird, Boxes, LayoutDashboard, Settings, Users, Wheat } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+const NAV_ITEMS = [
+  { label: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { label: 'Vật nuôi', href: '/animals', icon: Bird },
+  { label: 'Lô chăn nuôi', href: '/batches', icon: Boxes },
+  { label: 'Khu vực', href: '/zones', icon: Wheat },
+  { label: 'Người dùng', href: '/users', icon: Users },
+  { label: 'Cấu hình', href: '/config', icon: Settings },
+  { label: 'Báo cáo', href: '/reports', icon: BarChart3 },
+];
+
+export function Sidebar(): React.JSX.Element {
+  const pathname = usePathname();
+
+  return (
+    <aside className="no-print flex h-screen w-60 flex-col bg-sidebar text-sidebar-text shrink-0">
+      <div className="flex h-16 items-center px-6 border-b border-white/10">
+        <span className="text-lg font-bold text-white tracking-wide">HD-FARM</span>
+      </div>
+
+      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+        {NAV_ITEMS.map(({ label, href, icon: Icon }) => {
+          const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href);
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={cn(
+                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                isActive
+                  ? 'bg-sidebar-active text-white'
+                  : 'text-sidebar-text hover:bg-white/10 hover:text-white'
+              )}
+            >
+              <Icon className="h-4 w-4 shrink-0" />
+              {label}
+            </Link>
+          );
+        })}
+      </nav>
+    </aside>
+  );
+}

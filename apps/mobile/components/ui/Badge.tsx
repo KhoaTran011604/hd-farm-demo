@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
-import type { HealthStatus } from '@hd-farm/shared';
+import type { HealthStatus } from '../../lib/types';
 
 const STATUS_COLOR: Record<HealthStatus, { bg: string; text: string }> = {
   healthy: { bg: '#dcfce7', text: '#166534' },

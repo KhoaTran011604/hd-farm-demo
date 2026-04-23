@@ -2,10 +2,9 @@ import { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../lib/api';
-import { AnimalCard } from '../../components/AnimalCard';
-import { Card } from '../../components/ui/Card';
-import type { Farm, Zone, Pen } from '@hd-farm/shared';
-import type { Animal } from '@hd-farm/shared';
+import { AnimalCard } from '../../components/animal-card';
+import { Card } from '../../components/ui/card';
+import type { Farm, Zone, Pen, Animal } from '../../lib/types';
 
 function ChevronIcon({ expanded }: { expanded: boolean }) {
   return <Text style={{ fontSize: 14, color: '#6b7280' }}>{expanded ? '▲' : '▼'}</Text>;

@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import type { Animal } from '@hd-farm/shared';
-import { Card } from './ui/Card';
-import { Badge } from './ui/Badge';
+import type { Animal } from '../lib/types';
+import { Card } from './ui/card';
+import { Badge } from './ui/badge';
 
 interface AnimalCardProps {
   animal: Pick<Animal, 'id' | 'name' | 'species' | 'status' | 'qrCode'> & {

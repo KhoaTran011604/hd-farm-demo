@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getToken, clearToken } from './auth';
 
-const API_URL = process.env['EXPO_PUBLIC_API_URL'] ?? 'http://localhost:3000';
+const API_URL = process.env['EXPO_PUBLIC_API_URL'] ?? 'http://172.16.1.100:3000';
 
 export const api = axios.create({
   baseURL: API_URL,
@@ -9,7 +9,6 @@ export const api = axios.create({
   timeout: 10_000,
 });
 
-// Registered by _layout.tsx so the interceptor can navigate without importing router here
 let unauthorizedHandler: (() => void) | null = null;
 export function setUnauthorizedHandler(fn: () => void) {
   unauthorizedHandler = fn;

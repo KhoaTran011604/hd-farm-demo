@@ -1,11 +1,11 @@
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
+import { Text, StyleSheet, ScrollView, ActivityIndicator, RefreshControl, View } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../lib/api';
 import { getUser } from '../../lib/auth';
 import { useEffect, useState } from 'react';
-import { Card } from '../../components/ui/Card';
-import { AnimalCard } from '../../components/AnimalCard';
-import type { Animal, UserRole } from '@hd-farm/shared';
+import { Card } from '../../components/ui/card';
+import { AnimalCard } from '../../components/animal-card';
+import type { Animal, UserRole } from '../../lib/types';
 
 interface WorkerTask {
   animalId: string;
@@ -95,14 +95,14 @@ export default function HomeScreen() {
       refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refetch} tintColor="#1a7f37" />}
     >
       <Text style={styles.heading}>{isManager ? 'Farm Overview' : 'My Tasks'}</Text>
-
       {isManager && managerQuery.data ? (
         <>
           <View style={styles.statsGrid}>
             <StatCard label="Total" value={managerQuery.data.totalAnimals} />
             <StatCard label="Healthy" value={managerQuery.data.healthyAnimals} color="#166534" />
             <StatCard label="Sick" value={managerQuery.data.sickAnimals} color="#991b1b" />
-            <StatCard label="Alerts" value={managerQuery.data.alertsCount} color="#d97706" />
+            <StatCard label="Monitoring" value={managerQuery.data.monitoringAnimals} color="#d97706" />
+            <StatCard label="Alerts" value={managerQuery.data.alertsCount} color="#b45309" />
           </View>
           <Text style={styles.sectionTitle}>Recent Activity</Text>
           {managerQuery.data.recentEvents.map((a) => (
@@ -121,7 +121,6 @@ export default function HomeScreen() {
           ))}
         </>
       ) : null}
-
       {!isManager && workerQuery.data ? (
         <>
           <Text style={styles.subheading}>{workerQuery.data.tasks.length} animals need attention</Text>

@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { clearToken } from '../../lib/auth';
 import { queryClient } from '../../lib/query-client';
-import { Card } from '../../components/ui/Card';
+import { Card } from '../../components/ui/card';
 
 interface MenuRowProps {
   label: string;

@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../lib/api';
-import { AnimalCard } from '../../components/AnimalCard';
-import { Card } from '../../components/ui/Card';
-import type { AnimalSpecies, HealthStatus } from '@hd-farm/shared';
+import { AnimalCard } from '../../components/animal-card';
+import { Card } from '../../components/ui/card';
+import type { AnimalSpecies, HealthStatus } from '../../lib/types';
 
 interface AlertAnimal {
   id: string;

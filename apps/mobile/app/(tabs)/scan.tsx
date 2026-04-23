@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../lib/api';
-import { QrScanner } from '../../components/QrScanner';
-import { ScanResultSheet } from '../../components/ScanResultSheet';
-import type { Animal } from '@hd-farm/shared';
+import { QrScanner } from '../../components/qr-scanner';
+import { ScanResultSheet } from '../../components/scan-result-sheet';
+import type { Animal } from '../../lib/types';
 
 type ScannedAnimal = Pick<Animal, 'id' | 'name' | 'species' | 'status' | 'qrCode'> & {
   penName?: string;
@@ -40,7 +40,6 @@ export default function ScanScreen() {
     <View style={styles.screen}>
       <QrScanner onScanned={handleScanned} active={cameraActive} />
 
-      {/* Overlay UI when camera is active */}
       {cameraActive ? (
         <>
           <View style={styles.overlay}>
@@ -55,7 +54,6 @@ export default function ScanScreen() {
         </>
       ) : null}
 
-      {/* Loading / error overlays while fetching animal */}
       {isLoading && scannedUuid ? (
         <View style={styles.fetchOverlay}>
           <Text style={styles.fetchText}>Looking up animal…</Text>

@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Ale
 import { useRouter } from 'expo-router';
 import { api } from '../../lib/api';
 import { saveToken, saveUser } from '../../lib/auth';
-import { Button } from '../../components/ui/Button';
-import { Input } from '../../components/ui/Input';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -48,7 +48,6 @@ export default function LoginScreen() {
           <Text style={styles.title}>HD Farms</Text>
           <Text style={styles.subtitle}>Sign in to your account</Text>
         </View>
-
         <View style={styles.form}>
           <Input
             label="Email"

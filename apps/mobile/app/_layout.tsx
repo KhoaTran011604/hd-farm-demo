@@ -1,11 +1,15 @@
+import 'react-native-reanimated';
 import { useEffect, useState } from 'react';
 import { Stack, useRouter } from 'expo-router';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { StyleSheet, View, ActivityIndicator } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, View, ActivityIndicator, TouchableOpacity, Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { getToken } from '../lib/auth';
 import { queryClient } from '../lib/query-client';
 import { setUnauthorizedHandler } from '../lib/api';
+
+const GREEN = '#1a7f37';
 
 export default function RootLayout() {
   const router = useRouter();
@@ -28,25 +32,53 @@ export default function RootLayout() {
   }, [router]);
 
   return (
-    <GestureHandlerRootView style={styles.root}>
+    <View style={styles.root}>
       <QueryClientProvider client={queryClient}>
-        {!checked ? (
-          <View style={styles.loading}>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            headerStyle: { backgroundColor: GREEN },
+            headerTintColor: '#fff',
+            headerTitleStyle: { fontWeight: '700', fontSize: 18 },
+            headerShadowVisible: false,
+          }}
+        >
+          <Stack.Screen name="(auth)/login" />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen
+            name="animals/[id]"
+            options={({ navigation }) => ({
+              headerShown: true,
+              title: 'Animal Detail',
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={styles.backBtn}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <Ionicons
+                    name={Platform.OS === 'ios' ? 'chevron-back' : 'arrow-back'}
+                    size={26}
+                    color="#fff"
+                  />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+        </Stack>
+        {!checked && (
+          <View style={[StyleSheet.absoluteFill, styles.loading]}>
             <ActivityIndicator color="#1a7f37" size="large" />
           </View>
-        ) : (
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(auth)" />
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="animals/[id]" options={{ headerShown: true, title: 'Animal Detail' }} />
-          </Stack>
         )}
       </QueryClientProvider>
-    </GestureHandlerRootView>
+      <StatusBar style="light" backgroundColor={GREEN} />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-  loading: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' },
+  loading: { justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' },
+  backBtn: { marginLeft: Platform.OS === 'ios' ? 0 : 4, padding: 2 },
 });

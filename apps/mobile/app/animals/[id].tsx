@@ -2,10 +2,10 @@ import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-nat
 import { useLocalSearchParams } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../lib/api';
-import { Card } from '../../components/ui/Card';
-import { Badge } from '../../components/ui/Badge';
-import { Button } from '../../components/ui/Button';
-import type { Animal } from '@hd-farm/shared';
+import { Card } from '../../components/ui/card';
+import { Badge } from '../../components/ui/badge';
+import { Button } from '../../components/ui/button';
+import type { Animal } from '../../lib/types';
 
 interface AnimalDetail extends Animal {
   penName?: string;
@@ -52,7 +52,6 @@ export default function AnimalDetailScreen() {
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      {/* Header card */}
       <Card style={styles.headerCard}>
         <View style={styles.headerRow}>
           <Text style={styles.name}>{animal.name}</Text>
@@ -66,7 +65,6 @@ export default function AnimalDetailScreen() {
         ) : null}
       </Card>
 
-      {/* Details */}
       <Card style={styles.section}>
         <Text style={styles.sectionTitle}>Details</Text>
         <FieldRow label="QR Code" value={animal.qrCode} />
@@ -76,7 +74,6 @@ export default function AnimalDetailScreen() {
         <FieldRow label="Updated" value={updatedAt} />
       </Card>
 
-      {/* Metadata */}
       {animal.typeMetadata && Object.keys(animal.typeMetadata).length > 0 ? (
         <Card style={styles.section}>
           <Text style={styles.sectionTitle}>Additional Info</Text>
@@ -90,10 +87,9 @@ export default function AnimalDetailScreen() {
         </Card>
       ) : null}
 
-      {/* Quick actions */}
       <Card style={styles.section}>
         <Text style={styles.sectionTitle}>Quick Actions</Text>
-        <Text style={styles.comingSoon}>Weigh, status change, and vaccination actions coming in Phase 6.</Text>
+        <Text style={styles.comingSoon}>Weigh, status change, and vaccination actions coming soon.</Text>
         <View style={styles.actionRow}>
           <Button label="Weigh" variant="secondary" onPress={() => {}} style={styles.actionBtn} disabled />
           <Button label="Status" variant="secondary" onPress={() => {}} style={styles.actionBtn} disabled />

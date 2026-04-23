@@ -31,7 +31,7 @@ Bootstrap bilingual UI (vi default, en fallback) for HD-FARMS monorepo. Web uses
 |---|-------|------|--------|--------|
 | 1 | Shared locales (en.json + vi.json) | `phase-01-shared-locales.md` | 30m | complete |
 | 2 | Web next-intl setup (middleware, routing, provider) | `phase-02-web-nextintl-setup.md` | 1.5h | complete |
-| 3 | Web app structure + language switcher | `phase-03-web-app-structure.md` | 1h | pending |
+| 3 | Web app structure + language switcher | `phase-03-web-app-structure.md` | 1h | complete |
 | 4 | Mobile i18next + expo-localization setup | `phase-04-mobile-i18next-setup.md` | 1h | pending |
 | 5 | Mobile app screens + language switcher | `phase-05-mobile-app-structure.md` | 1h | pending |
 

@@ -2,6 +2,7 @@
 
 import { useReactTable, getCoreRowModel, getPaginationRowModel, flexRender, type ColumnDef } from '@tanstack/react-table';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -34,10 +35,11 @@ export function GenericTable<TData>({
   columns,
   isLoading = false,
   onRowClick,
-  emptyMessage = 'Không có dữ liệu',
+  emptyMessage,
   pageSize,
   pagination,
 }: GenericTableProps<TData>): React.JSX.Element {
+  const t = useTranslations('table');
   const table = useReactTable({
     data,
     columns,
@@ -76,7 +78,7 @@ export function GenericTable<TData>({
             ) : table.getRowModel().rows.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={columns.length} className="text-center py-8 text-muted-foreground">
-                  {emptyMessage}
+                  {emptyMessage ?? t('empty')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -100,7 +102,7 @@ export function GenericTable<TData>({
       {pageSize != null && (
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">
-            Trang {clientPage} / {totalPages}
+            {t('pageOf', { page: clientPage ?? 1, total: totalPages ?? 1 })}
           </span>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
@@ -118,7 +120,7 @@ export function GenericTable<TData>({
         <div className="flex items-center justify-between">
           {pagination.page != null && pagination.total != null ? (
             <span className="text-sm text-muted-foreground">
-              Trang {pagination.page} · {pagination.total} kết quả
+              {t('pageWithResults', { page: pagination.page, total: pagination.total })}
             </span>
           ) : (
             <span />

@@ -1,11 +1,13 @@
-import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 import { Plus } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
 import { AnimalTable } from '@/components/animals/animal-table';
 import { api } from '@/lib/api';
 import type { AnimalListResponse } from '@/lib/animal-types';
 
 export default async function AnimalsPage(): Promise<React.JSX.Element> {
+  const t = await getTranslations('animals');
   let initialData: AnimalListResponse | undefined;
 
   try {
@@ -17,11 +19,11 @@ export default async function AnimalsPage(): Promise<React.JSX.Element> {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Vật nuôi</h1>
+        <h1 className="text-2xl font-bold">{t('title')}</h1>
         <Button asChild>
           <Link href="/animals/new">
             <Plus className="mr-2 h-4 w-4" />
-            Thêm vật nuôi
+            {t('add')}
           </Link>
         </Button>
       </div>

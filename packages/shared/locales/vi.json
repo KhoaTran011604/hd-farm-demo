@@ -9,7 +9,15 @@
     "loading": "Đang tải...",
     "confirm": "Xác nhận",
     "back": "Quay lại",
-    "next": "Tiếp theo"
+    "next": "Tiếp theo",
+    "switchLanguage": "Đổi ngôn ngữ",
+    "english": "Tiếng Anh",
+    "vietnamese": "Tiếng Việt",
+    "required": "Bắt buộc",
+    "success": "Thành công",
+    "error": "Lỗi",
+    "processing": "Đang xử lý...",
+    "choose": "Chọn..."
   },
   "auth": {
     "login": "Đăng nhập",
@@ -19,12 +27,107 @@
     "password": "Mật khẩu",
     "forgotPassword": "Quên mật khẩu?"
   },
+  "nav": {
+    "dashboard": "Bảng điều khiển",
+    "animals": "Vật nuôi",
+    "batches": "Lô chăn nuôi",
+    "zones": "Khu vực",
+    "users": "Người dùng",
+    "config": "Cấu hình",
+    "reports": "Báo cáo"
+  },
+  "table": {
+    "empty": "Không có dữ liệu",
+    "pageOf": "Trang {page} / {total}",
+    "pageWithResults": "Trang {page} · {total} kết quả"
+  },
+  "breadcrumb": {
+    "home": "Bảng điều khiển",
+    "new": "Thêm mới",
+    "qr": "Mã QR",
+    "animals": "Vật nuôi",
+    "batches": "Lô chăn nuôi",
+    "zones": "Khu vực",
+    "users": "Người dùng",
+    "config": "Cấu hình",
+    "reports": "Báo cáo"
+  },
+  "dashboard": {
+    "title": "Bảng điều khiển",
+    "subtitle": "Tổng quan sẽ được bổ sung ở Phase 12.",
+    "stats": {
+      "animals": "Tổng vật nuôi",
+      "batches": "Lô chăn nuôi",
+      "zones": "Khu vực",
+      "reports": "Báo cáo"
+    }
+  },
   "animals": {
-    "title": "Quản lý vật nuôi",
+    "title": "Vật nuôi",
     "list": "Danh sách vật nuôi",
     "add": "Thêm vật nuôi",
-    "species": "Loài",
-    "status": "Tình trạng"
+    "id": "ID",
+    "printQr": "In mã QR",
+    "fields": {
+      "name": "Tên",
+      "species": "Loài",
+      "status": "Trạng thái",
+      "qrCode": "Mã QR",
+      "pen": "Ô chuồng",
+      "zone": "Khu vực",
+      "farm": "Trại",
+      "createdAt": "Ngày nhập",
+      "createdAtLong": "Ngày nhập trại",
+      "updatedAt": "Cập nhật lần cuối"
+    },
+    "filters": {
+      "allFarms": "Tất cả trại",
+      "allZones": "Tất cả khu",
+      "allPens": "Tất cả ô",
+      "allStatuses": "Tất cả trạng thái"
+    },
+    "form": {
+      "nameLabel": "Tên vật nuôi",
+      "namePlaceholder": "Ví dụ: Heo A01",
+      "speciesLabel": "Loài",
+      "farmLabel": "Trại",
+      "zoneLabel": "Khu vực",
+      "penLabel": "Ô chuồng",
+      "qrLabel": "Mã QR (tuỳ chọn)",
+      "qrPlaceholder": "Tự động nếu để trống",
+      "submit": "Thêm vật nuôi",
+      "chooseFarm": "Chọn trại",
+      "chooseZone": "Chọn khu vực",
+      "choosePen": "Chọn ô chuồng",
+      "createdToast": "Đã thêm vật nuôi mới"
+    },
+    "species": {
+      "heo": "Heo",
+      "gà": "Gà",
+      "bò": "Bò"
+    },
+    "status": {
+      "healthy": "Khỏe mạnh",
+      "monitoring": "Theo dõi",
+      "sick": "Bệnh",
+      "quarantine": "Cách ly",
+      "recovered": "Đã hồi phục",
+      "dead": "Chết",
+      "sold": "Đã bán"
+    },
+    "tabs": {
+      "overview": "Tổng quan",
+      "health": "Sức khoẻ",
+      "vaccination": "Tiêm chủng",
+      "disease": "Bệnh & Điều trị",
+      "feeding": "Thức ăn",
+      "reproduction": "Sinh sản",
+      "comingInPhase": "{label} — sẽ có ở Phase {phase}"
+    },
+    "qr": {
+      "instruction": "Mã QR vật nuôi — nhấn \"In mã QR\" hoặc Ctrl+P để in",
+      "penShort": "Ô"
+    }
   },
   "farms": {
     "title": "Trang trại",

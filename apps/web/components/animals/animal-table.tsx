@@ -1,24 +1,15 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useRouter } from '@/i18n/navigation';
 import { type ColumnDef } from '@tanstack/react-table';
 import { GenericTable } from '@/components/ui/generic-table';
 import { StatusBadge } from '@/components/animals/status-badge';
 import { AnimalFilters } from '@/components/animals/animal-filters';
 import { useAnimalsQuery } from '@/queries/animals/queries';
 import type { AnimalRow, AnimalListResponse, AnimalFilters as Filters } from '@/lib/animal-types';
-import { SPECIES_LABELS } from '@/lib/animal-types';
 import { formatDate } from '@/lib/utils';
-
-const columns: ColumnDef<AnimalRow>[] = [
-  { accessorKey: 'name', header: 'Tên' },
-  { accessorKey: 'species', header: 'Loài', cell: ({ row }) => SPECIES_LABELS[row.original.species] ?? row.original.species },
-  { accessorKey: 'status', header: 'Trạng thái', cell: ({ row }) => <StatusBadge status={row.original.status} /> },
-  { id: 'pen', header: 'Ô chuồng', cell: ({ row }) => row.original.pen?.name ?? '—' },
-  { id: 'zone', header: 'Khu vực', cell: ({ row }) => row.original.zone?.name ?? '—' },
-  { accessorKey: 'createdAt', header: 'Ngày nhập', cell: ({ row }) => formatDate(row.original.createdAt) },
-];
 
 interface AnimalTableProps {
   initialData?: AnimalListResponse;
@@ -26,9 +17,35 @@ interface AnimalTableProps {
 
 export function AnimalTable({ initialData }: AnimalTableProps): React.JSX.Element {
   const router = useRouter();
+  const tFields = useTranslations('animals.fields');
+  const tSpecies = useTranslations('animals.species');
   const [filters, setFilters] = useState<Filters>({ page: 1 });
 
   const { data, isLoading } = useAnimalsQuery(filters, initialData);
+
+  const columns = useMemo<ColumnDef<AnimalRow>[]>(
+    () => [
+      { accessorKey: 'name', header: tFields('name') },
+      {
+        accessorKey: 'species',
+        header: tFields('species'),
+        cell: ({ row }) => tSpecies(row.original.species),
+      },
+      {
+        accessorKey: 'status',
+        header: tFields('status'),
+        cell: ({ row }) => <StatusBadge status={row.original.status} />,
+      },
+      { id: 'pen', header: tFields('pen'), cell: ({ row }) => row.original.pen?.name ?? '—' },
+      { id: 'zone', header: tFields('zone'), cell: ({ row }) => row.original.zone?.name ?? '—' },
+      {
+        accessorKey: 'createdAt',
+        header: tFields('createdAt'),
+        cell: ({ row }) => formatDate(row.original.createdAt),
+      },
+    ],
+    [tFields, tSpecies],
+  );
 
   const totalPages = data ? Math.ceil(data.total / data.pageSize) : 1;
   const currentPage = filters.page ?? 1;

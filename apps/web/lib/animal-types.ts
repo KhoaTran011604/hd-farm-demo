@@ -28,9 +28,3 @@ export interface AnimalFilters {
   status?: string;
   page?: number;
 }
-
-export const SPECIES_LABELS: Record<AnimalSpecies, string> = {
-  heo: 'Heo',
-  gà: 'Gà',
-  bò: 'Bò',
-};

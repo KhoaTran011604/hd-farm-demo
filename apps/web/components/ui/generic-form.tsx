@@ -14,6 +14,7 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -54,12 +55,13 @@ export function GenericForm<TData extends FieldValues, TResponse = unknown>({
   onSuccess,
   onError,
   children,
-  submitLabel = 'Lưu',
+  submitLabel,
   resetOnSuccess = false,
   className,
   showSubmitButton = true,
   disabled = false,
 }: GenericFormProps<TData, TResponse>): React.ReactElement {
+  const tCommon = useTranslations('common');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const methods = useForm<TData>({
@@ -112,7 +114,7 @@ export function GenericForm<TData extends FieldValues, TResponse = unknown>({
           <div className="sticky bottom-0 flex justify-end border-t bg-background pt-4 pb-6 mt-4 translate-y-6">
             <Button type="submit" disabled={isSubmitting || disabled} aria-busy={isSubmitting}>
               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isSubmitting ? 'Đang xử lý...' : submitLabel}
+              {isSubmitting ? tCommon('processing') : (submitLabel ?? tCommon('save'))}
             </Button>
           </div>
         )}
@@ -287,13 +289,14 @@ export function FormSelect({
   name,
   label,
   options,
-  placeholder = 'Chọn...',
+  placeholder,
   required,
   description,
   disabled,
   className,
   onValueChange,
 }: FormSelectProps): React.ReactElement {
+  const tCommon = useTranslations('common');
   const { control, formState: { errors } } = useFormContext();
   const error = errors[name]?.message as string | undefined;
 
@@ -318,7 +321,7 @@ export function FormSelect({
             disabled={disabled}
           >
             <SelectTrigger aria-invalid={!!error}>
-              <SelectValue placeholder={placeholder} />
+              <SelectValue placeholder={placeholder ?? tCommon('choose')} />
             </SelectTrigger>
             <SelectContent>
               {options.map((option) => (

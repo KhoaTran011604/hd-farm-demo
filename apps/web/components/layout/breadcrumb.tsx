@@ -1,31 +1,30 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link, usePathname } from '@/i18n/navigation';
 import { ChevronRight } from 'lucide-react';
 
-const SEGMENT_LABELS: Record<string, string> = {
-  animals: 'Vật nuôi',
-  new: 'Thêm mới',
-  batches: 'Lô chăn nuôi',
-  zones: 'Khu vực',
-  users: 'Người dùng',
-  config: 'Cấu hình',
-  reports: 'Báo cáo',
-  qr: 'Mã QR',
-};
-
-function getLabel(segment: string): string {
-  return SEGMENT_LABELS[segment] ?? segment;
-}
+const KNOWN_SEGMENTS = new Set([
+  'animals',
+  'batches',
+  'zones',
+  'users',
+  'config',
+  'reports',
+  'new',
+  'qr',
+]);
 
 export function AppBreadcrumb(): React.JSX.Element {
   const pathname = usePathname();
+  const t = useTranslations('breadcrumb');
   const segments = pathname.split('/').filter(Boolean);
 
   if (segments.length === 0) {
-    return <span className="text-sm font-medium">Dashboard</span>;
+    return <span className="text-sm font-medium">{t('home')}</span>;
   }
+
+  const getLabel = (seg: string): string => (KNOWN_SEGMENTS.has(seg) ? t(seg) : seg);
 
   const crumbs = segments.map((seg, idx) => ({
     label: getLabel(seg),
@@ -36,7 +35,7 @@ export function AppBreadcrumb(): React.JSX.Element {
   return (
     <nav className="flex items-center gap-1 text-sm">
       <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
-        Dashboard
+        {t('home')}
       </Link>
       {crumbs.map(({ label, href, isLast }) => (
         <span key={href} className="flex items-center gap-1">

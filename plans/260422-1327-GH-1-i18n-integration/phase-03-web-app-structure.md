@@ -8,7 +8,7 @@
 ## Overview
 - **Date:** 2026-04-22
 - **Priority:** P1
-- **Status:** pending
+- **Status:** complete
 - **Effort:** 1h
 - **Description:** Create initial page scaffolding under `app/[locale]/`, add a `LanguageSwitcher` client component using next-intl's `Link`/`useRouter`, and a locale-aware 404 page. Validates the full i18n pipeline end to end.
 
@@ -174,12 +174,12 @@ pnpm -F @hd-farm/web dev
 Visit `http://localhost:3000/` → should redirect to `/vi`. Click English button → goes to `/en`. Visit `/vi/xyz` → locale-aware 404.
 
 ## Todo List
-- [ ] Add `dashboard.*` + `common.notFound/switchLanguage/english/vietnamese` keys to both locale JSONs
-- [ ] Create `apps/web/app/[locale]/page.tsx`
-- [ ] Create `apps/web/components/language-switcher.tsx`
-- [ ] Create `apps/web/app/[locale]/not-found.tsx`
-- [ ] Mount `<LanguageSwitcher />` in `[locale]/layout.tsx`
-- [ ] Smoke test dev server: `/` → `/vi`, switcher, 404
+- [x] Add `dashboard.*` + `common.notFound/switchLanguage/english/vietnamese` keys to both locale JSONs
+- [x] Create `apps/web/app/[locale]/page.tsx`
+- [x] Create `apps/web/components/language-switcher.tsx`
+- [x] Create `apps/web/app/[locale]/not-found.tsx`
+- [x] Mount `<LanguageSwitcher />` in `[locale]/layout.tsx`
+- [x] Smoke test dev server: `/` → `/vi`, switcher, 404
 
 ## Success Criteria
 - `/` redirects to `/vi/` (default locale)

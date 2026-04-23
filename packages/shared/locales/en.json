@@ -9,7 +9,15 @@
     "loading": "Loading...",
     "confirm": "Confirm",
     "back": "Back",
-    "next": "Next"
+    "next": "Next",
+    "switchLanguage": "Switch language",
+    "english": "English",
+    "vietnamese": "Vietnamese",
+    "required": "Required",
+    "success": "Success",
+    "error": "Error",
+    "processing": "Processing...",
+    "choose": "Select..."
   },
   "auth": {
     "login": "Log in",
@@ -19,12 +27,107 @@
     "password": "Password",
     "forgotPassword": "Forgot password?"
   },
+  "nav": {
+    "dashboard": "Dashboard",
+    "animals": "Animals",
+    "batches": "Batches",
+    "zones": "Zones",
+    "users": "Users",
+    "config": "Settings",
+    "reports": "Reports"
+  },
+  "table": {
+    "empty": "No data",
+    "pageOf": "Page {page} / {total}",
+    "pageWithResults": "Page {page} · {total} results"
+  },
+  "breadcrumb": {
+    "home": "Dashboard",
+    "new": "New",
+    "qr": "QR Code",
+    "animals": "Animals",
+    "batches": "Batches",
+    "zones": "Zones",
+    "users": "Users",
+    "config": "Settings",
+    "reports": "Reports"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview will be added in Phase 12.",
+    "stats": {
+      "animals": "Total animals",
+      "batches": "Batches",
+      "zones": "Zones",
+      "reports": "Reports"
+    }
+  },
   "animals": {
     "title": "Animals",
     "list": "Animal list",
     "add": "Add animal",
-    "species": "Species",
-    "status": "Status"
+    "id": "ID",
+    "printQr": "Print QR",
+    "fields": {
+      "name": "Name",
+      "species": "Species",
+      "status": "Status",
+      "qrCode": "QR Code",
+      "pen": "Pen",
+      "zone": "Zone",
+      "farm": "Farm",
+      "createdAt": "Registered",
+      "createdAtLong": "Registered at farm",
+      "updatedAt": "Last updated"
+    },
+    "filters": {
+      "allFarms": "All farms",
+      "allZones": "All zones",
+      "allPens": "All pens",
+      "allStatuses": "All statuses"
+    },
+    "form": {
+      "nameLabel": "Animal name",
+      "namePlaceholder": "e.g. Heo A01",
+      "speciesLabel": "Species",
+      "farmLabel": "Farm",
+      "zoneLabel": "Zone",
+      "penLabel": "Pen",
+      "qrLabel": "QR code (optional)",
+      "qrPlaceholder": "Auto-generated if empty",
+      "submit": "Add animal",
+      "chooseFarm": "Please choose a farm",
+      "chooseZone": "Please choose a zone",
+      "choosePen": "Please choose a pen",
+      "createdToast": "New animal added"
+    },
+    "species": {
+      "heo": "Pig",
+      "gà": "Chicken",
+      "bò": "Cow"
+    },
+    "status": {
+      "healthy": "Healthy",
+      "monitoring": "Monitoring",
+      "sick": "Sick",
+      "quarantine": "Quarantine",
+      "recovered": "Recovered",
+      "dead": "Dead",
+      "sold": "Sold"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "health": "Health",
+      "vaccination": "Vaccination",
+      "disease": "Disease & Treatment",
+      "feeding": "Feeding",
+      "reproduction": "Breeding",
+      "comingInPhase": "{label} — coming in Phase {phase}"
+    },
+    "qr": {
+      "instruction": "Animal QR code — press \"Print QR\" or Ctrl+P to print",
+      "penShort": "Pen"
+    }
   },
   "farms": {
     "title": "Farms",

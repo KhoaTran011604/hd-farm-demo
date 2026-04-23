@@ -2,14 +2,17 @@
 
 import { LogOut, Moon, Sun, User } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useRouter } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { LanguageSwitcher } from '@/components/language-switcher';
 import { AppBreadcrumb } from './breadcrumb';
 
 export function Header(): React.JSX.Element {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
+  const tAuth = useTranslations('auth');
 
   async function handleLogout(): Promise<void> {
     await fetch('/api/auth/logout', { method: 'POST' });
@@ -22,6 +25,8 @@ export function Header(): React.JSX.Element {
       <AppBreadcrumb />
 
       <div className="flex items-center gap-2">
+        <LanguageSwitcher />
+
         <Button
           variant="ghost"
           size="icon"
@@ -42,7 +47,7 @@ export function Header(): React.JSX.Element {
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout} className="text-destructive">
               <LogOut className="mr-2 h-4 w-4" />
-              Đăng xuất
+              {tAuth('logout')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

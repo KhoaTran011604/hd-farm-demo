@@ -1,10 +1,14 @@
+'use client';
+
 import { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
-import { useQuery } from '@tanstack/react-query';
-import { api } from '../../lib/api';
-import { AnimalCard } from '../../components/animal-card';
-import { Card } from '../../components/ui/card';
-import type { Farm, Zone, Pen, Animal } from '../../lib/types';
+import { Card } from '@/components/ui/card';
+import { AnimalCard } from '@/components/animal-card';
+import { useFarmsQuery } from '@/queries/farms/queries';
+import { useZonesQuery } from '@/queries/zones/queries';
+import { usePensQuery } from '@/queries/pens/queries';
+import { useAnimalsByPenQuery } from '@/queries/animals/queries';
+import type { Zone, Pen } from '@/lib/types';
 
 function ChevronIcon({ expanded }: { expanded: boolean }) {
   return <Text style={{ fontSize: 14, color: '#6b7280' }}>{expanded ? '▲' : '▼'}</Text>;
@@ -12,12 +16,7 @@ function ChevronIcon({ expanded }: { expanded: boolean }) {
 
 function PenSection({ pen, zoneName }: { pen: Pen; zoneName: string }) {
   const [expanded, setExpanded] = useState(false);
-
-  const { data, isLoading } = useQuery<{ items: Animal[] }>({
-    queryKey: ['animals', 'pen', pen.id],
-    queryFn: () => api.get('/animals', { params: { penId: pen.id } }).then((r) => r.data),
-    enabled: expanded,
-  });
+  const { data, isLoading } = useAnimalsByPenQuery(pen.id, expanded);
 
   return (
     <View style={styles.penSection}>
@@ -37,10 +36,7 @@ function PenSection({ pen, zoneName }: { pen: Pen; zoneName: string }) {
             <Text style={styles.emptyText}>No animals in this pen.</Text>
           ) : (
             data?.items.map((a) => (
-              <AnimalCard
-                key={a.id}
-                animal={{ ...a, penName: pen.name, zoneName }}
-              />
+              <AnimalCard key={a.id} animal={{ ...a, penName: pen.name, zoneName }} />
             ))
           )}
         </View>
@@ -51,12 +47,7 @@ function PenSection({ pen, zoneName }: { pen: Pen; zoneName: string }) {
 
 function ZoneSection({ zone }: { zone: Zone }) {
   const [expanded, setExpanded] = useState(false);
-
-  const { data: pens, isLoading } = useQuery<Pen[]>({
-    queryKey: ['pens', zone.id],
-    queryFn: () => api.get('/pens', { params: { zoneId: zone.id } }).then((r) => r.data),
-    enabled: expanded,
-  });
+  const { data: pens, isLoading } = usePensQuery(expanded ? zone.id : null);
 
   return (
     <Card style={styles.zoneCard}>
@@ -82,22 +73,13 @@ function ZoneSection({ zone }: { zone: Zone }) {
 }
 
 export default function ZonesScreen() {
-  const farmsQuery = useQuery<Farm[]>({
-    queryKey: ['farms'],
-    queryFn: () => api.get('/farms').then((r) => r.data),
-  });
-
+  const { data: farms, isLoading: farmsLoading } = useFarmsQuery();
   const [selectedFarmId, setSelectedFarmId] = useState<string | null>(null);
 
-  const farmId = selectedFarmId ?? farmsQuery.data?.[0]?.id ?? null;
+  const farmId = selectedFarmId ?? farms?.[0]?.id ?? null;
+  const { data: zones, isLoading: zonesLoading, isFetching, refetch } = useZonesQuery(farmId);
 
-  const zonesQuery = useQuery<Zone[]>({
-    queryKey: ['zones', farmId],
-    queryFn: () => api.get('/zones', { params: { farmId } }).then((r) => r.data),
-    enabled: !!farmId,
-  });
-
-  if (farmsQuery.isLoading) {
+  if (farmsLoading) {
     return (
       <View style={styles.center}>
         <ActivityIndicator color="#1a7f37" size="large" />
@@ -110,14 +92,14 @@ export default function ZonesScreen() {
       style={styles.screen}
       contentContainerStyle={styles.content}
       refreshControl={
-        <RefreshControl refreshing={zonesQuery.isFetching} onRefresh={() => zonesQuery.refetch()} tintColor="#1a7f37" />
+        <RefreshControl refreshing={isFetching} onRefresh={() => void refetch()} tintColor="#1a7f37" />
       }
     >
       <Text style={styles.heading}>Zones</Text>
 
-      {(farmsQuery.data?.length ?? 0) > 1 ? (
+      {(farms?.length ?? 0) > 1 ? (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.farmTabs} contentContainerStyle={{ gap: 8 }}>
-          {farmsQuery.data?.map((farm) => (
+          {farms?.map((farm) => (
             <TouchableOpacity
               key={farm.id}
               style={[styles.farmTab, farmId === farm.id && styles.farmTabActive]}
@@ -131,14 +113,12 @@ export default function ZonesScreen() {
         </ScrollView>
       ) : null}
 
-      {zonesQuery.isLoading ? (
+      {zonesLoading ? (
         <ActivityIndicator color="#1a7f37" style={{ marginTop: 24 }} />
-      ) : (zonesQuery.data?.length ?? 0) === 0 ? (
+      ) : (zones?.length ?? 0) === 0 ? (
         <Card><Text style={styles.emptyText}>No zones found for this farm.</Text></Card>
       ) : (
-        zonesQuery.data?.map((zone) => (
-          <ZoneSection key={zone.id} zone={zone} />
-        ))
+        zones?.map((zone) => <ZoneSection key={zone.id} zone={zone} />)
       )}
     </ScrollView>
   );
@@ -150,11 +130,7 @@ const styles = StyleSheet.create({
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   heading: { fontSize: 22, fontWeight: '700', color: '#111827', marginBottom: 12 },
   farmTabs: { marginBottom: 16 },
-  farmTab: {
-    paddingHorizontal: 16, paddingVertical: 8,
-    borderRadius: 20, backgroundColor: '#f3f4f6',
-    borderWidth: 1, borderColor: '#e5e7eb',
-  },
+  farmTab: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: '#f3f4f6', borderWidth: 1, borderColor: '#e5e7eb' },
   farmTabActive: { backgroundColor: '#1a7f37', borderColor: '#1a7f37' },
   farmTabText: { fontSize: 13, color: '#374151', fontWeight: '500' },
   farmTabTextActive: { color: '#fff' },

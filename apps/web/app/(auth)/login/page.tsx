@@ -1,41 +1,38 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useRouter } from 'next/navigation';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { GenericForm, FormTextField } from '@/components/ui/generic-form';
 
-const schema = yup.object({ email: yup.string().email('Email không hợp lệ').required('Bắt buộc'), password: yup.string().min(8, 'Tối thiểu 8 ký tự').required('Bắt buộc') });
+const schema = yup.object({
+  email: yup.string().email('Email không hợp lệ').required('Bắt buộc'),
+  password: yup.string().min(8, 'Tối thiểu 8 ký tự').required('Bắt buộc'),
+});
 type LoginForm = yup.InferType<typeof schema>;
+
+const DEFAULT_VALUES: LoginForm = { email: '', password: '' };
 
 export default function LoginPage(): React.JSX.Element {
   const router = useRouter();
   const { toast } = useToast();
-  const form = useForm<LoginForm>({ resolver: yupResolver(schema) });
 
   async function onSubmit(values: LoginForm): Promise<void> {
+    let res: Response;
     try {
-      const res = await fetch('/api/auth/login', {
+      res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),
       });
-
-      if (!res.ok) {
-        const err = await res.json() as { message?: string };
-        toast({ title: 'Đăng nhập thất bại', description: err.message ?? 'Sai email hoặc mật khẩu', variant: 'destructive' });
-        return;
-      }
-
-      router.push('/');
-      router.refresh();
     } catch {
-      toast({ title: 'Lỗi kết nối', description: 'Không thể kết nối đến máy chủ', variant: 'destructive' });
+      throw new Error('Không thể kết nối đến máy chủ');
+    }
+    if (!res.ok) {
+      const err = await res.json() as { message?: string };
+      throw new Error(err.message ?? 'Sai email hoặc mật khẩu');
     }
   }
 
@@ -47,27 +44,22 @@ export default function LoginPage(): React.JSX.Element {
           <CardTitle className="text-lg">Đăng nhập quản trị</CardTitle>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField control={form.control} name="email" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl><Input type="email" placeholder="admin@example.com" {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="password" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Mật khẩu</FormLabel>
-                  <FormControl><Input type="password" placeholder="••••••••" {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? 'Đang đăng nhập...' : 'Đăng nhập'}
-              </Button>
-            </form>
-          </Form>
+          <GenericForm
+            schema={schema}
+            defaultValues={DEFAULT_VALUES}
+            onSubmit={onSubmit}
+            onSuccess={() => { router.push('/'); router.refresh(); }}
+            onError={(error) => toast({
+              title: error.message === 'Không thể kết nối đến máy chủ' ? 'Lỗi kết nối' : 'Đăng nhập thất bại',
+              description: error.message,
+              variant: 'destructive',
+            })}
+            showSubmitButton={false}
+          >
+            <FormTextField name="email" label="Email" type="email" placeholder="admin@example.com" required autoComplete="email" />
+            <FormTextField name="password" label="Mật khẩu" type="password" placeholder="••••••••" required autoComplete="current-password" />
+            <Button type="submit" className="w-full">Đăng nhập</Button>
+          </GenericForm>
         </CardContent>
       </Card>
     </div>

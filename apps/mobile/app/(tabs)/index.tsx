@@ -1,46 +1,10 @@
 import { Text, StyleSheet, ScrollView, ActivityIndicator, RefreshControl, View } from 'react-native';
-import { useQuery } from '@tanstack/react-query';
-import { api } from '../../lib/api';
-import { getUser } from '../../lib/auth';
 import { useEffect, useState } from 'react';
-import { Card } from '../../components/ui/card';
-import { AnimalCard } from '../../components/animal-card';
-import type { Animal, UserRole } from '../../lib/types';
-
-interface WorkerTask {
-  animalId: string;
-  animalName: string;
-  species: string;
-  status: string;
-  qrCode: string;
-  penName?: string;
-  zoneName?: string;
-  action: string;
-}
-
-interface WorkerData {
-  tasks: WorkerTask[];
-  totalAnimals: number;
-}
-
-interface RecentEvent {
-  animalId: string;
-  animalName: string;
-  species: string;
-  status: string;
-  updatedAt: string;
-  penName?: string;
-  zoneName?: string;
-}
-
-interface ManagerData {
-  totalAnimals: number;
-  healthyAnimals: number;
-  sickAnimals: number;
-  monitoringAnimals: number;
-  alertsCount: number;
-  recentEvents: RecentEvent[];
-}
+import { Card } from '@/components/ui/card';
+import { AnimalCard } from '@/components/animal-card';
+import { useWorkerDashboardQuery, useManagerDashboardQuery } from '@/queries/dashboard/queries';
+import { getUser } from '@/lib/auth';
+import type { Animal, UserRole } from '@/lib/types';
 
 function StatCard({ label, value, color }: { label: string; value: number; color?: string }) {
   return (
@@ -60,24 +24,15 @@ export default function HomeScreen() {
 
   const isManager = role === 'admin' || role === 'manager';
 
-  const workerQuery = useQuery<WorkerData>({
-    queryKey: ['dashboard', 'tasks'],
-    queryFn: () => api.get('/dashboard/my-tasks').then((r) => r.data),
-    enabled: role !== null && !isManager,
-  });
-
-  const managerQuery = useQuery<ManagerData>({
-    queryKey: ['dashboard', 'overview'],
-    queryFn: () => api.get('/dashboard/overview').then((r) => r.data),
-    enabled: role !== null && isManager,
-  });
+  const workerQuery = useWorkerDashboardQuery(role !== null && !isManager);
+  const managerQuery = useManagerDashboardQuery(role !== null && isManager);
 
   const isLoading = workerQuery.isLoading || managerQuery.isLoading;
   const isRefreshing = workerQuery.isFetching || managerQuery.isFetching;
 
   function refetch() {
-    if (isManager) managerQuery.refetch();
-    else workerQuery.refetch();
+    if (isManager) void managerQuery.refetch();
+    else void workerQuery.refetch();
   }
 
   if (!role || isLoading) {
@@ -95,6 +50,7 @@ export default function HomeScreen() {
       refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refetch} tintColor="#1a7f37" />}
     >
       <Text style={styles.heading}>{isManager ? 'Farm Overview' : 'My Tasks'}</Text>
+
       {isManager && managerQuery.data ? (
         <>
           <View style={styles.statsGrid}>
@@ -121,6 +77,7 @@ export default function HomeScreen() {
           ))}
         </>
       ) : null}
+
       {!isManager && workerQuery.data ? (
         <>
           <Text style={styles.subheading}>{workerQuery.data.tasks.length} animals need attention</Text>

@@ -1,13 +1,10 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { useFormContext } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { GenericForm } from '@/components/ui/generic-form';
+import { Button } from '@/components/ui/button';
+import { GenericForm, FormTextField, FormSelect, FormActions, useFormValue } from '@/components/ui/generic-form';
 import { useToast } from '@/hooks/use-toast';
 import { useFarmsQuery } from '@/queries/farms/queries';
 import { useZonesQuery } from '@/queries/zones/queries';
@@ -22,22 +19,65 @@ const schema = yup.object({
   penId: yup.string().required('Chọn ô chuồng'),
   qrCode: yup.string().optional(),
 });
+
 type AnimalFormValues = yup.InferType<typeof schema>;
 
-export function AnimalForm(): React.JSX.Element {
-  const router = useRouter();
-  const { toast } = useToast();
-  const form = useForm<AnimalFormValues>({
-    resolver: yupResolver(schema),
-    defaultValues: { name: '', species: undefined, farmId: '', zoneId: '', penId: '', qrCode: '' },
-  });
+const SPECIES_OPTIONS = [
+  { value: 'heo', label: 'Heo' },
+  { value: 'gà', label: 'Gà' },
+  { value: 'bò', label: 'Bò' },
+];
 
-  const farmId = form.watch('farmId');
-  const zoneId = form.watch('zoneId');
+const DEFAULT_VALUES = {
+  name: '',
+  species: '' as 'heo' | 'gà' | 'bò',
+  farmId: '',
+  zoneId: '',
+  penId: '',
+  qrCode: '',
+};
+
+// Rendered inside FormProvider — watches cascading select dependencies
+function LocationFields(): React.JSX.Element {
+  const farmId = useFormValue<AnimalFormValues>('farmId');
+  const zoneId = useFormValue<AnimalFormValues>('zoneId');
+  const { setValue } = useFormContext<AnimalFormValues>();
 
   const { data: farms = [] } = useFarmsQuery();
   const { data: zones = [] } = useZonesQuery(farmId || undefined);
   const { data: pens = [] } = usePensQuery(zoneId || undefined);
+
+  return (
+    <>
+      <FormSelect
+        name="farmId"
+        label="Trại"
+        required
+        options={farms.map((f) => ({ value: f.id, label: f.name }))}
+        onValueChange={() => { setValue('zoneId', ''); setValue('penId', ''); }}
+      />
+      <FormSelect
+        name="zoneId"
+        label="Khu vực"
+        required
+        options={zones.map((z) => ({ value: z.id, label: z.name }))}
+        disabled={!farmId}
+        onValueChange={() => setValue('penId', '')}
+      />
+      <FormSelect
+        name="penId"
+        label="Ô chuồng"
+        required
+        options={pens.map((p) => ({ value: p.id, label: p.name }))}
+        disabled={!zoneId}
+      />
+    </>
+  );
+}
+
+export function AnimalForm(): React.JSX.Element {
+  const router = useRouter();
+  const { toast } = useToast();
 
   const createAnimal = useCreateAnimal({
     onSuccess: () => {
@@ -50,64 +90,28 @@ export function AnimalForm(): React.JSX.Element {
     },
   });
 
-  async function onSubmit(values: AnimalFormValues): Promise<void> {
-    createAnimal.mutate({
-      name: values.name,
-      species: values.species as 'heo' | 'gà' | 'bò',
-      penId: values.penId,
-      qrCode: values.qrCode || undefined,
-    });
-  }
-
   return (
-    <GenericForm form={form} onSubmit={onSubmit} onCancel={() => router.back()} submitLabel="Thêm vật nuôi">
-      <FormField control={form.control} name="name" render={({ field }) => (
-        <FormItem><FormLabel>Tên vật nuôi</FormLabel><FormControl><Input placeholder="Ví dụ: Heo A01" {...field} /></FormControl><FormMessage /></FormItem>
-      )} />
-
-      <FormField control={form.control} name="species" render={({ field }) => (
-        <FormItem><FormLabel>Loài</FormLabel>
-          <Select onValueChange={field.onChange} value={field.value}>
-            <FormControl><SelectTrigger><SelectValue placeholder="Chọn loài" /></SelectTrigger></FormControl>
-            <SelectContent>
-              <SelectItem value="heo">Heo</SelectItem>
-              <SelectItem value="gà">Gà</SelectItem>
-              <SelectItem value="bò">Bò</SelectItem>
-            </SelectContent>
-          </Select><FormMessage />
-        </FormItem>
-      )} />
-
-      <FormField control={form.control} name="farmId" render={({ field }) => (
-        <FormItem><FormLabel>Trại</FormLabel>
-          <Select onValueChange={(v) => { field.onChange(v); form.resetField('zoneId'); form.resetField('penId'); }} value={field.value}>
-            <FormControl><SelectTrigger><SelectValue placeholder="Chọn trại" /></SelectTrigger></FormControl>
-            <SelectContent>{farms.map((f) => <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>)}</SelectContent>
-          </Select><FormMessage />
-        </FormItem>
-      )} />
-
-      <FormField control={form.control} name="zoneId" render={({ field }) => (
-        <FormItem><FormLabel>Khu vực</FormLabel>
-          <Select onValueChange={(v) => { field.onChange(v); form.resetField('penId'); }} value={field.value} disabled={!farmId}>
-            <FormControl><SelectTrigger><SelectValue placeholder="Chọn khu vực" /></SelectTrigger></FormControl>
-            <SelectContent>{zones.map((z) => <SelectItem key={z.id} value={z.id}>{z.name}</SelectItem>)}</SelectContent>
-          </Select><FormMessage />
-        </FormItem>
-      )} />
-
-      <FormField control={form.control} name="penId" render={({ field }) => (
-        <FormItem><FormLabel>Ô chuồng</FormLabel>
-          <Select onValueChange={field.onChange} value={field.value} disabled={!zoneId}>
-            <FormControl><SelectTrigger><SelectValue placeholder="Chọn ô chuồng" /></SelectTrigger></FormControl>
-            <SelectContent>{pens.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent>
-          </Select><FormMessage />
-        </FormItem>
-      )} />
-
-      <FormField control={form.control} name="qrCode" render={({ field }) => (
-        <FormItem><FormLabel>Mã QR (tuỳ chọn)</FormLabel><FormControl><Input placeholder="Tự động nếu để trống" {...field} /></FormControl><FormMessage /></FormItem>
-      )} />
+    <GenericForm
+      schema={schema}
+      defaultValues={DEFAULT_VALUES}
+      onSubmit={async (values) => {
+        await createAnimal.mutateAsync({
+          name: values.name,
+          species: values.species,
+          penId: values.penId,
+          qrCode: values.qrCode || undefined,
+        });
+      }}
+      showSubmitButton={false}
+    >
+      <FormTextField name="name" label="Tên vật nuôi" required placeholder="Ví dụ: Heo A01" />
+      <FormSelect name="species" label="Loài" required options={SPECIES_OPTIONS} />
+      <LocationFields />
+      <FormTextField name="qrCode" label="Mã QR (tuỳ chọn)" placeholder="Tự động nếu để trống" />
+      <FormActions>
+        <Button type="button" variant="outline" onClick={() => router.back()}>Huỷ</Button>
+        <Button type="submit">Thêm vật nuôi</Button>
+      </FormActions>
     </GenericForm>
   );
 }

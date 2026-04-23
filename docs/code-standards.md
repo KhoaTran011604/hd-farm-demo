@@ -959,7 +959,8 @@ Before merging any PR:
 - **Phone numbers:** Store raw values; when rendering to UI, always display via `formatPhoneNumber()` from `src/lib/utils/phone.ts` (common formatting for international numbers; VN-specific formatting via rules today; extensible by providing additional `countryRules` and/or setting `NEXT_PUBLIC_DEFAULT_PHONE_COUNTRY`)
 - **Optimistic updates:** Use TanStack Query mutations with optimistic updates for better UX
 - **Centralized query keys:** Always use `queries/keys.ts` for query keys — NEVER create per-domain keys
-- **Use GenericForm/GenericTable:** Always use wrapper components instead of building forms/tables from scratch
+- **Use GenericForm/GenericTable (web):** Always use `components/ui/generic-form.tsx` and `components/ui/generic-table.tsx` — never build forms/tables from scratch
+- **Use GenericList (mobile):** Always use `components/ui/generic-list.tsx` for lists — supports `useInfiniteQuery` with auto-load on scroll; use `useInfiniteQuery` for unbounded lists, `useQuery` only for small bounded sets (farms, pens per zone)
 - **Mutation callbacks:** NEVER show toast/messages/redirects inside mutation hooks — hooks only handle cache invalidation; all UI feedback (toast, alert, redirect, modal) must be passed via callbacks from the calling component
 - **Generic hooks:** All query/mutation hooks must use TypeScript generics for proper type inference
 

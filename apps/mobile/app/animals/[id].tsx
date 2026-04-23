@@ -1,17 +1,9 @@
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { useQuery } from '@tanstack/react-query';
-import { api } from '../../lib/api';
-import { Card } from '../../components/ui/card';
-import { Badge } from '../../components/ui/badge';
-import { Button } from '../../components/ui/button';
-import type { Animal } from '../../lib/types';
-
-interface AnimalDetail extends Animal {
-  penName?: string;
-  zoneName?: string;
-  farmName?: string;
-}
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { useAnimalDetailQuery } from '@/queries/animals/queries';
 
 function FieldRow({ label, value }: { label: string; value: string }) {
   return (
@@ -24,12 +16,7 @@ function FieldRow({ label, value }: { label: string; value: string }) {
 
 export default function AnimalDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-
-  const { data: animal, isLoading, isError } = useQuery<AnimalDetail>({
-    queryKey: ['animal', id],
-    queryFn: () => api.get(`/animals/${id}`).then((r) => r.data),
-    enabled: !!id,
-  });
+  const { data: animal, isLoading, isError } = useAnimalDetailQuery(id);
 
   if (isLoading) {
     return (
@@ -58,7 +45,7 @@ export default function AnimalDetailScreen() {
           <Badge status={animal.status} />
         </View>
         <Text style={styles.species}>{animal.species}</Text>
-        {animal.zoneName || animal.penName ? (
+        {animal.zoneName ?? animal.penName ? (
           <Text style={styles.location}>
             {[animal.farmName, animal.zoneName, animal.penName].filter(Boolean).join(' › ')}
           </Text>
@@ -78,11 +65,7 @@ export default function AnimalDetailScreen() {
         <Card style={styles.section}>
           <Text style={styles.sectionTitle}>Additional Info</Text>
           {Object.entries(animal.typeMetadata).map(([k, v]) => (
-            <FieldRow
-              key={k}
-              label={k}
-              value={typeof v === 'object' && v !== null ? JSON.stringify(v) : String(v)}
-            />
+            <FieldRow key={k} label={k} value={typeof v === 'object' && v !== null ? JSON.stringify(v) : String(v)} />
           ))}
         </Card>
       ) : null}

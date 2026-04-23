@@ -8,7 +8,10 @@
     ".": "./src/index.ts",
     "./types": "./src/types/index.ts",
     "./validators": "./src/validators/index.ts",
-    "./constants": "./src/constants/index.ts"
+    "./constants": "./src/constants/index.ts",
+    "./locales": "./locales/index.ts",
+    "./locales/en": "./locales/en.json",
+    "./locales/vi": "./locales/vi.json"
   },
   "dependencies": {
     "yup": "^1.4.0"

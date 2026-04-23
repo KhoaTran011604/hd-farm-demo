@@ -1,0 +1,51 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "loading": "Loading...",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next"
+  },
+  "auth": {
+    "login": "Log in",
+    "logout": "Log out",
+    "register": "Sign up",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password?"
+  },
+  "animals": {
+    "title": "Animals",
+    "list": "Animal list",
+    "add": "Add animal",
+    "species": "Species",
+    "status": "Status"
+  },
+  "farms": {
+    "title": "Farms",
+    "list": "Farm list",
+    "name": "Farm name"
+  },
+  "zones": {
+    "title": "Zones",
+    "list": "Zone list"
+  },
+  "pens": {
+    "title": "Pens",
+    "list": "Pen list"
+  },
+  "health": {
+    "title": "Health",
+    "vaccination": "Vaccination",
+    "treatment": "Treatment"
+  },
+  "notFound": {
+    "title": "404 — Page not found",
+    "description": "The page you are looking for does not exist."
+  }
+}

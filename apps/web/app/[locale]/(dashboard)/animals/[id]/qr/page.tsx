@@ -7,7 +7,7 @@ import { StatusBadge } from '@/components/animals/status-badge';
 import { PrintButton } from '@/components/animals/print-button';
 
 interface Props {
-  params: Promise<{ id: string }>;
+  params: Promise<{ locale: string; id: string }>;
 }
 
 export default async function AnimalQrPage({ params }: Props): Promise<React.JSX.Element> {

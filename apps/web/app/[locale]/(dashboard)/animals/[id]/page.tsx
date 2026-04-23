@@ -7,7 +7,7 @@ import { api } from '@/lib/api';
 import type { AnimalRow } from '@/lib/animal-types';
 
 interface Props {
-  params: Promise<{ id: string }>;
+  params: Promise<{ locale: string; id: string }>;
 }
 
 export default async function AnimalDetailPage({ params }: Props): Promise<React.JSX.Element> {

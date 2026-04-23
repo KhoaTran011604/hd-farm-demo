@@ -1,7 +1,7 @@
 ---
 title: "i18n Integration — Web + Mobile"
 description: "Setup next-intl (web) + i18next (mobile) with shared locale JSON in packages/shared"
-status: pending
+status: in-progress
 priority: P1
 effort: 5h
 branch: khoatran/phase-1-2
@@ -29,8 +29,8 @@ Bootstrap bilingual UI (vi default, en fallback) for HD-FARMS monorepo. Web uses
 
 | # | Phase | File | Effort | Status |
 |---|-------|------|--------|--------|
-| 1 | Shared locales (en.json + vi.json) | `phase-01-shared-locales.md` | 30m | pending |
-| 2 | Web next-intl setup (middleware, routing, provider) | `phase-02-web-nextintl-setup.md` | 1.5h | pending |
+| 1 | Shared locales (en.json + vi.json) | `phase-01-shared-locales.md` | 30m | complete |
+| 2 | Web next-intl setup (middleware, routing, provider) | `phase-02-web-nextintl-setup.md` | 1.5h | complete |
 | 3 | Web app structure + language switcher | `phase-03-web-app-structure.md` | 1h | pending |
 | 4 | Mobile i18next + expo-localization setup | `phase-04-mobile-i18next-setup.md` | 1h | pending |
 | 5 | Mobile app screens + language switcher | `phase-05-mobile-app-structure.md` | 1h | pending |

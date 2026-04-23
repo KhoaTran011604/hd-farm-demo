@@ -1,0 +1,51 @@
+{
+  "common": {
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "edit": "Sửa",
+    "create": "Tạo mới",
+    "search": "Tìm kiếm",
+    "loading": "Đang tải...",
+    "confirm": "Xác nhận",
+    "back": "Quay lại",
+    "next": "Tiếp theo"
+  },
+  "auth": {
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "register": "Đăng ký",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "forgotPassword": "Quên mật khẩu?"
+  },
+  "animals": {
+    "title": "Quản lý vật nuôi",
+    "list": "Danh sách vật nuôi",
+    "add": "Thêm vật nuôi",
+    "species": "Loài",
+    "status": "Tình trạng"
+  },
+  "farms": {
+    "title": "Trang trại",
+    "list": "Danh sách trang trại",
+    "name": "Tên trang trại"
+  },
+  "zones": {
+    "title": "Khu vực",
+    "list": "Danh sách khu vực"
+  },
+  "pens": {
+    "title": "Chuồng",
+    "list": "Danh sách chuồng"
+  },
+  "health": {
+    "title": "Sức khỏe",
+    "vaccination": "Tiêm phòng",
+    "treatment": "Điều trị"
+  },
+  "notFound": {
+    "title": "404 — Không tìm thấy trang",
+    "description": "Trang bạn đang tìm không tồn tại."
+  }
+}

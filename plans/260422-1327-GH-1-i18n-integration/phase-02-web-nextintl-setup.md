@@ -8,8 +8,8 @@
 ## Overview
 - **Date:** 2026-04-22
 - **Priority:** P1
-- **Status:** pending
-- **Effort:** 1.5h
+- **Status:** complete
+- **Effort:** 1.5h (actual: 1.7h)
 - **Description:** Install `next-intl@^4` in `apps/web`, wire up URL prefix routing (`/vi/...`, `/en/...`), configure middleware + `getRequestConfig`, mount `NextIntlClientProvider` at root layout, wire TypeScript type generation.
 
 ## Key Insights
@@ -218,16 +218,16 @@ pnpm -F @hd-farm/web build
 ```
 
 ## Todo List
-- [ ] `pnpm -F @hd-farm/web add next-intl`
-- [ ] Create `apps/web/i18n/routing.ts`
-- [ ] Create `apps/web/i18n/request.ts`
-- [ ] Create `apps/web/i18n/navigation.ts`
-- [ ] Create `apps/web/i18n/global.ts`
-- [ ] Create `apps/web/middleware.ts`
-- [ ] Create `apps/web/next.config.ts`
-- [ ] Add `allowArbitraryExtensions: true` to `apps/web/tsconfig.json`
-- [ ] Create `apps/web/app/[locale]/layout.tsx`
-- [ ] Run type-check + build; fix any warnings
+- [x] `pnpm -F @hd-farm/web add next-intl`
+- [x] Create `apps/web/i18n/routing.ts`
+- [x] Create `apps/web/i18n/request.ts`
+- [x] Create `apps/web/i18n/navigation.ts`
+- [x] Create `apps/web/i18n/global.ts`
+- [x] Create `apps/web/middleware.ts`
+- [x] Create `apps/web/next.config.ts`
+- [x] Add `allowArbitraryExtensions: true` to `apps/web/tsconfig.json`
+- [x] Create `apps/web/app/[locale]/layout.tsx`
+- [x] Run type-check + build; fix any warnings
 
 ## Success Criteria
 - `pnpm -F @hd-farm/web build` succeeds
@@ -246,6 +246,17 @@ pnpm -F @hd-farm/web build
 - Middleware matcher explicitly excludes `/api/*` → API routes NOT gated by locale
 - No cookie set outside next-intl's own (`NEXT_LOCALE`); respects browser preferences
 - No runtime user-supplied paths reach `import()` statement
+
+## Completion Notes
+
+**Code Review:** APPROVED (2026-04-23, code-review-260423-1408-phase02-web-nextintl.md)
+
+**Key Deviations from Plan:**
+1. **Next.js pinned to 15.3.9** (vs. plan 15.5.15): Pragmatic workaround for monorepo React duplication bug causing `/404` prerender `useRef` null error. Temporary pin; track upstream for unpinning.
+2. **pnpm.overrides added at root** (`react@19.1.0`, `react-dom@19.1.0`, `@types/react@^19.0.0`, `@types/react-dom@^19.0.0`): Previous `@types/react@~18.2.0` wrongly pinned and caused type mismatches. Overrides ensure monorepo type consistency.
+3. **Dropped experimental flags:** Removed `createMessagesDeclaration` (redundant with `global.ts` type augmentation) and `serverActions.allowedOrigins` (YAGNI — login uses fetch-to-API). Reduces config bloat.
+
+**Scope Beyond Plan:** Added `app/global-error.tsx` and `app/[locale]/not-found.tsx` to handle next-intl error boundaries per Next 15 SSG patterns. No functional impact; follows framework conventions.
 
 ## Next Steps
 - Phase 03: create placeholder page + language switcher under `app/[locale]/`

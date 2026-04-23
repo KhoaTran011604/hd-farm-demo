@@ -7,7 +7,7 @@
 ## Overview
 - **Date:** 2026-04-22
 - **Priority:** P1 (blocks phases 2 and 4)
-- **Status:** pending
+- **Status:** complete
 - **Effort:** 30m
 - **Description:** Create `packages/shared/locales/en.json` and `vi.json` with skeleton namespace keys (common, auth, animals, farms, zones, pens, health). Export locale modules from the shared package so web and mobile can import them.
 
@@ -198,12 +198,12 @@ pnpm -C packages/shared type-check
 ```
 
 ## Todo List
-- [ ] Create `packages/shared/locales/vi.json` with skeleton keys
-- [ ] Create `packages/shared/locales/en.json` with matching keys
-- [ ] Create `packages/shared/locales/index.ts` barrel export
-- [ ] Update `packages/shared/package.json` exports map
-- [ ] Run `pnpm -C packages/shared type-check` to verify
-- [ ] Confirm JSON files validate (no trailing commas, matching keys)
+- [x] Create `packages/shared/locales/vi.json` with skeleton keys
+- [x] Create `packages/shared/locales/en.json` with matching keys
+- [x] Create `packages/shared/locales/index.ts` barrel export
+- [x] Update `packages/shared/package.json` exports map
+- [x] Run `pnpm -C packages/shared type-check` to verify
+- [x] Confirm JSON files validate (no trailing commas, matching keys)
 
 ## Success Criteria
 - `@hd-farm/shared/locales/en` and `@hd-farm/shared/locales/vi` resolve in TypeScript

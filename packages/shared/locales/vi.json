@@ -140,6 +140,21 @@
       "reproduction": "Sinh sản",
       "comingInPhase": "{label} — sẽ có ở Phase {phase}"
     },
+    "healthActions": {
+      "changeStatus": "Đổi trạng thái",
+      "changeStatusTitle": "Thay đổi trạng thái vật nuôi",
+      "newStatus": "Trạng thái mới",
+      "weightKg": "Cân nặng (kg, tuỳ chọn)",
+      "weightPlaceholder": "Ví dụ: 85.5",
+      "note": "Ghi chú",
+      "notePlaceholder": "Lý do hoặc quan sát...",
+      "confirmChange": "Xác nhận thay đổi",
+      "terminalWarning": "Đây là trạng thái cuối — không thể hoàn tác sau khi xác nhận.",
+      "noTransitionsAvailable": "Không thể chuyển trạng thái từ trạng thái hiện tại.",
+      "statusUpdated": "Cập nhật trạng thái thành công",
+      "noRecords": "Chưa có hồ sơ sức khoẻ.",
+      "loadMore": "Tải thêm"
+    },
     "qr": {
       "instruction": "Mã QR vật nuôi — nhấn \"In mã QR\" hoặc Ctrl+P để in",
       "penShort": "Ô"

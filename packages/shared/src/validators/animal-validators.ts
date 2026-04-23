@@ -22,5 +22,11 @@ export const createBatchSchema = Yup.object().shape({
 
 export const updateAnimalStatusSchema = Yup.object().shape({
   status: Yup.string().oneOf(HEALTH_STATUSES as unknown as string[]).required('Status is required'),
+  weightKg: Yup.number().positive().max(2000).optional(),
   reason: Yup.string().optional(),
+});
+
+export const recordWeightSchema = Yup.object().shape({
+  weightKg: Yup.number().positive('Weight must be positive').max(2000, 'Weight exceeds maximum').required('Weight is required'),
+  note: Yup.string().optional(),
 });

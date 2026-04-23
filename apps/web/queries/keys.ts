@@ -16,5 +16,7 @@ export const queryKeys = {
     all: ['animals'] as const,
     list: (filters: AnimalFilters) => ['animals', filters] as const,
     detail: (id: string) => ['animals', id] as const,
+    byPen: (penId: string) => ['animals', 'pen', penId] as const,
+    health: (id: string) => ['animals', id, 'health'] as const,
   },
 } as const;

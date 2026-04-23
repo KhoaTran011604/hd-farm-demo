@@ -140,6 +140,21 @@
       "reproduction": "Breeding",
       "comingInPhase": "{label} — coming in Phase {phase}"
     },
+    "healthActions": {
+      "changeStatus": "Change status",
+      "changeStatusTitle": "Change animal status",
+      "newStatus": "New status",
+      "weightKg": "Weight (kg, optional)",
+      "weightPlaceholder": "e.g. 85.5",
+      "note": "Note",
+      "notePlaceholder": "Reason or observation...",
+      "confirmChange": "Confirm change",
+      "terminalWarning": "This is a terminal status — it cannot be reversed after confirmation.",
+      "noTransitionsAvailable": "No status transitions available from the current state.",
+      "statusUpdated": "Status updated successfully",
+      "noRecords": "No health records yet.",
+      "loadMore": "Load more"
+    },
     "qr": {
       "instruction": "Animal QR code — press \"Print QR\" or Ctrl+P to print",
       "penShort": "Pen"

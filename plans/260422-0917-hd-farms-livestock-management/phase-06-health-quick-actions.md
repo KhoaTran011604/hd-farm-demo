@@ -6,7 +6,7 @@
 
 ## Overview
 - **Priority**: P1
-- **Status**: Pending
+- **Status**: Done
 - **Effort**: 2 days
 - **Description**: Full status change flow with validation + `health_records` audit log. Quick weight + status forms on mobile. Web optimistic status modal.
 
@@ -88,15 +88,15 @@ apps/mobile/components/quickForms/
 10. **Compile + manual test**
 
 ## Todo List
-- [ ] Status transition validator (shared)
-- [ ] animals.service.updateStatus with tx
-- [ ] animals.service.recordWeight
-- [ ] Routes + role guards
-- [ ] Web StatusChangeDialog
-- [ ] Web HealthTab with timeline
-- [ ] Mobile WeighForm + StatusChangeForm
-- [ ] Wire forms into scan sheet + detail
-- [ ] Compile + test invalid transitions (should 400)
+- [x] Status transition validator (shared)
+- [x] animals.service.updateStatus with tx
+- [x] animals.service.recordWeight
+- [x] Routes + role guards
+- [x] Web StatusChangeDialog
+- [x] Web HealthTab with timeline
+- [x] Mobile WeighForm + StatusChangeForm
+- [x] Wire forms into scan sheet + detail
+- [x] Compile + test invalid transitions (should 400)
 
 ## Success Criteria
 - Attempting `sold → active` returns 400 with clear error

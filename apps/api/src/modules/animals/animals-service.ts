@@ -1,9 +1,9 @@
-import { eq, and, isNull, inArray, sql, asc } from 'drizzle-orm';
+import { eq, and, isNull, inArray, sql, asc, desc } from 'drizzle-orm';
 import { animals, pens, zones, healthRecords } from '@hd-farm/db';
 import type { Database } from '@hd-farm/db';
 import { paginate } from '../../utils/pagination.js';
 import { AppError } from '../../utils/errors.js';
-import { PAGE_SIZE, MAX_PAGE_SIZE } from '@hd-farm/shared';
+import { PAGE_SIZE, MAX_PAGE_SIZE, canTransition, TERMINAL_STATUSES } from '@hd-farm/shared';
 import type { HealthStatus, AnimalSpecies } from '@hd-farm/shared';
 
 export interface AnimalListFilters {
@@ -184,34 +184,117 @@ export async function updateAnimalStatus(
   companyId: string,
   animalId: string,
   userId: string,
-  data: { status: string; reason?: string }
+  userRole: string,
+  data: { status: string; weightKg?: number; reason?: string }
 ) {
-  const [existing] = await db.select({ id: animals.id, farmId: animals.farmId }).from(animals)
+  // Workers cannot set terminal statuses
+  if (TERMINAL_STATUSES.includes(data.status as HealthStatus) && userRole === 'worker') {
+    throw new AppError('Workers cannot set terminal status (dead/sold)', 403, 'FORBIDDEN');
+  }
+
+  const [existing] = await db.select({
+    id: animals.id,
+    farmId: animals.farmId,
+    status: animals.status,
+  }).from(animals)
     .where(and(eq(animals.id, animalId), eq(animals.companyId, companyId), isNull(animals.deletedAt)))
     .limit(1);
   if (!existing) throw new AppError('Animal not found', 404, 'NOT_FOUND');
 
-  const healthAuditStatuses: HealthStatus[] = ['healthy', 'monitoring', 'sick', 'quarantine'];
+  if (!canTransition(existing.status as HealthStatus, data.status as HealthStatus)) {
+    throw new AppError(
+      `Cannot transition from '${existing.status}' to '${data.status}'`,
+      400,
+      'INVALID_TRANSITION'
+    );
+  }
+
+  let healthRecord: typeof healthRecords.$inferSelect | null = null;
 
   await db.transaction(async (tx) => {
     await tx.update(animals)
       .set({ status: data.status as HealthStatus, updatedAt: new Date() })
       .where(eq(animals.id, animalId));
 
-    if (healthAuditStatuses.includes(data.status as HealthStatus)) {
-      await tx.insert(healthRecords).values({
-        companyId,
-        farmId: existing.farmId,
-        animalId,
-        checkerId: userId,
-        status: data.status as 'healthy' | 'monitoring' | 'sick' | 'quarantine',
-        notes: data.reason,
-      });
-    }
+    const [record] = await tx.insert(healthRecords).values({
+      companyId,
+      farmId: existing.farmId,
+      animalId,
+      checkerId: userId,
+      status: data.status as typeof healthRecords.$inferInsert['status'],
+      weightKg: data.weightKg != null ? String(data.weightKg) : null,
+      notes: data.reason,
+    }).returning();
+    healthRecord = record;
   });
 
   const [updated] = await db.select().from(animals).where(eq(animals.id, animalId)).limit(1);
-  return updated;
+  return { animal: updated, healthRecord };
+}
+
+export async function recordWeight(
+  db: Database,
+  companyId: string,
+  animalId: string,
+  userId: string,
+  data: { weightKg: number; note?: string }
+) {
+  const [existing] = await db.select({
+    id: animals.id,
+    farmId: animals.farmId,
+    status: animals.status,
+  }).from(animals)
+    .where(and(eq(animals.id, animalId), eq(animals.companyId, companyId), isNull(animals.deletedAt)))
+    .limit(1);
+  if (!existing) throw new AppError('Animal not found', 404, 'NOT_FOUND');
+
+  const [record] = await db.insert(healthRecords).values({
+    companyId,
+    farmId: existing.farmId,
+    animalId,
+    checkerId: userId,
+    // No status change — weight-only checkpoint
+    status: null,
+    weightKg: String(data.weightKg),
+    notes: data.note,
+  }).returning();
+
+  return record;
+}
+
+export async function listAnimalHealth(
+  db: Database,
+  companyId: string,
+  animalId: string,
+  cursor?: string,
+  limit?: number
+) {
+  const pageSize = Math.min(limit ?? PAGE_SIZE, MAX_PAGE_SIZE);
+
+  // Verify animal belongs to company
+  const [animal] = await db.select({ id: animals.id }).from(animals)
+    .where(and(eq(animals.id, animalId), eq(animals.companyId, companyId), isNull(animals.deletedAt)))
+    .limit(1);
+  if (!animal) throw new AppError('Animal not found', 404, 'NOT_FOUND');
+
+  let whereClause = eq(healthRecords.animalId, animalId);
+
+  if (cursor) {
+    const [ts, afterId] = cursor.split('|');
+    if (ts && afterId) {
+      whereClause = and(
+        whereClause,
+        sql`(${healthRecords.checkedAt}, ${healthRecords.id}) < (${new Date(ts)}, ${afterId})`
+      ) as typeof whereClause;
+    }
+  }
+
+  const items = await db.select().from(healthRecords)
+    .where(whereClause)
+    .orderBy(desc(healthRecords.checkedAt), desc(healthRecords.id))
+    .limit(pageSize + 1);
+
+  return paginate(items, pageSize, (item) => `${item.checkedAt.toISOString()}|${item.id}`);
 }
 
 export async function softDeleteAnimal(db: Database, companyId: string, animalId: string) {

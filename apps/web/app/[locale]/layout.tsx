@@ -4,6 +4,7 @@ import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { Providers } from '@/providers/providers';
+import { Toaster } from 'sonner';
 import type { ReactNode } from 'react';
 import '../globals.css';
 
@@ -36,6 +37,7 @@ export default async function LocaleLayout({ children, params }: Props): Promise
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>{children}</Providers>
         </NextIntlClientProvider>
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );

@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, index } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, timestamp, numeric, index } from 'drizzle-orm/pg-core';
 import { animals } from './animals';
 import { diseaseTypes, vaccineTypes } from './config';
 
@@ -9,8 +9,9 @@ export const healthRecords = pgTable('health_records', {
   animalId: uuid('animal_id').notNull().references(() => animals.id),
   checkerId: uuid('checker_id').notNull(),
   status: text('status', {
-    enum: ['healthy', 'monitoring', 'sick', 'quarantine'],
-  }).notNull(),
+    enum: ['healthy', 'monitoring', 'sick', 'quarantine', 'recovered', 'dead', 'sold'],
+  }),
+  weightKg: numeric('weight_kg', { precision: 7, scale: 2 }),
   notes: text('notes'),
   checkedAt: timestamp('checked_at').defaultNow().notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),

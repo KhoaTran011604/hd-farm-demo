@@ -1,6 +1,11 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { requireRole, verifyToken } from '../../plugins/auth.js';
-import { createAnimalSchema, updateAnimalSchema, updateAnimalStatusSchema } from '@hd-farm/shared';
+import {
+  createAnimalSchema,
+  updateAnimalSchema,
+  updateAnimalStatusSchema,
+  recordWeightSchema,
+} from '@hd-farm/shared';
 import type { AnimalSpecies } from '@hd-farm/shared';
 import {
   listAnimals,
@@ -9,6 +14,8 @@ import {
   createAnimal,
   updateAnimal,
   updateAnimalStatus,
+  recordWeight,
+  listAnimalHealth,
   softDeleteAnimal,
 } from './animals-service.js';
 
@@ -59,7 +66,33 @@ const animalsRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.patch('/animals/:id/status', { preHandler: managerOrWorker }, async (request) => {
     const { id } = request.params as { id: string };
     const data = await updateAnimalStatusSchema.validate(request.body, { abortEarly: false, stripUnknown: true });
-    return updateAnimalStatus(fastify.db, request.user.companyId, id, request.user.userId, data);
+    return updateAnimalStatus(
+      fastify.db,
+      request.user.companyId,
+      id,
+      request.user.userId,
+      request.user.role,
+      data,
+    );
+  });
+
+  fastify.post('/animals/:id/weight', { preHandler: managerOrWorker }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const data = await recordWeightSchema.validate(request.body, { abortEarly: false, stripUnknown: true });
+    const record = await recordWeight(fastify.db, request.user.companyId, id, request.user.userId, data);
+    return reply.status(201).send(record);
+  });
+
+  fastify.get('/animals/:id/health', { preHandler: verifyToken }, async (request) => {
+    const { id } = request.params as { id: string };
+    const q = request.query as { cursor?: string; limit?: string };
+    return listAnimalHealth(
+      fastify.db,
+      request.user.companyId,
+      id,
+      q.cursor,
+      q.limit ? (parseInt(q.limit, 10) || undefined) : undefined,
+    );
   });
 
   fastify.delete('/animals/:id', { preHandler: adminOrManager }, async (request, reply) => {

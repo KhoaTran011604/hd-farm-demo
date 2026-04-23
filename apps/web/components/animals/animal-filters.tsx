@@ -1,9 +1,8 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { AnimalFilters } from '@/lib/animal-types';
-import type { Farm, Zone, Pen } from '@hd-farm/shared';
+import { useFarmsQuery, useZonesQuery, usePensQuery } from '@/hooks/use-location-queries';
 
 const HEALTH_STATUSES = [
   { value: 'healthy', label: 'Khỏe mạnh' },
@@ -15,54 +14,19 @@ const HEALTH_STATUSES = [
   { value: 'sold', label: 'Đã bán' },
 ];
 
-async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('Fetch failed');
-  return res.json() as Promise<T>;
-}
-
 interface AnimalFiltersProps {
   filters: AnimalFilters;
   onChange: (updated: Partial<AnimalFilters>) => void;
 }
 
 export function AnimalFilters({ filters, onChange }: AnimalFiltersProps): React.JSX.Element {
-  const { data: farms = [] } = useQuery<Farm[]>({
-    queryKey: ['farms'],
-    queryFn: () => fetchJson('/api/proxy/farms'),
-  });
-
-  const { data: zones = [] } = useQuery<Zone[]>({
-    queryKey: ['zones', filters.farmId],
-    queryFn: () => fetchJson(`/api/proxy/zones?farmId=${filters.farmId}`),
-    enabled: !!filters.farmId,
-  });
-
-  const { data: pens = [] } = useQuery<Pen[]>({
-    queryKey: ['pens', filters.zoneId],
-    queryFn: () => fetchJson(`/api/proxy/pens?zoneId=${filters.zoneId}`),
-    enabled: !!filters.zoneId,
-  });
-
-  function handleFarmChange(val: string): void {
-    onChange({ farmId: val === 'all' ? undefined : val, zoneId: undefined, penId: undefined });
-  }
-
-  function handleZoneChange(val: string): void {
-    onChange({ zoneId: val === 'all' ? undefined : val, penId: undefined });
-  }
-
-  function handlePenChange(val: string): void {
-    onChange({ penId: val === 'all' ? undefined : val });
-  }
-
-  function handleStatusChange(val: string): void {
-    onChange({ status: val === 'all' ? undefined : val });
-  }
+  const { data: farms = [] } = useFarmsQuery();
+  const { data: zones = [] } = useZonesQuery(filters.farmId);
+  const { data: pens = [] } = usePensQuery(filters.zoneId);
 
   return (
     <div className="flex flex-wrap gap-3">
-      <Select onValueChange={handleFarmChange} value={filters.farmId ?? 'all'}>
+      <Select onValueChange={(v) => onChange({ farmId: v === 'all' ? undefined : v, zoneId: undefined, penId: undefined })} value={filters.farmId ?? 'all'}>
         <SelectTrigger className="w-40"><SelectValue placeholder="Tất cả trại" /></SelectTrigger>
         <SelectContent>
           <SelectItem value="all">Tất cả trại</SelectItem>
@@ -70,7 +34,7 @@ export function AnimalFilters({ filters, onChange }: AnimalFiltersProps): React.
         </SelectContent>
       </Select>
 
-      <Select onValueChange={handleZoneChange} value={filters.zoneId ?? 'all'} disabled={!filters.farmId}>
+      <Select onValueChange={(v) => onChange({ zoneId: v === 'all' ? undefined : v, penId: undefined })} value={filters.zoneId ?? 'all'} disabled={!filters.farmId}>
         <SelectTrigger className="w-40"><SelectValue placeholder="Tất cả khu" /></SelectTrigger>
         <SelectContent>
           <SelectItem value="all">Tất cả khu</SelectItem>
@@ -78,7 +42,7 @@ export function AnimalFilters({ filters, onChange }: AnimalFiltersProps): React.
         </SelectContent>
       </Select>
 
-      <Select onValueChange={handlePenChange} value={filters.penId ?? 'all'} disabled={!filters.zoneId}>
+      <Select onValueChange={(v) => onChange({ penId: v === 'all' ? undefined : v })} value={filters.penId ?? 'all'} disabled={!filters.zoneId}>
         <SelectTrigger className="w-40"><SelectValue placeholder="Tất cả ô" /></SelectTrigger>
         <SelectContent>
           <SelectItem value="all">Tất cả ô</SelectItem>
@@ -86,7 +50,7 @@ export function AnimalFilters({ filters, onChange }: AnimalFiltersProps): React.
         </SelectContent>
       </Select>
 
-      <Select onValueChange={handleStatusChange} value={filters.status ?? 'all'}>
+      <Select onValueChange={(v) => onChange({ status: v === 'all' ? undefined : v })} value={filters.status ?? 'all'}>
         <SelectTrigger className="w-44"><SelectValue placeholder="Tất cả trạng thái" /></SelectTrigger>
         <SelectContent>
           <SelectItem value="all">Tất cả trạng thái</SelectItem>

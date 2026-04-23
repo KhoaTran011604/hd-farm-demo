@@ -45,7 +45,7 @@ export default function LoginScreen() {
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
-          <Text style={styles.title}>HD Farms</Text>
+          <Text style={styles.title}>HD Farm</Text>
           <Text style={styles.subtitle}>Sign in to your account</Text>
         </View>
         <View style={styles.form}>

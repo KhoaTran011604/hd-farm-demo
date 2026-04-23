@@ -2,6 +2,7 @@ import { Tabs, useRouter } from 'expo-router';
 import { TouchableOpacity, View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 function QrFabButton({ onPress }: { onPress: () => void }) {
   return (
@@ -19,10 +20,12 @@ const GREEN = '#1a7f37';
 export default function TabsLayout() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   return (
     <Tabs
       screenOptions={{
+        headerTitle: 'HD FARM',
         tabBarActiveTintColor: GREEN,
         tabBarInactiveTintColor: '#9ca3af',
         tabBarStyle: {
@@ -51,7 +54,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: t('tabs.home'),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'home' : 'home-outline'} size={24} color={color} />
           ),
@@ -60,7 +63,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="zones"
         options={{
-          title: 'Zones',
+          title: t('tabs.zones'),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'map' : 'map-outline'} size={24} color={color} />
           ),
@@ -78,7 +81,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="alerts"
         options={{
-          title: 'Alerts',
+          title: t('tabs.alerts'),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'notifications' : 'notifications-outline'} size={24} color={color} />
           ),
@@ -87,7 +90,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="more"
         options={{
-          title: 'More',
+          title: t('tabs.more'),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'menu' : 'menu-outline'} size={24} color={color} />
           ),

@@ -17,7 +17,10 @@
     "success": "Success",
     "error": "Error",
     "processing": "Processing...",
-    "choose": "Select..."
+    "choose": "Select...",
+    "language": "Language",
+    "signOutConfirmTitle": "Sign Out",
+    "signOutConfirmMessage": "Are you sure you want to sign out?"
   },
   "auth": {
     "login": "Log in",
@@ -52,14 +55,27 @@
     "config": "Settings",
     "reports": "Reports"
   },
+  "tabs": {
+    "home": "Home",
+    "zones": "Zones",
+    "alerts": "Alerts",
+    "more": "More"
+  },
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Overview will be added in Phase 12.",
+    "managerTitle": "Farm Overview",
+    "workerTitle": "My Tasks",
+    "recentActivity": "Recent Activity",
+    "workerSubtitle": "{count} animals need attention",
+    "allClear": "All clear — no animals need attention today.",
     "stats": {
       "animals": "Total animals",
       "batches": "Batches",
       "zones": "Zones",
-      "reports": "Reports"
+      "reports": "Reports",
+      "total": "Total",
+      "alertsCount": "Alerts"
     }
   },
   "animals": {
@@ -136,7 +152,16 @@
   },
   "zones": {
     "title": "Zones",
-    "list": "Zone list"
+    "list": "Zone list",
+    "noZones": "No zones found for this farm.",
+    "noPens": "No pens in this zone.",
+    "noAnimals": "No animals in this pen.",
+    "penCapacity": "Cap: {cap}"
+  },
+  "alerts": {
+    "title": "Alerts",
+    "noAlerts": "No active alerts — all animals are healthy.",
+    "subtitle": "{count} animal(s) need attention"
   },
   "pens": {
     "title": "Pens",

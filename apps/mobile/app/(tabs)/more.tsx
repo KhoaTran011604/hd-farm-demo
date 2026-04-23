@@ -1,9 +1,11 @@
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { clearToken } from '../../lib/auth';
 import { queryClient } from '../../lib/query-client';
 import { Card } from '../../components/ui/card';
+import { LanguageSwitcher } from '@/components/language-switcher';
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -28,12 +30,13 @@ function MenuRow({ label, icon, onPress, danger }: MenuRowProps) {
 
 export default function MoreScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   function handleLogout() {
-    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('common.signOutConfirmTitle'), t('common.signOutConfirmMessage'), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Sign Out',
+        text: t('auth.logout'),
         style: 'destructive',
         onPress: async () => {
           await clearToken();
@@ -46,16 +49,21 @@ export default function MoreScreen() {
 
   return (
     <View style={styles.screen}>
-      <Text style={styles.heading}>More</Text>
-
+      <Text style={styles.heading}>{t('tabs.more')}</Text>
       <Card style={styles.section}>
-        <MenuRow label="Animals" icon="paw" onPress={() => router.push('/(tabs)/zones')} />
-        <View style={styles.divider} />
-        <MenuRow label="Zones & Pens" icon="layers-outline" onPress={() => router.push('/(tabs)/zones')} />
+        <Text style={styles.sectionLabel}>{t('common.language')}</Text>
+        <LanguageSwitcher />
       </Card>
 
       <Card style={styles.section}>
-        <MenuRow label="Sign Out" icon="log-out-outline" onPress={handleLogout} danger />
+        <MenuRow label={t('animals.title')} icon="paw" onPress={() => router.push('/(tabs)/zones')} />
+        <View style={styles.divider} />
+        <MenuRow label={t('zones.title')} icon="layers-outline" onPress={() => router.push('/(tabs)/zones')} />
+      </Card>
+
+
+      <Card style={styles.section}>
+        <MenuRow label={t('auth.logout')} icon="log-out-outline" onPress={handleLogout} danger />
       </Card>
     </View>
   );
@@ -65,6 +73,7 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#f9fafb', padding: 16 },
   heading: { fontSize: 22, fontWeight: '700', color: '#111827', marginBottom: 20 },
   section: { marginBottom: 16, padding: 0, overflow: 'hidden' },
+  sectionLabel: { fontSize: 13, fontWeight: '600', color: '#6b7280', paddingHorizontal: 16, paddingTop: 12, textTransform: 'uppercase', letterSpacing: 0.5 },
   row: { flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 },
   iconWrap: {
     width: 32,
@@ -76,7 +85,6 @@ const styles = StyleSheet.create({
   },
   iconWrapDanger: { backgroundColor: '#fff1f2' },
   rowLabel: { flex: 1, fontSize: 15, color: '#111827', fontWeight: '500' },
-  chevron: { fontSize: 20, color: '#9ca3af' },
   divider: { height: 1, backgroundColor: '#f3f4f6', marginLeft: 60 },
   danger: { color: '#d1242f' },
 });

@@ -1,3 +1,4 @@
+import '@/i18n/config'; // side-effect: initializes i18next before any screen mounts
 import 'react-native-reanimated';
 import { useEffect, useState } from 'react';
 import { Stack, useRouter } from 'expo-router';
@@ -8,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { getToken } from '../lib/auth';
 import { queryClient } from '../lib/query-client';
 import { setUnauthorizedHandler } from '../lib/api';
+import { I18nProvider } from '@/i18n/i18n-context';
 
 const GREEN = '#1a7f37';
 
@@ -32,6 +34,7 @@ export default function RootLayout() {
   }, [router]);
 
   return (
+    <I18nProvider>
     <View style={styles.root}>
       <QueryClientProvider client={queryClient}>
         <Stack
@@ -74,6 +77,7 @@ export default function RootLayout() {
       </QueryClientProvider>
       <StatusBar style="light" backgroundColor={GREEN} />
     </View>
+    </I18nProvider>
   );
 }
 

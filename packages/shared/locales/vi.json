@@ -17,7 +17,10 @@
     "success": "Thành công",
     "error": "Lỗi",
     "processing": "Đang xử lý...",
-    "choose": "Chọn..."
+    "choose": "Chọn...",
+    "language": "Ngôn ngữ",
+    "signOutConfirmTitle": "Đăng xuất",
+    "signOutConfirmMessage": "Bạn có chắc muốn đăng xuất không?"
   },
   "auth": {
     "login": "Đăng nhập",
@@ -52,14 +55,27 @@
     "config": "Cấu hình",
     "reports": "Báo cáo"
   },
+  "tabs": {
+    "home": "Trang chủ",
+    "zones": "Khu vực",
+    "alerts": "Cảnh báo",
+    "more": "Thêm"
+  },
   "dashboard": {
     "title": "Bảng điều khiển",
     "subtitle": "Tổng quan sẽ được bổ sung ở Phase 12.",
+    "managerTitle": "Tổng quan trang trại",
+    "workerTitle": "Công việc của tôi",
+    "recentActivity": "Hoạt động gần đây",
+    "workerSubtitle": "{count} vật nuôi cần chú ý",
+    "allClear": "Không có vật nuôi nào cần chú ý hôm nay.",
     "stats": {
       "animals": "Tổng vật nuôi",
       "batches": "Lô chăn nuôi",
       "zones": "Khu vực",
-      "reports": "Báo cáo"
+      "reports": "Báo cáo",
+      "total": "Tổng số",
+      "alertsCount": "Cảnh báo"
     }
   },
   "animals": {
@@ -136,7 +152,16 @@
   },
   "zones": {
     "title": "Khu vực",
-    "list": "Danh sách khu vực"
+    "list": "Danh sách khu vực",
+    "noZones": "Không có khu vực nào trong trại này.",
+    "noPens": "Không có chuồng nào trong khu vực này.",
+    "noAnimals": "Không có vật nuôi nào trong chuồng này.",
+    "penCapacity": "Sức chứa: {cap}"
+  },
+  "alerts": {
+    "title": "Cảnh báo",
+    "noAlerts": "Không có cảnh báo — tất cả vật nuôi đều khỏe mạnh.",
+    "subtitle": "{count} vật nuôi cần chú ý"
   },
   "pens": {
     "title": "Chuồng",

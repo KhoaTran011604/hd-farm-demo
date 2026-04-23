@@ -8,7 +8,7 @@
 ## Overview
 - **Date:** 2026-04-22
 - **Priority:** P1
-- **Status:** pending
+- **Status:** complete
 - **Effort:** 1h
 - **Description:** Bootstrap Expo Router tab layout, home/dashboard placeholder screen, and a language switcher component that uses `useI18n()` from phase 4. Validates end-to-end i18n pipeline on mobile.
 
@@ -170,12 +170,12 @@ pnpm -F @hd-farm/mobile dev
 - Tap VI/EN buttons → UI updates immediately; restart app → persisted locale retained.
 
 ## Todo List
-- [ ] Add `tabs.home` key to both `en.json` and `vi.json`
-- [ ] Create `apps/mobile/components/language-switcher.tsx`
-- [ ] Create `apps/mobile/app/(tabs)/_layout.tsx`
-- [ ] Create `apps/mobile/app/(tabs)/index.tsx`
-- [ ] Run `pnpm -F @hd-farm/mobile type-check`
-- [ ] Launch on iOS + Android sim; verify language detection + switching + persistence
+- [x] Add `tabs.home` key to both `en.json` and `vi.json`
+- [x] Create `apps/mobile/components/language-switcher.tsx`
+- [x] Create `apps/mobile/app/(tabs)/_layout.tsx`
+- [x] Create `apps/mobile/app/(tabs)/index.tsx`
+- [x] Run `pnpm -F @hd-farm/mobile type-check`
+- [x] Launch on iOS + Android sim; verify language detection + switching + persistence
 
 ## Success Criteria
 - Type-check passes; dev build runs on Expo Go

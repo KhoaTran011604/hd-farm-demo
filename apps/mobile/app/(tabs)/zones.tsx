@@ -1,7 +1,6 @@
-'use client';
-
 import { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { AnimalCard } from '@/components/animal-card';
 import { useFarmsQuery } from '@/queries/farms/queries';
@@ -15,6 +14,7 @@ function ChevronIcon({ expanded }: { expanded: boolean }) {
 }
 
 function PenSection({ pen, zoneName }: { pen: Pen; zoneName: string }) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const { data, isLoading } = useAnimalsByPenQuery(pen.id, expanded);
 
@@ -23,7 +23,7 @@ function PenSection({ pen, zoneName }: { pen: Pen; zoneName: string }) {
       <TouchableOpacity style={styles.penHeader} onPress={() => setExpanded((v) => !v)} activeOpacity={0.7}>
         <Text style={styles.penName}>{pen.name}</Text>
         <View style={styles.penMeta}>
-          {pen.capacity ? <Text style={styles.penCapacity}>Cap: {pen.capacity}</Text> : null}
+          {pen.capacity ? <Text style={styles.penCapacity}>{t('zones.penCapacity', { cap: pen.capacity })}</Text> : null}
           <ChevronIcon expanded={expanded} />
         </View>
       </TouchableOpacity>
@@ -33,7 +33,7 @@ function PenSection({ pen, zoneName }: { pen: Pen; zoneName: string }) {
           {isLoading ? (
             <ActivityIndicator color="#1a7f37" style={{ marginVertical: 12 }} />
           ) : (data?.items?.length ?? 0) === 0 ? (
-            <Text style={styles.emptyText}>No animals in this pen.</Text>
+            <Text style={styles.emptyText}>{t('zones.noAnimals')}</Text>
           ) : (
             data?.items.map((a) => (
               <AnimalCard key={a.id} animal={{ ...a, penName: pen.name, zoneName }} />
@@ -46,6 +46,7 @@ function PenSection({ pen, zoneName }: { pen: Pen; zoneName: string }) {
 }
 
 function ZoneSection({ zone }: { zone: Zone }) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const { data: pens, isLoading } = usePensQuery(expanded ? zone.id : null);
 
@@ -63,7 +64,7 @@ function ZoneSection({ zone }: { zone: Zone }) {
         isLoading ? (
           <ActivityIndicator color="#1a7f37" style={{ marginVertical: 12 }} />
         ) : (pens?.length ?? 0) === 0 ? (
-          <Text style={styles.emptyText}>No pens in this zone.</Text>
+          <Text style={styles.emptyText}>{t('zones.noPens')}</Text>
         ) : (
           pens?.map((pen) => <PenSection key={pen.id} pen={pen} zoneName={zone.name} />)
         )
@@ -73,6 +74,7 @@ function ZoneSection({ zone }: { zone: Zone }) {
 }
 
 export default function ZonesScreen() {
+  const { t } = useTranslation();
   const { data: farms, isLoading: farmsLoading } = useFarmsQuery();
   const [selectedFarmId, setSelectedFarmId] = useState<string | null>(null);
 
@@ -95,7 +97,7 @@ export default function ZonesScreen() {
         <RefreshControl refreshing={isFetching} onRefresh={() => void refetch()} tintColor="#1a7f37" />
       }
     >
-      <Text style={styles.heading}>Zones</Text>
+      <Text style={styles.heading}>{t('zones.title')}</Text>
 
       {(farms?.length ?? 0) > 1 ? (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.farmTabs} contentContainerStyle={{ gap: 8 }}>
@@ -116,7 +118,7 @@ export default function ZonesScreen() {
       {zonesLoading ? (
         <ActivityIndicator color="#1a7f37" style={{ marginTop: 24 }} />
       ) : (zones?.length ?? 0) === 0 ? (
-        <Card><Text style={styles.emptyText}>No zones found for this farm.</Text></Card>
+        <Card><Text style={styles.emptyText}>{t('zones.noZones')}</Text></Card>
       ) : (
         zones?.map((zone) => <ZoneSection key={zone.id} zone={zone} />)
       )}

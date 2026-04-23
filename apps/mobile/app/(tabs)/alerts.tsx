@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../lib/api';
 import { AnimalCard } from '../../components/animal-card';
 import { Card } from '../../components/ui/card';
@@ -16,6 +17,7 @@ interface AlertAnimal {
 }
 
 export default function AlertsScreen() {
+  const { t } = useTranslation();
   const { data, isLoading, isFetching, refetch } = useQuery<{ items: AlertAnimal[] }>({
     queryKey: ['alerts'],
     queryFn: () =>
@@ -38,14 +40,14 @@ export default function AlertsScreen() {
       contentContainerStyle={styles.content}
       refreshControl={<RefreshControl refreshing={isFetching} onRefresh={refetch} tintColor="#1a7f37" />}
     >
-      <Text style={styles.heading}>Alerts</Text>
+      <Text style={styles.heading}>{t('alerts.title')}</Text>
       {alerts.length === 0 ? (
         <Card>
-          <Text style={styles.emptyText}>No active alerts — all animals are healthy.</Text>
+          <Text style={styles.emptyText}>{t('alerts.noAlerts')}</Text>
         </Card>
       ) : (
         <>
-          <Text style={styles.subheading}>{alerts.length} animal(s) need attention</Text>
+          <Text style={styles.subheading}>{t('alerts.subtitle', { count: alerts.length })}</Text>
           {alerts.map((a) => (
             <AnimalCard
               key={a.id}

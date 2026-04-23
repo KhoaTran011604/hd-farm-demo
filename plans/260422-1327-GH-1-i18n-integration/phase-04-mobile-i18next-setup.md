@@ -8,7 +8,7 @@
 ## Overview
 - **Date:** 2026-04-22
 - **Priority:** P1
-- **Status:** pending
+- **Status:** complete
 - **Effort:** 1h
 - **Description:** Install `expo-localization`, `i18next`, `react-i18next`, `@react-native-async-storage/async-storage` in `apps/mobile`. Initialize i18next synchronously at app startup using shared locale JSON; detect device locale; persist user selection; wire TypeScript module augmentation.
 
@@ -236,16 +236,16 @@ pnpm -F @hd-farm/mobile dev
 ```
 
 ## Todo List
-- [ ] Install `expo-localization`, `@react-native-async-storage/async-storage` via `expo install`
-- [ ] Install `i18next`, `react-i18next` via pnpm
-- [ ] Create `apps/mobile/metro.config.js` with watchFolders for workspace resolution
-- [ ] Create `apps/mobile/i18n/supported-locales.ts`
-- [ ] Create `apps/mobile/i18n/config.ts`
-- [ ] Create `apps/mobile/i18n/i18n-context.tsx`
-- [ ] Create `apps/mobile/types/i18next.d.ts`
-- [ ] Update `apps/mobile/tsconfig.json` include list
-- [ ] Create `apps/mobile/app/_layout.tsx`
-- [ ] Run type-check; launch Expo dev server; verify no fallback flash
+- [x] Install `expo-localization`, `@react-native-async-storage/async-storage` via `expo install`
+- [x] Install `i18next`, `react-i18next` via pnpm
+- [x] Create `apps/mobile/metro.config.js` with watchFolders for workspace resolution
+- [x] Create `apps/mobile/i18n/supported-locales.ts`
+- [x] Create `apps/mobile/i18n/config.ts`
+- [x] Create `apps/mobile/i18n/i18n-context.tsx`
+- [x] Create `apps/mobile/types/i18next.d.ts`
+- [x] Update `apps/mobile/tsconfig.json` include list
+- [x] Create `apps/mobile/app/_layout.tsx`
+- [x] Run type-check; launch Expo dev server; verify no fallback flash
 
 ## Success Criteria
 - `pnpm -F @hd-farm/mobile type-check` passes

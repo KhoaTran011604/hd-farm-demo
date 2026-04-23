@@ -1,5 +1,6 @@
 import { Text, StyleSheet, ScrollView, ActivityIndicator, RefreshControl, View } from 'react-native';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { AnimalCard } from '@/components/animal-card';
 import { useWorkerDashboardQuery, useManagerDashboardQuery } from '@/queries/dashboard/queries';
@@ -16,6 +17,7 @@ function StatCard({ label, value, color }: { label: string; value: number; color
 }
 
 export default function HomeScreen() {
+  const { t } = useTranslation();
   const [role, setRole] = useState<UserRole | null>(null);
 
   useEffect(() => {
@@ -49,18 +51,18 @@ export default function HomeScreen() {
       contentContainerStyle={styles.content}
       refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refetch} tintColor="#1a7f37" />}
     >
-      <Text style={styles.heading}>{isManager ? 'Farm Overview' : 'My Tasks'}</Text>
+      <Text style={styles.heading}>{isManager ? t('dashboard.managerTitle') : t('dashboard.workerTitle')}</Text>
 
       {isManager && managerQuery.data ? (
         <>
           <View style={styles.statsGrid}>
-            <StatCard label="Total" value={managerQuery.data.totalAnimals} />
-            <StatCard label="Healthy" value={managerQuery.data.healthyAnimals} color="#166534" />
-            <StatCard label="Sick" value={managerQuery.data.sickAnimals} color="#991b1b" />
-            <StatCard label="Monitoring" value={managerQuery.data.monitoringAnimals} color="#d97706" />
-            <StatCard label="Alerts" value={managerQuery.data.alertsCount} color="#b45309" />
+            <StatCard label={t('dashboard.stats.total')} value={managerQuery.data.totalAnimals} />
+            <StatCard label={t('animals.status.healthy')} value={managerQuery.data.healthyAnimals} color="#166534" />
+            <StatCard label={t('animals.status.sick')} value={managerQuery.data.sickAnimals} color="#991b1b" />
+            <StatCard label={t('animals.status.monitoring')} value={managerQuery.data.monitoringAnimals} color="#d97706" />
+            <StatCard label={t('dashboard.stats.alertsCount')} value={managerQuery.data.alertsCount} color="#b45309" />
           </View>
-          <Text style={styles.sectionTitle}>Recent Activity</Text>
+          <Text style={styles.sectionTitle}>{t('dashboard.recentActivity')}</Text>
           {managerQuery.data.recentEvents.map((a) => (
             <AnimalCard
               key={a.animalId}
@@ -80,7 +82,7 @@ export default function HomeScreen() {
 
       {!isManager && workerQuery.data ? (
         <>
-          <Text style={styles.subheading}>{workerQuery.data.tasks.length} animals need attention</Text>
+          <Text style={styles.subheading}>{t('dashboard.workerSubtitle', { count: workerQuery.data.tasks.length })}</Text>
           {workerQuery.data.tasks.map((t) => (
             <AnimalCard
               key={t.animalId}
@@ -97,7 +99,7 @@ export default function HomeScreen() {
           ))}
           {workerQuery.data.tasks.length === 0 ? (
             <Card>
-              <Text style={styles.emptyText}>All clear — no animals need attention today.</Text>
+              <Text style={styles.emptyText}>{t('dashboard.allClear')}</Text>
             </Card>
           ) : null}
         </>

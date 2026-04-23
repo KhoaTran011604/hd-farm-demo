@@ -2,7 +2,9 @@
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { AnimalFilters } from '@/lib/animal-types';
-import { useFarmsQuery, useZonesQuery, usePensQuery } from '@/hooks/use-location-queries';
+import { useFarmsQuery } from '@/queries/farms/queries';
+import { useZonesQuery } from '@/queries/zones/queries';
+import { usePensQuery } from '@/queries/pens/queries';
 
 const HEALTH_STATUSES = [
   { value: 'healthy', label: 'Khỏe mạnh' },

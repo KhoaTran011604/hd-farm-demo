@@ -9,8 +9,10 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { GenericForm } from '@/components/ui/generic-form';
 import { useToast } from '@/hooks/use-toast';
-import { useFarmsQuery, useZonesQuery, usePensQuery } from '@/hooks/use-location-queries';
-import { useCreateAnimal } from '@/hooks/use-create-animal';
+import { useFarmsQuery } from '@/queries/farms/queries';
+import { useZonesQuery } from '@/queries/zones/queries';
+import { usePensQuery } from '@/queries/pens/queries';
+import { useCreateAnimal } from '@/queries/animals/mutations';
 
 const schema = yup.object({
   name: yup.string().required('Bắt buộc'),

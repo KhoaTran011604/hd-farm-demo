@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import type { AnimalFilters, AnimalListResponse } from '@/lib/animal-types';
-import { queryKeys } from '@/lib/queries/keys';
+import { queryKeys } from '@/queries/keys';
 
 async function fetchAnimals(filters: AnimalFilters): Promise<AnimalListResponse> {
   const params = new URLSearchParams();

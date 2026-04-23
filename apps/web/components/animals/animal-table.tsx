@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { GenericTable } from '@/components/ui/generic-table';
 import { StatusBadge } from '@/components/animals/status-badge';
 import { AnimalFilters } from '@/components/animals/animal-filters';
-import { useAnimalsQuery } from '@/hooks/use-animals-query';
+import { useAnimalsQuery } from '@/queries/animals/queries';
 import type { AnimalRow, AnimalListResponse, AnimalFilters as Filters } from '@/lib/animal-types';
 import { SPECIES_LABELS } from '@/lib/animal-types';
 import { formatDate } from '@/lib/utils';

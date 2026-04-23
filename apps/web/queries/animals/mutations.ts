@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '@/lib/queries/keys';
+import { queryKeys } from '@/queries/keys';
 
 interface CreateAnimalInput {
   name: string;

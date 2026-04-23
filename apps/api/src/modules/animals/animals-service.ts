@@ -11,42 +11,64 @@ export interface AnimalListFilters {
   zoneId?: string;
   penId?: string;
   status?: string;
+  // cursor mode (mobile)
   cursor?: string;
   limit?: number;
+  // page mode (web)
+  page?: number;
 }
 
 export async function listAnimals(db: Database, companyId: string, filters: AnimalListFilters) {
-  const limit = Math.min(filters.limit ?? PAGE_SIZE, MAX_PAGE_SIZE);
+  const pageSize = Math.min(filters.limit ?? PAGE_SIZE, MAX_PAGE_SIZE);
 
   let whereClause = and(eq(animals.companyId, companyId), isNull(animals.deletedAt));
 
   if (filters.farmId) whereClause = and(whereClause, eq(animals.farmId, filters.farmId));
   if (filters.penId) whereClause = and(whereClause, eq(animals.penId, filters.penId));
   if (filters.status) whereClause = and(whereClause, eq(animals.status, filters.status as HealthStatus));
-  // composite keyset cursor: encode as "isoDate|uuid" to avoid collisions on identical timestamps
+
+  if (filters.zoneId) {
+    const zonePens = await db.select({ id: pens.id }).from(pens)
+      .where(and(eq(pens.zoneId, filters.zoneId), eq(pens.companyId, companyId), isNull(pens.deletedAt)));
+    if (zonePens.length === 0) {
+      return filters.page != null
+        ? { items: [], total: 0, page: filters.page, pageSize }
+        : { items: [], nextCursor: null };
+    }
+    whereClause = and(whereClause, inArray(animals.penId, zonePens.map((p) => p.id)));
+  }
+
+  // Page-based (web)
+  if (filters.page != null) {
+    const page = Math.max(1, filters.page);
+    const [{ total }] = await db.select({ total: sql<number>`COUNT(*)::int` })
+      .from(animals).where(whereClause);
+    const items = await db.select().from(animals)
+      .where(whereClause)
+      .orderBy(asc(animals.createdAt), asc(animals.id))
+      .limit(pageSize)
+      .offset((page - 1) * pageSize);
+    return { items, total, page, pageSize };
+  }
+
+  // Cursor-based (mobile)
   if (filters.cursor) {
     const [ts, afterId] = filters.cursor.split('|');
     if (ts && afterId) {
       whereClause = and(
         whereClause,
+        // composite keyset: avoid collisions on identical timestamps
         sql`(${animals.createdAt}, ${animals.id}) > (${new Date(ts)}, ${afterId})`
       );
     }
   }
 
-  if (filters.zoneId) {
-    const zonePens = await db.select({ id: pens.id }).from(pens)
-      .where(and(eq(pens.zoneId, filters.zoneId), eq(pens.companyId, companyId), isNull(pens.deletedAt)));
-    if (zonePens.length === 0) return { items: [], nextCursor: null };
-    whereClause = and(whereClause, inArray(animals.penId, zonePens.map((p) => p.id)));
-  }
-
   const items = await db.select().from(animals)
     .where(whereClause)
     .orderBy(asc(animals.createdAt), asc(animals.id))
-    .limit(limit + 1);
+    .limit(pageSize + 1);
 
-  return paginate(items, limit, (item) => `${item.createdAt.toISOString()}|${item.id}`);
+  return paginate(items, pageSize, (item) => `${item.createdAt.toISOString()}|${item.id}`);
 }
 
 export async function getAnimalById(db: Database, companyId: string, animalId: string) {

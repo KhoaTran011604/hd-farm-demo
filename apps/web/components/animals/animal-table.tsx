@@ -2,9 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { type ColumnDef } from '@tanstack/react-table';
-import { Button } from '@/components/ui/button';
 import { GenericTable } from '@/components/ui/generic-table';
 import { StatusBadge } from '@/components/animals/status-badge';
 import { AnimalFilters } from '@/components/animals/animal-filters';
@@ -28,26 +26,15 @@ interface AnimalTableProps {
 
 export function AnimalTable({ initialData }: AnimalTableProps): React.JSX.Element {
   const router = useRouter();
-  const [filters, setFilters] = useState<Filters>({});
-  const [cursorHistory, setCursorHistory] = useState<string[]>([]);
+  const [filters, setFilters] = useState<Filters>({ page: 1 });
 
   const { data, isLoading } = useAnimalsQuery(filters, initialData);
 
+  const totalPages = data ? Math.ceil(data.total / data.pageSize) : 1;
+  const currentPage = filters.page ?? 1;
+
   function handleFilterChange(updated: Partial<Filters>): void {
-    setFilters((prev) => ({ ...prev, ...updated, cursor: undefined }));
-    setCursorHistory([]);
-  }
-
-  function handleNext(): void {
-    if (!data?.nextCursor) return;
-    setCursorHistory((h) => [...h, filters.cursor ?? '']);
-    setFilters((prev) => ({ ...prev, cursor: data.nextCursor ?? undefined }));
-  }
-
-  function handlePrev(): void {
-    const prev = cursorHistory[cursorHistory.length - 1] ?? undefined;
-    setCursorHistory((h) => h.slice(0, -1));
-    setFilters((f) => ({ ...f, cursor: prev }));
+    setFilters((prev) => ({ ...prev, ...updated, page: 1 }));
   }
 
   return (
@@ -59,16 +46,15 @@ export function AnimalTable({ initialData }: AnimalTableProps): React.JSX.Elemen
         columns={columns}
         isLoading={isLoading}
         onRowClick={(row) => router.push(`/animals/${row.id}`)}
+        pagination={{
+          hasPrev: currentPage > 1,
+          hasNext: currentPage < totalPages,
+          onPrev: () => setFilters((f) => ({ ...f, page: currentPage - 1 })),
+          onNext: () => setFilters((f) => ({ ...f, page: currentPage + 1 })),
+          page: currentPage,
+          total: data?.total,
+        }}
       />
-
-      <div className="flex items-center justify-end gap-2">
-        <Button variant="outline" size="sm" onClick={handlePrev} disabled={cursorHistory.length === 0}>
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <Button variant="outline" size="sm" onClick={handleNext} disabled={!data?.nextCursor}>
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-      </div>
     </div>
   );
 }

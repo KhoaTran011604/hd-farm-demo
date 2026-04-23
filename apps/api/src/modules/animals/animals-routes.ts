@@ -19,7 +19,7 @@ const animalsRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get('/animals', { preHandler: verifyToken }, async (request) => {
     const q = request.query as {
       farmId?: string; zoneId?: string; penId?: string;
-      status?: string; cursor?: string; limit?: string;
+      status?: string; cursor?: string; limit?: string; page?: string;
     };
     return listAnimals(fastify.db, request.user.companyId, {
       farmId: q.farmId,
@@ -28,6 +28,7 @@ const animalsRoutes: FastifyPluginAsync = async (fastify) => {
       status: q.status,
       cursor: q.cursor,
       limit: q.limit ? (parseInt(q.limit, 10) || undefined) : undefined,
+      page: q.page ? (parseInt(q.page, 10) || undefined) : undefined,
     });
   });
 

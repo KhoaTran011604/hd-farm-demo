@@ -16,7 +16,9 @@ export interface AnimalRow {
 
 export interface AnimalListResponse {
   items: AnimalRow[];
-  nextCursor: string | null;
+  total: number;
+  page: number;
+  pageSize: number;
 }
 
 export interface AnimalFilters {
@@ -24,7 +26,7 @@ export interface AnimalFilters {
   zoneId?: string;
   penId?: string;
   status?: string;
-  cursor?: string;
+  page?: number;
 }
 
 export const SPECIES_LABELS: Record<AnimalSpecies, string> = {

@@ -105,13 +105,16 @@ export function GenericForm<TData extends FieldValues, TResponse = unknown>({
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(handleFormSubmit)} className={cn('flex flex-col h-full', className)}>
-        <div className="flex-1 overflow-y-auto space-y-4 p-1">
+      <form
+        onSubmit={methods.handleSubmit(handleFormSubmit)}
+        className={cn('flex min-h-0 flex-1 flex-col', className)}
+      >
+        <div className="min-h-0 flex-1 overflow-y-auto space-y-4 px-1 py-1">
           {children}
         </div>
 
         {showSubmitButton && (
-          <div className="sticky bottom-0 flex justify-end border-t bg-background pt-4 pb-6 mt-4 translate-y-6">
+          <div className="flex shrink-0 justify-end gap-2 border-t bg-background px-1 pt-3">
             <Button type="submit" disabled={isSubmitting || disabled} aria-busy={isSubmitting}>
               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isSubmitting ? tCommon('processing') : (submitLabel ?? tCommon('save'))}

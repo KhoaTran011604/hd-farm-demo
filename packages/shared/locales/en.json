@@ -251,7 +251,17 @@
       "noTransitionsAvailable": "No status transitions available from the current state.",
       "statusUpdated": "Status updated successfully",
       "noRecords": "No health records yet.",
-      "loadMore": "Load more"
+      "loadMore": "Load more",
+      "recordHealth": "Record health",
+      "recordHealthTitle": "Record health entry",
+      "weightRequired": "Weight (kg)",
+      "weightRequiredPlaceholder": "e.g. 85.5",
+      "recorded": "Health record saved"
+    },
+    "edit": {
+      "title": "Edit animal",
+      "submit": "Save changes",
+      "updated": "Animal updated"
     },
     "qr": {
       "instruction": "Animal QR code — press \"Print QR\" or Ctrl+P to print",

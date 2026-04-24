@@ -1,24 +1,25 @@
 'use client';
 
+import * as React from 'react';
 import { useTranslations } from 'next-intl';
 import { Activity, Pencil, QrCode } from 'lucide-react';
 import { StatusBadge } from '@/components/animals/status-badge';
 import { AnimalQrBadge } from '@/components/animals/animal-qr-badge';
+import { AnimalEditDialog } from '@/components/animals/animal-edit-dialog';
 import { printAnimalQr } from '@/lib/print-qr';
 import type { AnimalRow } from '@/lib/animal-types';
 import { formatDate } from '@/lib/utils';
 
 interface AnimalDetailHeaderProps {
   animal: AnimalRow;
-  onEdit?: () => void;
   onUpdateStatus?: () => void;
 }
 
 export function AnimalDetailHeader({
   animal,
-  onEdit,
   onUpdateStatus,
 }: AnimalDetailHeaderProps): React.JSX.Element {
+  const [editOpen, setEditOpen] = React.useState(false);
   const t = useTranslations('animals.detail');
   const tMeta = useTranslations('animals.detail.meta');
   const tQr = useTranslations('animals.qr');
@@ -40,6 +41,7 @@ export function AnimalDetailHeader({
   }
 
   return (
+    <>
     <div className="flex flex-wrap items-start gap-6 rounded-xl border border-[#E5E7EB] bg-white p-6">
       <AnimalQrBadge animal={animal} />
 
@@ -74,7 +76,7 @@ export function AnimalDetailHeader({
         </button>
         <button
           type="button"
-          onClick={onEdit}
+          onClick={() => setEditOpen(true)}
           className="flex h-[38px] items-center gap-1.5 rounded-lg border border-[#E5E7EB] bg-white px-3.5 text-[13px] font-semibold text-[#4B5563] hover:bg-background"
         >
           <Pencil className="h-[15px] w-[15px]" />
@@ -90,6 +92,9 @@ export function AnimalDetailHeader({
         </button>
       </div>
     </div>
+
+    <AnimalEditDialog animal={animal} open={editOpen} onOpenChange={setEditOpen} />
+    </>
   );
 }
 

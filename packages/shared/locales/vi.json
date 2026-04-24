@@ -251,7 +251,17 @@
       "noTransitionsAvailable": "Không thể chuyển trạng thái từ trạng thái hiện tại.",
       "statusUpdated": "Cập nhật trạng thái thành công",
       "noRecords": "Chưa có hồ sơ sức khoẻ.",
-      "loadMore": "Tải thêm"
+      "loadMore": "Tải thêm",
+      "recordHealth": "Ghi nhận sức khoẻ",
+      "recordHealthTitle": "Ghi nhận hồ sơ sức khoẻ",
+      "weightRequired": "Cân nặng (kg)",
+      "weightRequiredPlaceholder": "Ví dụ: 85.5",
+      "recorded": "Đã lưu hồ sơ sức khoẻ"
+    },
+    "edit": {
+      "title": "Chỉnh sửa vật nuôi",
+      "submit": "Lưu thay đổi",
+      "updated": "Đã cập nhật vật nuôi"
     },
     "qr": {
       "instruction": "Mã QR vật nuôi — nhấn \"In mã QR\" hoặc Ctrl+P để in",

@@ -39,6 +39,42 @@ export function useCreateAnimal(callbacks?: CreateAnimalCallbacks) {
   });
 }
 
+interface UpdateAnimalInput {
+  name?: string;
+  penId?: string;
+}
+
+interface UpdateAnimalCallbacks {
+  onSuccess?: () => void;
+  onError?: (message: string) => void;
+}
+
+export function useUpdateAnimal(animalId: string, callbacks?: UpdateAnimalCallbacks) {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, UpdateAnimalInput>({
+    mutationFn: async (input) => {
+      const res = await fetch(`/api/proxy/animals/${animalId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
+      if (!res.ok) {
+        const err = await res.json() as { message?: string };
+        throw new Error(err.message ?? 'Không thể cập nhật vật nuôi');
+      }
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.animals.detail(animalId) });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.animals.all });
+      callbacks?.onSuccess?.();
+    },
+    onError: (error) => {
+      callbacks?.onError?.(error.message);
+    },
+  });
+}
+
 interface UpdateStatusInput {
   status: string;
   weightKg?: number;

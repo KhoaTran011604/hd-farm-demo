@@ -6,10 +6,10 @@ import {
 import { useLocalSearchParams } from 'expo-router';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { WeighForm } from '@/components/quick-forms/weigh-form';
 import { StatusChangeForm } from '@/components/quick-forms/status-change-form';
 import { VaccinationForm } from '@/components/quick-forms/vaccination-form';
+import { AnimalTimeline, type TimelineAction } from '@/components/animal-timeline';
 import { useAnimalDetailQuery } from '@/queries/animals/queries';
 import type { HealthStatus } from '@hd-farm/shared';
 
@@ -102,29 +102,10 @@ export default function AnimalDetailScreen() {
           </Card>
         ) : null}
 
-        <Card style={styles.section}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
-          <View style={styles.actionRow}>
-            <Button
-              label="Cân"
-              variant="secondary"
-              onPress={() => setActiveAction('weigh')}
-              style={styles.actionBtn}
-            />
-            <Button
-              label="Trạng thái"
-              variant="secondary"
-              onPress={() => setActiveAction('status')}
-              style={styles.actionBtn}
-            />
-            <Button
-              label="Tiêm"
-              variant="secondary"
-              onPress={() => setActiveAction('vaccinate')}
-              style={styles.actionBtn}
-            />
-          </View>
-        </Card>
+        <AnimalTimeline
+          animalId={animal.id}
+          onAction={(a: TimelineAction) => setActiveAction(a)}
+        />
       </ScrollView>
 
       {/* Weigh modal */}
@@ -215,8 +196,6 @@ const styles = StyleSheet.create({
   fieldRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
   fieldLabel: { fontSize: 14, color: '#6b7280' },
   fieldValue: { fontSize: 14, color: '#111827', fontWeight: '500', maxWidth: '60%', textAlign: 'right' },
-  actionRow: { flexDirection: 'row', gap: 8 },
-  actionBtn: { flex: 1 },
   // Modal
   modalOverlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.4)' },
   modalSheet: {

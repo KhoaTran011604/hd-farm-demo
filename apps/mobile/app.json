@@ -8,6 +8,12 @@
     "userInterfaceStyle": "automatic",
     "scheme": "hdfarms",
     "newArchEnabled": true,
+    "owner": "k_tran2001",
+    "extra": {
+      "eas": {
+        "projectId": "ee91e0d5-2b0d-4ed2-99a8-5415ac185c59"
+      }
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.hdfarm.mobile",
@@ -23,7 +29,7 @@
       "permissions": [
         "android.permission.CAMERA"
       ],
-      "package": "com.hdfarm.mobile"
+      "package": "com.k_tran2001.hdfarm"
     },
     "plugins": [
       "expo-router",

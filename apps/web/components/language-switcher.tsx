@@ -2,44 +2,50 @@
 
 import { useTransition } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
+import { Languages } from 'lucide-react';
 import { useRouter, usePathname } from '@/i18n/navigation';
-import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import type { Locale } from '@hd-farm/shared/locales';
 
-export function LanguageSwitcher(): React.JSX.Element {
+interface LanguageSwitcherProps {
+  className?: string;
+}
+
+export function LanguageSwitcher({ className }: LanguageSwitcherProps): React.JSX.Element {
   const t = useTranslations('common');
   const currentLocale = useLocale() as Locale;
   const router = useRouter();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
 
-  const handleSwitch = (next: Locale): void => {
+  function handleChange(next: string): void {
     if (next === currentLocale) return;
     startTransition(() => {
-      router.replace(pathname, { locale: next });
+      router.replace(pathname, { locale: next as Locale });
     });
-  };
+  }
 
   return (
-    <nav aria-label={t('switchLanguage')} className="flex items-center gap-1">
-      <Button
-        type="button"
-        variant={currentLocale === 'vi' ? 'default' : 'ghost'}
-        size="sm"
-        disabled={isPending || currentLocale === 'vi'}
-        onClick={() => handleSwitch('vi')}
-      >
-        {t('vietnamese')}
-      </Button>
-      <Button
-        type="button"
-        variant={currentLocale === 'en' ? 'default' : 'ghost'}
-        size="sm"
-        disabled={isPending || currentLocale === 'en'}
-        onClick={() => handleSwitch('en')}
-      >
-        {t('english')}
-      </Button>
-    </nav>
+    <div className={className ?? 'flex items-center gap-2 px-2 py-1.5'}>
+      <Languages
+        aria-label={t('switchLanguage')}
+        className="h-4 w-4 shrink-0 text-[#4B5563]"
+      />
+      <Select value={currentLocale} onValueChange={handleChange} disabled={isPending}>
+        <SelectTrigger className="h-8 flex-1 text-sm">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="vi">{t('vietnamese')}</SelectItem>
+          <SelectItem value="en">{t('english')}</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
   );
 }

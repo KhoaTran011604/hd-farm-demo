@@ -37,7 +37,17 @@
     "zones": "Zones",
     "users": "Users",
     "config": "Settings",
-    "reports": "Reports"
+    "reports": "Reports",
+    "health": "Health",
+    "vaccine": "Vaccination",
+    "feed": "Feed",
+    "reproduction": "Breeding",
+    "tagline": "Livestock management",
+    "groups": {
+      "overview": "Overview",
+      "management": "Management",
+      "health": "Health"
+    }
   },
   "table": {
     "empty": "No data",
@@ -62,8 +72,40 @@
     "more": "More"
   },
   "dashboard": {
-    "title": "Dashboard",
-    "subtitle": "Overview will be added in Phase 12.",
+    "title": "Farm Overview",
+    "subtitle": "Last updated: today, {time}",
+    "lastUpdated": "Last updated: today, {time}",
+    "kpi": {
+      "totalAnimals": "Total livestock",
+      "sick": "Sick animals",
+      "vaccineToday": "Vaccines today",
+      "activeBatches": "Active batches",
+      "today": "Today",
+      "active": "Active"
+    },
+    "alerts": {
+      "title": "Today's alerts",
+      "viewAll": "View all"
+    },
+    "statusDist": {
+      "title": "Status distribution",
+      "unit": "animals"
+    },
+    "zoneCapacity": {
+      "title": "Zone capacity",
+      "manage": "Manage zones",
+      "full": "full",
+      "animals": "animals",
+      "sick": "sick",
+      "monitoring": "monitoring",
+      "quarantine": "quarantine"
+    },
+    "weightTrend": {
+      "title": "Weight trend — last 30 days",
+      "range7": "7 days",
+      "range30": "30 days",
+      "range90": "90 days"
+    },
     "managerTitle": "Farm Overview",
     "workerTitle": "My Tasks",
     "recentActivity": "Recent Activity",
@@ -131,7 +173,32 @@
       "allFarms": "All farms",
       "allZones": "All zones",
       "allPens": "All pens",
-      "allStatuses": "All statuses"
+      "allStatuses": "All statuses",
+      "allSpecies": "All species",
+      "allBatches": "All batches",
+      "searchPlaceholder": "Search by ID or name...",
+      "exportCsv": "Export CSV",
+      "importExcel": "Import Excel"
+    },
+    "bulk": {
+      "selected": "{count} selected",
+      "moveZone": "Move zone",
+      "updateStatus": "Update status",
+      "recordVaccine": "Record vaccine",
+      "delete": "Delete"
+    },
+    "tableMeta": {
+      "subtitle": "{total} animals · {zones} zones",
+      "showing": "Showing {from}–{to} of {total} animals",
+      "columnsBtn": "Columns",
+      "rowsPerPage": "Show",
+      "rows": "rows",
+      "pageOf": "Page {page} / {total}",
+      "lastWeighed": "Last weighed",
+      "weightCol": "Weight",
+      "batchCol": "Batch",
+      "idCol": "#ID",
+      "nameCol": "Name / ID"
     },
     "form": {
       "nameLabel": "Animal name",
@@ -188,7 +255,59 @@
     },
     "qr": {
       "instruction": "Animal QR code — press \"Print QR\" or Ctrl+P to print",
-      "penShort": "Pen"
+      "penShort": "Pen",
+      "print": "Print QR",
+      "printHeader": "Print QR"
+    },
+    "detail": {
+      "editBtn": "Edit",
+      "updateStatus": "Update status",
+      "sectionInfo": "Basic info",
+      "sectionWeightTrend": "Weight gain (14 days)",
+      "sectionHistory": "Recent history",
+      "viewAllHistory": "View full history →",
+      "thisAnimal": "This animal",
+      "batchAverage": "Batch average",
+      "meta": {
+        "id": "ID",
+        "species": "Species",
+        "zone": "Zone",
+        "batch": "Batch",
+        "registeredAt": "Registered",
+        "age": "Age",
+        "ageUnit": "days"
+      },
+      "stats": {
+        "lastWeight": "Last weight",
+        "noWeight": "No data",
+        "nextVaccine": "Next vaccine",
+        "noVaccine": "None",
+        "treatment": "Treatment",
+        "noTreatment": "None",
+        "inTreatment": "In treatment",
+        "overdue": "Overdue"
+      },
+      "info": {
+        "id": "ID",
+        "breed": "Breed",
+        "sex": "Sex",
+        "status": "Status",
+        "changeStatus": "Change status",
+        "birthDate": "Birth date",
+        "origin": "Origin",
+        "rfid": "Ear tag (RFID)",
+        "zone": "Zone",
+        "batch": "Batch",
+        "caretaker": "Caretaker",
+        "unknown": "—"
+      },
+      "history": {
+        "disease": "Disease detected",
+        "weight": "Weight recorded",
+        "vaccine": "Vaccine administered",
+        "feeding": "Feeding",
+        "statusChange": "Status change"
+      }
     }
   },
   "farms": {

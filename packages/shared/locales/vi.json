@@ -31,13 +31,23 @@
     "forgotPassword": "Quên mật khẩu?"
   },
   "nav": {
-    "dashboard": "Bảng điều khiển",
-    "animals": "Vật nuôi",
-    "batches": "Lô chăn nuôi",
+    "dashboard": "Tổng quan",
+    "animals": "Đàn vật nuôi",
+    "batches": "Lô/Đợt nuôi",
     "zones": "Khu vực",
     "users": "Người dùng",
-    "config": "Cấu hình",
-    "reports": "Báo cáo"
+    "config": "Cài đặt",
+    "reports": "Báo cáo",
+    "health": "Sức khỏe",
+    "vaccine": "Tiêm vaccine",
+    "feed": "Thức ăn",
+    "reproduction": "Sinh sản",
+    "tagline": "Quản lý đàn vật nuôi",
+    "groups": {
+      "overview": "Tổng quan",
+      "management": "Quản lý",
+      "health": "Sức khỏe"
+    }
   },
   "table": {
     "empty": "Không có dữ liệu",
@@ -62,8 +72,40 @@
     "more": "Thêm"
   },
   "dashboard": {
-    "title": "Bảng điều khiển",
-    "subtitle": "Tổng quan sẽ được bổ sung ở Phase 12.",
+    "title": "Tổng quan trang trại",
+    "subtitle": "Cập nhật lần cuối: hôm nay, {time}",
+    "lastUpdated": "Cập nhật lần cuối: hôm nay, {time}",
+    "kpi": {
+      "totalAnimals": "Tổng đàn vật nuôi",
+      "sick": "Con đang bệnh",
+      "vaccineToday": "Vaccine hôm nay",
+      "activeBatches": "Lô nuôi đang chạy",
+      "today": "Hôm nay",
+      "active": "Hoạt động"
+    },
+    "alerts": {
+      "title": "Cảnh báo hôm nay",
+      "viewAll": "Xem tất cả"
+    },
+    "statusDist": {
+      "title": "Phân bố trạng thái",
+      "unit": "con"
+    },
+    "zoneCapacity": {
+      "title": "Công suất khu vực",
+      "manage": "Quản lý khu vực",
+      "full": "đầy",
+      "animals": "con",
+      "sick": "bệnh",
+      "monitoring": "theo dõi",
+      "quarantine": "cách ly"
+    },
+    "weightTrend": {
+      "title": "Xu hướng tăng trọng — 30 ngày qua",
+      "range7": "7 ngày",
+      "range30": "30 ngày",
+      "range90": "90 ngày"
+    },
     "managerTitle": "Tổng quan trang trại",
     "workerTitle": "Công việc của tôi",
     "recentActivity": "Hoạt động gần đây",
@@ -129,9 +171,34 @@
     },
     "filters": {
       "allFarms": "Tất cả trại",
-      "allZones": "Tất cả khu",
+      "allZones": "Tất cả khu vực",
       "allPens": "Tất cả ô",
-      "allStatuses": "Tất cả trạng thái"
+      "allStatuses": "Tất cả trạng thái",
+      "allSpecies": "Tất cả loại",
+      "allBatches": "Tất cả lô",
+      "searchPlaceholder": "Tìm theo số hiệu, tên...",
+      "exportCsv": "Xuất CSV",
+      "importExcel": "Nhập Excel"
+    },
+    "bulk": {
+      "selected": "{count} con được chọn",
+      "moveZone": "Chuyển khu vực",
+      "updateStatus": "Cập nhật trạng thái",
+      "recordVaccine": "Ghi nhận vaccine",
+      "delete": "Xóa"
+    },
+    "tableMeta": {
+      "subtitle": "{total} con · {zones} khu vực",
+      "showing": "Hiển thị {from}–{to} trong {total} con",
+      "columnsBtn": "Cột hiển thị",
+      "rowsPerPage": "Hiển thị",
+      "rows": "hàng",
+      "pageOf": "Trang {page} / {total}",
+      "lastWeighed": "Lần cân cuối",
+      "weightCol": "Cân nặng",
+      "batchCol": "Lô nuôi",
+      "idCol": "#ID",
+      "nameCol": "Tên / Số hiệu"
     },
     "form": {
       "nameLabel": "Tên vật nuôi",
@@ -188,7 +255,59 @@
     },
     "qr": {
       "instruction": "Mã QR vật nuôi — nhấn \"In mã QR\" hoặc Ctrl+P để in",
-      "penShort": "Ô"
+      "penShort": "Ô",
+      "print": "In QR",
+      "printHeader": "QR In ấn"
+    },
+    "detail": {
+      "editBtn": "Chỉnh sửa",
+      "updateStatus": "Cập nhật tình trạng",
+      "sectionInfo": "Thông tin cơ bản",
+      "sectionWeightTrend": "Tăng trọng (14 ngày)",
+      "sectionHistory": "Lịch sử gần đây",
+      "viewAllHistory": "Xem toàn bộ lịch sử →",
+      "thisAnimal": "Con này",
+      "batchAverage": "Trung bình lô",
+      "meta": {
+        "id": "Số hiệu",
+        "species": "Loại",
+        "zone": "Khu vực",
+        "batch": "Lô nuôi",
+        "registeredAt": "Ngày nhập",
+        "age": "Tuổi",
+        "ageUnit": "ngày"
+      },
+      "stats": {
+        "lastWeight": "Cân nặng cuối",
+        "noWeight": "Chưa có",
+        "nextVaccine": "Vaccine tiếp theo",
+        "noVaccine": "Chưa có",
+        "treatment": "Đợt điều trị",
+        "noTreatment": "Không có",
+        "inTreatment": "Đang điều trị",
+        "overdue": "Quá hạn"
+      },
+      "info": {
+        "id": "Số hiệu",
+        "breed": "Giống",
+        "sex": "Giới tính",
+        "status": "Trạng thái",
+        "changeStatus": "Đổi trạng thái",
+        "birthDate": "Ngày sinh",
+        "origin": "Nguồn gốc",
+        "rfid": "Số tai (RFID)",
+        "zone": "Khu vực",
+        "batch": "Lô nuôi",
+        "caretaker": "Người phụ trách",
+        "unknown": "—"
+      },
+      "history": {
+        "disease": "Phát hiện bệnh",
+        "weight": "Ghi nhận cân nặng",
+        "vaccine": "Tiêm vaccine",
+        "feeding": "Cho ăn",
+        "statusChange": "Đổi trạng thái"
+      }
     }
   },
   "farms": {

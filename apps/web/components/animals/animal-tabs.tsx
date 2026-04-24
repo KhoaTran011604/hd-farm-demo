@@ -4,20 +4,35 @@ import * as React from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { toast } from 'sonner';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { StatusBadge } from '@/components/animals/status-badge';
 import { HealthTab } from '@/components/animals/health-tab';
 import { VaccinationTab } from '@/components/animals/vaccination-tab';
+import { AnimalOverviewPanel } from '@/components/animals/animal-overview-panel';
 import { StatusChangeDialog } from '@/components/animals/status-change-dialog';
-import { formatDate, formatDateTime } from '@/lib/utils';
 import type { AnimalRow } from '@/lib/animal-types';
+import { cn } from '@/lib/utils';
 
-const PLACEHOLDER_TABS = [
-  { value: 'disease', phase: 8 },
-  { value: 'feeding', phase: 10 },
-  { value: 'reproduction', phase: 11 },
-] as const;
+type TabKey =
+  | 'overview'
+  | 'health'
+  | 'vaccination'
+  | 'disease'
+  | 'feeding'
+  | 'reproduction';
+
+const PLACEHOLDER_TABS: Record<string, number> = {
+  disease: 8,
+  feeding: 10,
+  reproduction: 11,
+};
+
+const TAB_KEYS: TabKey[] = [
+  'overview',
+  'health',
+  'vaccination',
+  'disease',
+  'feeding',
+  'reproduction',
+];
 
 interface AnimalTabsProps {
   animal: AnimalRow;
@@ -25,74 +40,58 @@ interface AnimalTabsProps {
 
 export function AnimalTabs({ animal }: AnimalTabsProps): React.JSX.Element {
   const tTabs = useTranslations('animals.tabs');
-  const tFields = useTranslations('animals.fields');
-  const tSpecies = useTranslations('animals.species');
   const tHealth = useTranslations('animals.healthActions');
   const router = useRouter();
 
+  const [active, setActive] = React.useState<TabKey>('overview');
   const [statusDialogOpen, setStatusDialogOpen] = React.useState(false);
 
   return (
     <>
-      <Tabs defaultValue="overview">
-        <TabsList className="mb-4 h-auto flex-wrap gap-1">
-          <TabsTrigger value="overview">{tTabs('overview')}</TabsTrigger>
-          <TabsTrigger value="health">{tTabs('health')}</TabsTrigger>
-          <TabsTrigger value="vaccination">{tTabs('vaccination')}</TabsTrigger>
-          {PLACEHOLDER_TABS.map((t) => (
-            <TabsTrigger key={t.value} value={t.value}>
-              {tTabs(t.value)}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+      <div className="overflow-hidden rounded-xl border border-[#E5E7EB] bg-white">
+        <div className="flex overflow-x-auto border-b border-[#F3F4F6] px-5">
+          {TAB_KEYS.map((key) => {
+            const isActive = active === key;
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setActive(key)}
+                className={cn(
+                  'whitespace-nowrap border-b-2 px-4 py-3.5 text-[13.5px] font-semibold transition-colors',
+                  isActive
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-[#9CA3AF] hover:text-[#4B5563]',
+                )}
+              >
+                {tTabs(key)}
+              </button>
+            );
+          })}
+        </div>
 
-        <TabsContent value="overview">
-          <div className="grid gap-4 md:grid-cols-2">
-            <OverviewField label={tFields('name')} value={animal.name} />
-            <OverviewField label={tFields('species')} value={tSpecies(animal.species)} />
-            <OverviewField
-              label={tFields('status')}
-              value={
-                <div className="flex items-center gap-2">
-                  <StatusBadge status={animal.status} />
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="h-6 text-xs px-2"
-                    onClick={() => setStatusDialogOpen(true)}
-                  >
-                    {tHealth('changeStatus')}
-                  </Button>
-                </div>
-              }
+        <div className="p-6">
+          {active === 'overview' ? (
+            <AnimalOverviewPanel
+              animal={animal}
+              onChangeStatus={() => setStatusDialogOpen(true)}
             />
-            <OverviewField label={tFields('qrCode')} value={<code className="rounded bg-muted px-1.5 py-0.5 text-xs">{animal.qrCode}</code>} />
-            <OverviewField label={tFields('pen')} value={animal.pen?.name ?? '—'} />
-            <OverviewField label={tFields('zone')} value={animal.zone?.name ?? '—'} />
-            <OverviewField label={tFields('createdAtLong')} value={formatDate(animal.createdAt)} />
-            <OverviewField label={tFields('updatedAt')} value={formatDateTime(animal.updatedAt)} />
-          </div>
-        </TabsContent>
-
-        <TabsContent value="health">
-          <HealthTab animalId={animal.id} />
-        </TabsContent>
-
-        <TabsContent value="vaccination">
-          <VaccinationTab animalId={animal.id} />
-        </TabsContent>
-
-        {PLACEHOLDER_TABS.map((t) => (
-          <TabsContent key={t.value} value={t.value}>
-            <div className="flex flex-col items-center justify-center py-16 text-muted-foreground gap-2">
+          ) : null}
+          {active === 'health' ? <HealthTab animalId={animal.id} /> : null}
+          {active === 'vaccination' ? <VaccinationTab animalId={animal.id} /> : null}
+          {PLACEHOLDER_TABS[active] ? (
+            <div className="flex flex-col items-center justify-center gap-2 py-16 text-muted-foreground">
               <span className="text-4xl">🚧</span>
               <p className="text-sm font-medium">
-                {tTabs('comingInPhase', { label: tTabs(t.value), phase: t.phase })}
+                {tTabs('comingInPhase', {
+                  label: tTabs(active),
+                  phase: PLACEHOLDER_TABS[active],
+                })}
               </p>
             </div>
-          </TabsContent>
-        ))}
-      </Tabs>
+          ) : null}
+        </div>
+      </div>
 
       <StatusChangeDialog
         animalId={animal.id}
@@ -106,14 +105,5 @@ export function AnimalTabs({ animal }: AnimalTabsProps): React.JSX.Element {
         onError={(msg) => toast.error(msg)}
       />
     </>
-  );
-}
-
-function OverviewField({ label, value }: { label: string; value: React.ReactNode }): React.JSX.Element {
-  return (
-    <div className="rounded-lg border bg-card p-4">
-      <p className="mb-1 text-xs font-medium text-muted-foreground uppercase tracking-wide">{label}</p>
-      <div className="text-sm font-medium">{value}</div>
-    </div>
   );
 }

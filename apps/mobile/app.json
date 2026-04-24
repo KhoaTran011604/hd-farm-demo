@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "HD Farms",
-    "slug": "hd-farms",
+    "name": "HD Farm",
+    "slug": "hd-farm",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -12,7 +12,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.hdfarm.mobile",
       "infoPlist": {
-        "NSCameraUsageDescription": "HD Farms uses the camera to scan animal QR codes."
+        "NSCameraUsageDescription": "HD Farm uses the camera to scan animal QR codes."
       }
     },
     "android": {
@@ -30,7 +30,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "HD Farms uses the camera to scan animal QR codes."
+          "cameraPermission": "HD Farm uses the camera to scan animal QR codes."
         }
       ],
       "expo-secure-store"

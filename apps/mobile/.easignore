@@ -1,0 +1,30 @@
+# Extends .gitignore — include everything in .gitignore plus these.
+# EAS Build needs workspace packages, so DO NOT ignore ../../packages.
+
+# Dev-only artifacts
+.expo/
+.turbo/
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local env files (use EAS Environment Variables instead)
+.env
+.env.local
+.env.*.local
+
+# Tests
+__tests__/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx

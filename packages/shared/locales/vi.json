@@ -76,6 +76,37 @@
       "reports": "Báo cáo",
       "total": "Tổng số",
       "alertsCount": "Cảnh báo"
+    },
+    "home": {
+      "greeting": {
+        "morning": "Chào buổi sáng",
+        "afternoon": "Chào buổi chiều",
+        "evening": "Chào buổi tối"
+      },
+      "userDefault": "Người dùng",
+      "tasksToday": "Cần làm hôm nay",
+      "noTasks": "Không có nhiệm vụ hôm nay",
+      "viewAll": "Xem tất cả",
+      "quickActions": "Nhập nhanh",
+      "quickWeigh": "Cân",
+      "quickVaccine": "Vaccine",
+      "quickFeed": "Cho ăn",
+      "farmOverview": "Tổng quan trang trại",
+      "viewDetails": "Chi tiết",
+      "statsTotal": "Tổng đàn",
+      "statsHealthy": "Khỏe mạnh",
+      "statsSick": "Đang bệnh",
+      "statsMonitoring": "Theo dõi",
+      "statsNeedVaccine": "Cần vaccine",
+      "statsNotVaccinated": "Chưa tiêm",
+      "statsGood": "Tốt",
+      "statsHealthySub": "Tổng vật nuôi",
+      "statsSickSub": "{count} theo dõi",
+      "statsNeedVaccineSub": "Chưa tiêm",
+      "statsHealthySubGood": "Tốt",
+      "zoneManager": "Quản lý toàn trại",
+      "zoneWorker": "Phụ trách khu vực",
+      "statusNormal": "Bình thường"
     }
   },
   "animals": {
@@ -182,7 +213,34 @@
     "dueDate": "Đến hạn {date}",
     "dueToday": "Đến hạn hôm nay",
     "dueTomorrow": "Đến hạn ngày mai",
-    "viewAll": "Xem tất cả"
+    "viewAll": "Xem tất cả",
+    "tabs": {
+      "today": "Hôm nay ({count})",
+      "week": "Tuần này ({count})"
+    },
+    "groups": {
+      "overdue": "Quá hạn",
+      "today": "Hôm nay",
+      "tomorrow": "Ngày mai",
+      "week": "Tuần này"
+    },
+    "badge": {
+      "overdue": "Quá hạn",
+      "today": "Hôm nay",
+      "tomorrow": "Ngày mai",
+      "upcoming": "Sắp đến"
+    },
+    "card": {
+      "overdueDays": "Quá hạn {days} ngày",
+      "dueToday": "Hạn hôm nay",
+      "dueDate": "Hạn {date}",
+      "scanQr": "Quét QR",
+      "view": "Xem"
+    },
+    "empty": "Không có cảnh báo",
+    "emptyTitle": "Tất cả đã được chăm sóc!",
+    "emptyDesc": "Không có cảnh báo nào trong tuần này.",
+    "filter": "Lọc"
   },
   "vaccination": {
     "title": "Tiêm chủng",
@@ -212,6 +270,25 @@
     "title": "Sức khỏe",
     "vaccination": "Tiêm phòng",
     "treatment": "Điều trị"
+  },
+  "scan": {
+    "title": "Quét mã QR",
+    "hint": "Đưa mã QR vào khung để quét tự động",
+    "manualSearch": "Tìm theo số hiệu",
+    "recentLabel": "Quét gần đây",
+    "searching": "Đang tìm kiếm...",
+    "notFound": "Không tìm thấy vật nuôi với mã QR này.",
+    "retry": "Thử lại",
+    "permissionRequired": "Cần quyền truy cập camera để quét mã QR.",
+    "grantPermission": "Cấp quyền",
+    "viewDetail": "Xem chi tiết đầy đủ",
+    "quickActions": {
+      "weigh": "Cân",
+      "vaccine": "Vaccine",
+      "health": "Sức khỏe",
+      "feed": "Cho ăn",
+      "profile": "Hồ sơ"
+    }
   },
   "notFound": {
     "title": "404 — Không tìm thấy trang",

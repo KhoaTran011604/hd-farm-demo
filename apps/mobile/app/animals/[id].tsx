@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, ActivityIndicator,
   Modal, TouchableOpacity, KeyboardAvoidingView, Platform, Alert,
@@ -25,14 +25,20 @@ function FieldRow({ label, value }: { label: string; value: string }) {
 }
 
 export default function AnimalDetailScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, action } = useLocalSearchParams<{ id: string; action?: string }>();
   const { data: animal, isLoading, isError } = useAnimalDetailQuery(id);
   const [activeAction, setActiveAction] = useState<QuickAction>(null);
+
+  useEffect(() => {
+    if (action === 'weigh' || action === 'status' || action === 'vaccinate') {
+      setActiveAction(action);
+    }
+  }, [action]);
 
   if (isLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator color="#1a7f37" size="large" />
+        <ActivityIndicator color="#1A3009" size="large" />
       </View>
     );
   }
@@ -173,7 +179,7 @@ function QuickActionModal({
   children: React.ReactNode;
 }) {
   return (
-    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+    <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.modalOverlay}

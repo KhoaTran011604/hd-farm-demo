@@ -10,6 +10,12 @@ export interface UpcomingVaccination {
   dueDate: string;
 }
 
+export interface PaginatedVaccinations {
+  items: UpcomingVaccination[];
+  total: number;
+  nextOffset?: number;
+}
+
 async function fetchUpcomingVaccinations(
   farmId?: string,
   days = 7
@@ -18,7 +24,8 @@ async function fetchUpcomingVaccinations(
   if (farmId) params.set('farmId', farmId);
   const res = await fetch(`/api/proxy/alerts/upcoming-vaccinations?${params}`);
   if (!res.ok) throw new Error('Failed to fetch upcoming vaccinations');
-  return res.json() as Promise<UpcomingVaccination[]>;
+  const paginated = await res.json() as PaginatedVaccinations;
+  return paginated.items;
 }
 
 export function useUpcomingVaccinationsQuery(farmId?: string, days = 7) {

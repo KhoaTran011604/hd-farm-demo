@@ -32,7 +32,7 @@ export function GenericList<TItem>({
   if (isLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator color="#1a7f37" size="large" />
+        <ActivityIndicator color="#1A3009" size="large" />
       </View>
     );
   }
@@ -47,7 +47,7 @@ export function GenericList<TItem>({
       ListEmptyComponent={<Text style={styles.emptyText}>{emptyMessage}</Text>}
       ListFooterComponent={
         isFetchingNextPage ? (
-          <ActivityIndicator color="#1a7f37" style={styles.footer} />
+          <ActivityIndicator color="#1A3009" style={styles.footer} />
         ) : null
       }
       onEndReached={() => {
@@ -56,7 +56,7 @@ export function GenericList<TItem>({
       onEndReachedThreshold={0.3}
       refreshControl={
         onRefresh ? (
-          <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} tintColor="#1a7f37" />
+          <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} tintColor="#1A3009" />
         ) : undefined
       }
     />

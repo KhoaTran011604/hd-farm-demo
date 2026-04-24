@@ -10,19 +10,51 @@ export interface UpcomingVaccination {
   dueDate: Date;
 }
 
+export interface PaginatedVaccinations {
+  items: UpcomingVaccination[];
+  total: number;
+  nextOffset?: number;
+}
+
 export async function getUpcomingVaccinations(
   db: Database,
   companyId: string,
   farmId?: string,
-  days = 7
-): Promise<UpcomingVaccination[]> {
+  days = 7,
+  limit = 200,
+  offset = 0,
+): Promise<PaginatedVaccinations> {
   const farmFilter = farmId
     ? sql`AND a.farm_id = ${farmId}`
     : sql``;
 
-  // Compute due_date per animal+vaccine pair:
-  //   COALESCE(MAX(next_due_at), MAX(vaccinated_at) + interval_days days)
-  // Only returns rows where due_date falls within [now, now + days]
+  const dateCondition = sql`
+    COALESCE(
+      MAX(vr.next_due_at),
+      MAX(vr.vaccinated_at) + vt.interval_days * INTERVAL '1 day',
+      NOW()
+    ) BETWEEN NOW() - INTERVAL '1 day' AND NOW() + ${days} * INTERVAL '1 day'
+  `;
+
+  const totalResult = await db.execute<{ count: number }>(sql`
+    SELECT COUNT(*) AS count
+    FROM animals a
+    JOIN vaccine_types vt ON vt.species = a.species
+    LEFT JOIN vaccination_records vr
+      ON vr.animal_id = a.id
+      AND vr.vaccine_type_id = vt.id
+    WHERE
+      a.company_id = ${companyId}
+      AND a.deleted_at IS NULL
+      AND a.status NOT IN ('dead', 'sold')
+      AND vt.interval_days IS NOT NULL
+      ${farmFilter}
+    GROUP BY a.id, a.name, a.species, vt.id, vt.name, vt.interval_days
+    HAVING ${dateCondition}
+  `);
+
+  const total = Array.from(totalResult).length;
+
   const result = await db.execute<{
     animal_id: string;
     animal_name: string;
@@ -54,17 +86,13 @@ export async function getUpcomingVaccinations(
       AND vt.interval_days IS NOT NULL
       ${farmFilter}
     GROUP BY a.id, a.name, a.species, vt.id, vt.name, vt.interval_days
-    HAVING
-      COALESCE(
-        MAX(vr.next_due_at),
-        MAX(vr.vaccinated_at) + vt.interval_days * INTERVAL '1 day',
-        NOW()
-      ) BETWEEN NOW() - INTERVAL '1 day' AND NOW() + ${days} * INTERVAL '1 day'
+    HAVING ${dateCondition}
     ORDER BY due_date ASC
-    LIMIT 200
+    LIMIT ${limit}
+    OFFSET ${offset}
   `);
 
-  return Array.from(result).map((r) => ({
+  const items = Array.from(result).map((r) => ({
     animalId: r.animal_id,
     animalName: r.animal_name,
     species: r.species,
@@ -72,4 +100,10 @@ export async function getUpcomingVaccinations(
     vaccineName: r.vaccine_name,
     dueDate: r.due_date,
   }));
+
+  return {
+    items,
+    total,
+    nextOffset: items.length === limit ? offset + limit : undefined,
+  };
 }

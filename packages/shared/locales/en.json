@@ -76,6 +76,37 @@
       "reports": "Reports",
       "total": "Total",
       "alertsCount": "Alerts"
+    },
+    "home": {
+      "greeting": {
+        "morning": "Good morning",
+        "afternoon": "Good afternoon",
+        "evening": "Good evening"
+      },
+      "userDefault": "User",
+      "tasksToday": "Tasks for today",
+      "noTasks": "No tasks for today",
+      "viewAll": "View all",
+      "quickActions": "Quick Actions",
+      "quickWeigh": "Weigh",
+      "quickVaccine": "Vaccine",
+      "quickFeed": "Feed",
+      "farmOverview": "Farm Overview",
+      "viewDetails": "Details",
+      "statsTotal": "Total herd",
+      "statsHealthy": "Healthy",
+      "statsSick": "Sick",
+      "statsMonitoring": "Monitoring",
+      "statsNeedVaccine": "Need vaccine",
+      "statsNotVaccinated": "Not vaccinated",
+      "statsGood": "Good",
+      "statsHealthySub": "Total animals",
+      "statsSickSub": "{count} being monitored",
+      "statsNeedVaccineSub": "Not vaccinated",
+      "statsHealthySubGood": "Good",
+      "zoneManager": "Farm-wide management",
+      "zoneWorker": "Area in charge",
+      "statusNormal": "Normal"
     }
   },
   "animals": {
@@ -182,7 +213,34 @@
     "dueDate": "Due {date}",
     "dueToday": "Due today",
     "dueTomorrow": "Due tomorrow",
-    "viewAll": "View all"
+    "viewAll": "View all",
+    "tabs": {
+      "today": "Today ({count})",
+      "week": "This week ({count})"
+    },
+    "groups": {
+      "overdue": "Overdue",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "week": "This week"
+    },
+    "badge": {
+      "overdue": "Overdue",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "upcoming": "Upcoming"
+    },
+    "card": {
+      "overdueDays": "Overdue {days} day(s)",
+      "dueToday": "Due today",
+      "dueDate": "Due {date}",
+      "scanQr": "Scan QR",
+      "view": "View"
+    },
+    "empty": "No alerts",
+    "emptyTitle": "All caught up!",
+    "emptyDesc": "No alerts for this week.",
+    "filter": "Filter"
   },
   "vaccination": {
     "title": "Vaccination",
@@ -212,6 +270,25 @@
     "title": "Health",
     "vaccination": "Vaccination",
     "treatment": "Treatment"
+  },
+  "scan": {
+    "title": "Scan QR Code",
+    "hint": "Align QR code within the frame to scan automatically",
+    "manualSearch": "Search by ID",
+    "recentLabel": "Recent scans",
+    "searching": "Searching...",
+    "notFound": "No animal found with this QR code.",
+    "retry": "Try again",
+    "permissionRequired": "Camera permission is required to scan QR codes.",
+    "grantPermission": "Grant permission",
+    "viewDetail": "View full details",
+    "quickActions": {
+      "weigh": "Weigh",
+      "vaccine": "Vaccine",
+      "health": "Health",
+      "feed": "Feed",
+      "profile": "Profile"
+    }
   },
   "notFound": {
     "title": "404 — Page not found",

@@ -37,5 +37,6 @@ export const queryKeys = {
   alerts: {
     all: ['alerts'] as const,
     upcomingVaccinations: (days?: number) => ['alerts', 'upcoming-vaccinations', days] as const,
+    upcomingVaccinationsPagination: (days?: number) => ['alerts', 'upcoming-vaccinations-pagination', days] as const,
   },
 } as const;

@@ -31,7 +31,7 @@ function PenSection({ pen, zoneName }: { pen: Pen; zoneName: string }) {
       {expanded ? (
         <View style={styles.penContent}>
           {isLoading ? (
-            <ActivityIndicator color="#1a7f37" style={{ marginVertical: 12 }} />
+            <ActivityIndicator color="#1A3009" style={{ marginVertical: 12 }} />
           ) : (data?.items?.length ?? 0) === 0 ? (
             <Text style={styles.emptyText}>{t('zones.noAnimals')}</Text>
           ) : (
@@ -62,7 +62,7 @@ function ZoneSection({ zone }: { zone: Zone }) {
 
       {expanded ? (
         isLoading ? (
-          <ActivityIndicator color="#1a7f37" style={{ marginVertical: 12 }} />
+          <ActivityIndicator color="#1A3009" style={{ marginVertical: 12 }} />
         ) : (pens?.length ?? 0) === 0 ? (
           <Text style={styles.emptyText}>{t('zones.noPens')}</Text>
         ) : (
@@ -84,7 +84,7 @@ export default function ZonesScreen() {
   if (farmsLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator color="#1a7f37" size="large" />
+        <ActivityIndicator color="#1A3009" size="large" />
       </View>
     );
   }
@@ -94,7 +94,7 @@ export default function ZonesScreen() {
       style={styles.screen}
       contentContainerStyle={styles.content}
       refreshControl={
-        <RefreshControl refreshing={isFetching} onRefresh={() => void refetch()} tintColor="#1a7f37" />
+        <RefreshControl refreshing={isFetching} onRefresh={() => void refetch()} tintColor="#1A3009" />
       }
     >
       <Text style={styles.heading}>{t('zones.title')}</Text>
@@ -116,7 +116,7 @@ export default function ZonesScreen() {
       ) : null}
 
       {zonesLoading ? (
-        <ActivityIndicator color="#1a7f37" style={{ marginTop: 24 }} />
+        <ActivityIndicator color="#1A3009" style={{ marginTop: 24 }} />
       ) : (zones?.length ?? 0) === 0 ? (
         <Card><Text style={styles.emptyText}>{t('zones.noZones')}</Text></Card>
       ) : (
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
   heading: { fontSize: 22, fontWeight: '700', color: '#111827', marginBottom: 12 },
   farmTabs: { marginBottom: 16 },
   farmTab: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: '#f3f4f6', borderWidth: 1, borderColor: '#e5e7eb' },
-  farmTabActive: { backgroundColor: '#1a7f37', borderColor: '#1a7f37' },
+  farmTabActive: { backgroundColor: '#1A3009', borderColor: '#1A3009' },
   farmTabText: { fontSize: 13, color: '#374151', fontWeight: '500' },
   farmTabTextActive: { color: '#fff' },
   zoneCard: { marginBottom: 12 },

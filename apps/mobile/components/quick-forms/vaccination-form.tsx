@@ -194,9 +194,9 @@ const styles = StyleSheet.create({
     borderColor: '#d1d5db',
     backgroundColor: '#f9fafb',
   },
-  chipSelected: { borderColor: '#1a7f37', backgroundColor: '#f0faf3' },
+  chipSelected: { borderColor: '#1A3009', backgroundColor: '#f0faf3' },
   chipText: { fontSize: 13, fontWeight: '500', color: '#374151' },
-  chipTextSelected: { color: '#1a7f37' },
+  chipTextSelected: { color: '#1A3009' },
   readonlyField: { gap: 4 },
   readonlyLabel: { fontSize: 14, fontWeight: '500', color: '#374151' },
   readonlyValue: {
@@ -216,5 +216,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#bbf7d0',
   },
-  infoText: { fontSize: 13, color: '#1a7f37' },
+  infoText: { fontSize: 13, color: '#1A3009' },
 });

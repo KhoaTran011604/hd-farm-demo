@@ -55,6 +55,6 @@ const styles = StyleSheet.create({
   flex: { flex: 1, backgroundColor: '#f9fafb' },
   container: { flexGrow: 1, justifyContent: 'center', padding: 24 },
   header: { alignItems: 'center', marginBottom: 40 },
-  title: { fontSize: 32, fontWeight: '700', color: '#1a7f37' },
+  title: { fontSize: 32, fontWeight: '700', color: '#1A3009' },
   subtitle: { fontSize: 16, color: '#6b7280', marginTop: 6 },
 });

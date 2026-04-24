@@ -20,7 +20,7 @@ function MenuRow({ label, icon, onPress, danger }: MenuRowProps) {
   return (
     <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.7}>
       <View style={[styles.iconWrap, danger && styles.iconWrapDanger]}>
-        <Ionicons name={icon} size={18} color={danger ? '#d1242f' : '#1a7f37'} />
+        <Ionicons name={icon} size={18} color={danger ? '#d1242f' : '#1A3009'} />
       </View>
       <Text style={[styles.rowLabel, danger && styles.danger]}>{label}</Text>
       <Ionicons name="chevron-forward" size={18} color="#c7c7cc" />

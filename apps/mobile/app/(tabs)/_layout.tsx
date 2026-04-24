@@ -15,7 +15,7 @@ function QrFabButton({ onPress }: { onPress: () => void }) {
 }
 
 const TAB_BAR_HEIGHT = 64;
-const GREEN = '#1a7f37';
+const GREEN = '#1A3009';
 
 export default function TabsLayout() {
   const router = useRouter();
@@ -55,6 +55,7 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: t('tabs.home'),
+          headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'home' : 'home-outline'} size={24} color={color} />
           ),
@@ -73,6 +74,7 @@ export default function TabsLayout() {
         name="scan"
         options={{
           title: '',
+          headerShown: false,
           tabBarButton: () => (
             <QrFabButton onPress={() => router.push('/(tabs)/scan')} />
           ),
@@ -82,6 +84,7 @@ export default function TabsLayout() {
         name="alerts"
         options={{
           title: t('tabs.alerts'),
+          headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'notifications' : 'notifications-outline'} size={24} color={color} />
           ),
@@ -111,10 +114,10 @@ const styles = StyleSheet.create({
     width: 58,
     height: 58,
     borderRadius: 29,
-    backgroundColor: '#1a7f37',
+    backgroundColor: '#1A3009',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#1a7f37',
+    shadowColor: '#1A3009',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.35,
     shadowRadius: 8,

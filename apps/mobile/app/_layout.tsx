@@ -11,7 +11,7 @@ import { queryClient } from '../lib/query-client';
 import { setUnauthorizedHandler } from '../lib/api';
 import { I18nProvider } from '@/i18n/i18n-context';
 
-const GREEN = '#1a7f37';
+const GREEN = '#1A3009';
 
 export default function RootLayout() {
   const router = useRouter();
@@ -71,7 +71,7 @@ export default function RootLayout() {
         </Stack>
         {!checked && (
           <View style={[StyleSheet.absoluteFill, styles.loading]}>
-            <ActivityIndicator color="#1a7f37" size="large" />
+            <ActivityIndicator color="#1A3009" size="large" />
           </View>
         )}
       </QueryClientProvider>

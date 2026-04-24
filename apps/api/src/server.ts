@@ -13,6 +13,8 @@ import pensRoutes from './modules/tenancy/pens-routes.js';
 import animalsRoutes from './modules/animals/animals-routes.js';
 import dashboardRoutes from './modules/dashboard/dashboard-routes.js';
 import vaccinationsRoutes from './modules/vaccinations/vaccinations-routes.js';
+import diseasesRoutes from './modules/diseases/diseases-routes.js';
+import treatmentsRoutes from './modules/treatments/treatments-routes.js';
 import alertsRoutes from './modules/alerts/alerts-routes.js';
 
 export async function buildServer() {
@@ -41,6 +43,8 @@ export async function buildServer() {
   await app.register(animalsRoutes);
   await app.register(dashboardRoutes);
   await app.register(vaccinationsRoutes);
+  await app.register(diseasesRoutes);
+  await app.register(treatmentsRoutes);
   await app.register(alertsRoutes);
 
   return app;

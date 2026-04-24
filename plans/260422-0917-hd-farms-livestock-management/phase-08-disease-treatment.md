@@ -6,7 +6,7 @@
 
 ## Overview
 - **Priority**: P2
-- **Status**: Pending
+- **Status**: Complete
 - **Effort**: 5 days
 - **Description**: Disease records + linked treatment records CRUD. Auto status change to `sick`/`treating` on disease recording. Mobile quick disease form. Web Bệnh án tab with treatment timeline.
 
@@ -90,16 +90,25 @@ apps/mobile/components/quickForms/
 11. **Compile + test all transition paths**
 
 ## Todo List
-- [ ] Severity enum + shared types
-- [ ] Diseases service + auto status tx
-- [ ] Treatments service + withdrawal helper
-- [ ] Routes with role guards
-- [ ] Shared validators
-- [ ] Web DiseaseTab + dialogs
-- [ ] Web withdrawal banner on detail
-- [ ] Mobile DiseaseReportForm
-- [ ] Wire mobile quick action
-- [ ] Compile + test status transitions end-to-end
+- [x] Severity enum + shared types
+- [x] Diseases service + auto status tx
+- [x] Treatments service + withdrawal helper
+- [x] Routes with role guards
+- [x] Shared validators
+- [x] Web DiseaseTab + dialogs
+- [x] Web withdrawal banner on detail
+- [x] Mobile DiseaseReportForm
+- [x] Wire mobile quick action
+- [x] Compile + test status transitions end-to-end
+
+## Deviations from Plan (YAGNI)
+- **Severity enum**: Plan had `critical` — DB schema only supports `mild|moderate|severe`. Kept existing enum; `severe` covers critical.
+- **Status transitions**: DB enum lacks `treating`/`active`. Implemented: disease severity≥moderate → `sick`; resolve + no active diseases → `recovered`. Skipped intermediate `treating` state.
+- **Vet role**: Not defined in `UserRole` type. Medical writes locked to `admin|manager`. Workers can REPORT disease (create only), cannot manage treatments.
+- **Schema additions** (`packages/db/src/schema/health.ts`):
+  - `disease_records`: added `notes`, `recordedById`
+  - `treatment_records`: added `withdrawalDays`, `endedAt`
+  - Requires `drizzle-kit generate && migrate` to sync DB.
 
 ## Success Criteria
 - Creating severe disease sets animal.status = 'sick' atomically

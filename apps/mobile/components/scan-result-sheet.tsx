@@ -12,7 +12,7 @@ interface ScanResultSheetProps {
   onDismiss: () => void;
 }
 
-type QuickActionKey = 'weigh' | 'vaccinate' | 'status' | 'feed' | null;
+type QuickActionKey = 'weigh' | 'vaccinate' | 'status' | 'disease' | 'feed' | null;
 
 const STATUS_COLOR: Record<HealthStatus, { bg: string; text: string }> = {
   healthy: { bg: '#DCFCE7', text: '#16A34A' },
@@ -51,6 +51,7 @@ export function ScanResultSheet({ animal, onDismiss }: ScanResultSheetProps) {
     { icon: 'scale-outline', labelKey: 'scan.quickActions.weigh', bg: '#FEF3C7', color: '#D97706', action: 'weigh' },
     { icon: 'medical-outline', labelKey: 'scan.quickActions.vaccine', bg: '#DBEAFE', color: '#2563EB', action: 'vaccinate' },
     { icon: 'pulse-outline', labelKey: 'scan.quickActions.health', bg: '#DCFCE7', color: '#16A34A', action: 'status' },
+    { icon: 'warning-outline', labelKey: 'scan.quickActions.disease', bg: '#FEE2E2', color: '#DC2626', action: 'disease' },
     { icon: 'restaurant-outline', labelKey: 'scan.quickActions.feed', bg: '#FFF7ED', color: '#EA580C', action: 'feed' },
     { icon: 'document-text-outline', labelKey: 'scan.quickActions.profile', bg: '#F3F4F6', color: '#6B7280', action: null },
   ];

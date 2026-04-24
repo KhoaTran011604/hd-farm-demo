@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { AnimalDetailHeader } from '@/components/animals/animal-detail-header';
 import { AnimalStatCards } from '@/components/animals/animal-stat-cards';
 import { AnimalTabs } from '@/components/animals/animal-tabs';
+import { WithdrawalBanner } from '@/components/animals/withdrawal-banner';
 import { api } from '@/lib/api';
 import type { AnimalRow } from '@/lib/animal-types';
 
@@ -22,6 +23,7 @@ export default async function AnimalDetailPage({ params }: Props): Promise<React
   return (
     <div className="flex flex-col gap-5">
       <AnimalDetailHeader animal={animal} />
+      <WithdrawalBanner animalId={animal.id} />
       <AnimalStatCards />
       <AnimalTabs animal={animal} />
     </div>

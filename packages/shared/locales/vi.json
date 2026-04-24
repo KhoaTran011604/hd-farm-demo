@@ -381,6 +381,48 @@
     "nextDueAutoFill": "Tự động từ khoảng cách tiêm",
     "today": "Hôm nay"
   },
+  "disease": {
+    "title": "Bệnh & Điều trị",
+    "recordDisease": "Ghi nhận bệnh",
+    "addTreatment": "Thêm điều trị",
+    "resolve": "Đánh dấu đã khỏi",
+    "resolved": "Đã khỏi",
+    "active": "Đang điều trị",
+    "noRecords": "Chưa có hồ sơ bệnh.",
+    "diseaseType": "Loại bệnh",
+    "chooseDiseaseType": "Chọn loại bệnh (tuỳ chọn)",
+    "severity": "Mức độ",
+    "symptoms": "Triệu chứng",
+    "symptomsPlaceholder": "VD: sốt, bỏ ăn, khó thở...",
+    "notes": "Ghi chú",
+    "diagnosedAt": "Ngày chẩn đoán",
+    "resolvedAt": "Ngày khỏi bệnh",
+    "created": "Đã ghi nhận bệnh",
+    "updated": "Đã cập nhật bệnh",
+    "severities": {
+      "mild": "Nhẹ",
+      "moderate": "Trung bình",
+      "severe": "Nặng"
+    },
+    "treatment": {
+      "medicine": "Thuốc",
+      "medicinePlaceholder": "VD: Amoxicillin",
+      "dosage": "Liều lượng",
+      "dosagePlaceholder": "VD: 2ml x 2 lần/ngày",
+      "withdrawalDays": "Thời gian cách ly (ngày)",
+      "withdrawalHint": "Số ngày cách ly trước khi giết mổ",
+      "treatedAt": "Bắt đầu",
+      "endedAt": "Kết thúc",
+      "notes": "Ghi chú",
+      "created": "Đã ghi nhận điều trị",
+      "noTreatments": "Chưa có điều trị nào."
+    },
+    "withdrawal": {
+      "bannerTitle": "Đang trong thời gian cách ly thuốc",
+      "bannerDesc": "Vật nuôi này chưa thể bán hoặc giết mổ.",
+      "until": "Được phép từ"
+    }
+  },
   "pens": {
     "title": "Chuồng",
     "list": "Danh sách chuồng"
@@ -405,6 +447,7 @@
       "weigh": "Cân",
       "vaccine": "Vaccine",
       "health": "Sức khỏe",
+      "disease": "Ghi bệnh",
       "feed": "Cho ăn",
       "profile": "Hồ sơ"
     }

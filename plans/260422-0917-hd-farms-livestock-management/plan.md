@@ -51,7 +51,7 @@ Row-based: company → farm → zone → pen → animal. JWT scoped with `compan
 
 | #   | Phase                                                           | Days | Status  |
 | --- | --------------------------------------------------------------- | ---- | ------- |
-| 08  | [Disease Records + Treatment](./phase-08-disease-treatment.md)  | 5    | Pending |
+| 08  | [Disease Records + Treatment](./phase-08-disease-treatment.md)  | 5    | Complete |
 | 09  | [Batch (Lứa) Management](./phase-09-batch-management.md)        | 5    | Pending |
 | 10  | [Feeding Records + FCR](./phase-10-feeding-fcr.md)              | 6    | Pending |
 | 11  | [Reproduction Events](./phase-11-reproduction.md)               | 7    | Pending |

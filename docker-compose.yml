@@ -23,7 +23,7 @@ services:
     restart: unless-stopped
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@hdfarm.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_PASSWORD: admin@hdfarm.com
       PGADMIN_LISTEN_ADDRESS: 127.0.0.1
     ports:
       - "127.0.0.1:5050:80"

@@ -4,6 +4,19 @@ export type { Company, Farm, Zone, Pen } from './types/farm.js';
 export type { AnimalType, VaccineType, FeedType, DiseaseType } from './types/config.js';
 export { createAnimalSchema, updateAnimalSchema, createBatchSchema, updateAnimalStatusSchema, recordWeightSchema } from './validators/animal-validators.js';
 export { createVaccinationSchema, updateVaccinationSchema } from './validators/vaccination-validators.js';
+export {
+  createDiseaseSchema,
+  updateDiseaseSchema,
+  DISEASE_SEVERITIES,
+  DISEASE_SEVERITY_LABELS,
+  severityRequiresSick,
+} from './validators/disease-validators.js';
+export type { DiseaseSeverity } from './validators/disease-validators.js';
+export {
+  createTreatmentSchema,
+  updateTreatmentSchema,
+  withdrawalEndDate,
+} from './validators/treatment-validators.js';
 export { canTransition, TRANSITIONS, TERMINAL_STATUSES } from './validators/animal-status.js';
 export { loginSchema, createUserSchema, updateUserSchema } from './validators/user-validators.js';
 export {

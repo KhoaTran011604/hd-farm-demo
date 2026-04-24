@@ -19,12 +19,19 @@ export const queryKeys = {
     byPen: (penId: string) => ['animals', 'pen', penId] as const,
     health: (id: string) => ['animals', id, 'health'] as const,
     vaccinations: (id: string) => ['animals', id, 'vaccinations'] as const,
+    diseases: (id: string) => ['animals', id, 'diseases'] as const,
+    withdrawals: (id: string) => ['animals', id, 'withdrawals'] as const,
   },
   vaccinations: {
     all: ['vaccinations'] as const,
   },
+  diseases: {
+    all: ['diseases'] as const,
+    treatments: (diseaseId: string) => ['diseases', diseaseId, 'treatments'] as const,
+  },
   config: {
     vaccineTypes: ['config', 'vaccine-types'] as const,
+    diseaseTypes: ['config', 'disease-types'] as const,
   },
   alerts: {
     all: ['alerts'] as const,

@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Card } from '@/components/ui/card';
 
-export type TimelineAction = 'weigh' | 'status' | 'vaccinate';
+export type TimelineAction = 'weigh' | 'status' | 'vaccinate' | 'disease';
 type TabKey = 'weight' | 'status' | 'vaccine';
 
 interface TimelineEntry {

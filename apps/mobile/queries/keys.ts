@@ -31,8 +31,14 @@ export const queryKeys = {
   vaccinations: {
     byAnimal: (animalId: string) => ['vaccinations', 'animal', animalId] as const,
   },
+  diseases: {
+    byAnimal: (animalId: string) => ['diseases', 'animal', animalId] as const,
+    treatments: (diseaseId: string) => ['diseases', diseaseId, 'treatments'] as const,
+    withdrawalsByAnimal: (animalId: string) => ['withdrawals', 'animal', animalId] as const,
+  },
   config: {
     vaccineTypes: ['config', 'vaccine-types'] as const,
+    diseaseTypes: ['config', 'disease-types'] as const,
   },
   alerts: {
     all: ['alerts'] as const,

@@ -381,6 +381,48 @@
     "nextDueAutoFill": "Auto-filled from interval",
     "today": "Today"
   },
+  "disease": {
+    "title": "Diseases & Treatments",
+    "recordDisease": "Record Disease",
+    "addTreatment": "Add Treatment",
+    "resolve": "Mark Resolved",
+    "resolved": "Resolved",
+    "active": "Active",
+    "noRecords": "No disease records yet.",
+    "diseaseType": "Disease type",
+    "chooseDiseaseType": "Choose disease type (optional)",
+    "severity": "Severity",
+    "symptoms": "Symptoms",
+    "symptomsPlaceholder": "e.g. fever, loss of appetite...",
+    "notes": "Notes",
+    "diagnosedAt": "Diagnosed on",
+    "resolvedAt": "Resolved on",
+    "created": "Disease recorded",
+    "updated": "Disease updated",
+    "severities": {
+      "mild": "Mild",
+      "moderate": "Moderate",
+      "severe": "Severe"
+    },
+    "treatment": {
+      "medicine": "Medicine",
+      "medicinePlaceholder": "e.g. Amoxicillin",
+      "dosage": "Dosage",
+      "dosagePlaceholder": "e.g. 2ml x 2/day",
+      "withdrawalDays": "Withdrawal period (days)",
+      "withdrawalHint": "Days before meat is safe for slaughter",
+      "treatedAt": "Started on",
+      "endedAt": "Ended on",
+      "notes": "Notes",
+      "created": "Treatment recorded",
+      "noTreatments": "No treatments logged."
+    },
+    "withdrawal": {
+      "bannerTitle": "Active drug withdrawal",
+      "bannerDesc": "This animal cannot be sold or slaughtered yet.",
+      "until": "Safe on"
+    }
+  },
   "pens": {
     "title": "Pens",
     "list": "Pen list"
@@ -405,6 +447,7 @@
       "weigh": "Weigh",
       "vaccine": "Vaccine",
       "health": "Health",
+      "disease": "Disease",
       "feed": "Feed",
       "profile": "Profile"
     }

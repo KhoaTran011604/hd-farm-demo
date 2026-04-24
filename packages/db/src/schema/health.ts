@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, numeric, index } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, timestamp, numeric, integer, index } from 'drizzle-orm/pg-core';
 import { animals } from './animals';
 import { diseaseTypes, vaccineTypes } from './config';
 
@@ -28,6 +28,8 @@ export const diseaseRecords = pgTable('disease_records', {
   diseaseTypeId: uuid('disease_type_id').references(() => diseaseTypes.id),
   severity: text('severity', { enum: ['mild', 'moderate', 'severe'] }).notNull(),
   symptoms: text('symptoms'),
+  notes: text('notes'),
+  recordedById: uuid('recorded_by_id'),
   diagnosedAt: timestamp('diagnosed_at').notNull(),
   resolvedAt: timestamp('resolved_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -44,8 +46,10 @@ export const treatmentRecords = pgTable('treatment_records', {
   diseaseRecordId: uuid('disease_record_id').references(() => diseaseRecords.id),
   medicine: text('medicine').notNull(),
   dosage: text('dosage'),
+  withdrawalDays: integer('withdrawal_days'),
   treatedById: uuid('treated_by_id').notNull(),
   treatedAt: timestamp('treated_at').defaultNow().notNull(),
+  endedAt: timestamp('ended_at'),
   notes: text('notes'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, (t) => [

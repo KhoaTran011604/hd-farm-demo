@@ -6,6 +6,7 @@ import { useRouter } from '@/i18n/navigation';
 import { toast } from 'sonner';
 import { HealthTab } from '@/components/animals/health-tab';
 import { VaccinationTab } from '@/components/animals/vaccination-tab';
+import { DiseaseTab } from '@/components/animals/disease-tab';
 import { AnimalOverviewPanel } from '@/components/animals/animal-overview-panel';
 import { StatusChangeDialog } from '@/components/animals/status-change-dialog';
 import type { AnimalRow } from '@/lib/animal-types';
@@ -20,7 +21,6 @@ type TabKey =
   | 'reproduction';
 
 const PLACEHOLDER_TABS: Record<string, number> = {
-  disease: 8,
   feeding: 10,
   reproduction: 11,
 };
@@ -79,6 +79,7 @@ export function AnimalTabs({ animal }: AnimalTabsProps): React.JSX.Element {
           ) : null}
           {active === 'health' ? <HealthTab animalId={animal.id} /> : null}
           {active === 'vaccination' ? <VaccinationTab animalId={animal.id} /> : null}
+          {active === 'disease' ? <DiseaseTab animalId={animal.id} /> : null}
           {PLACEHOLDER_TABS[active] ? (
             <div className="flex flex-col items-center justify-center gap-2 py-16 text-muted-foreground">
               <span className="text-4xl">🚧</span>

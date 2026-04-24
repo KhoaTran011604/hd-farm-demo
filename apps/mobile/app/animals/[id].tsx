@@ -9,11 +9,12 @@ import { Badge } from '@/components/ui/badge';
 import { WeighForm } from '@/components/quick-forms/weigh-form';
 import { StatusChangeForm } from '@/components/quick-forms/status-change-form';
 import { VaccinationForm } from '@/components/quick-forms/vaccination-form';
+import { DiseaseReportForm } from '@/components/quick-forms/disease-report-form';
 import { AnimalTimeline, type TimelineAction } from '@/components/animal-timeline';
 import { useAnimalDetailQuery } from '@/queries/animals/queries';
 import type { HealthStatus } from '@hd-farm/shared';
 
-type QuickAction = 'weigh' | 'status' | 'vaccinate' | null;
+type QuickAction = 'weigh' | 'status' | 'vaccinate' | 'disease' | null;
 
 function FieldRow({ label, value }: { label: string; value: string }) {
   return (
@@ -30,7 +31,12 @@ export default function AnimalDetailScreen() {
   const [activeAction, setActiveAction] = useState<QuickAction>(null);
 
   useEffect(() => {
-    if (action === 'weigh' || action === 'status' || action === 'vaccinate') {
+    if (
+      action === 'weigh' ||
+      action === 'status' ||
+      action === 'vaccinate' ||
+      action === 'disease'
+    ) {
       setActiveAction(action);
     }
   }, [action]);
@@ -60,6 +66,7 @@ export default function AnimalDetailScreen() {
       weigh: 'Đã ghi nhận cân nặng',
       status: 'Đã cập nhật trạng thái',
       vaccinate: 'Đã ghi nhận mũi tiêm',
+      disease: 'Đã ghi nhận bệnh',
     };
     if (action) Alert.alert('Thành công', messages[action]);
   };
@@ -144,6 +151,19 @@ export default function AnimalDetailScreen() {
         <VaccinationForm
           animalId={animal.id}
           onSuccess={() => handleSuccess('vaccinate')}
+          onError={handleError}
+        />
+      </QuickActionModal>
+
+      {/* Disease modal */}
+      <QuickActionModal
+        visible={activeAction === 'disease'}
+        title="Ghi nhận bệnh"
+        onClose={() => setActiveAction(null)}
+      >
+        <DiseaseReportForm
+          animalId={animal.id}
+          onSuccess={() => handleSuccess('disease')}
           onError={handleError}
         />
       </QuickActionModal>

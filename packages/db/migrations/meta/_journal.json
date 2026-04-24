@@ -15,6 +15,13 @@
       "when": 1776933690343,
       "tag": "0001_amusing_lake",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1777017740711,
+      "tag": "0002_stiff_madame_hydra",
+      "breakpoints": true
     }
   ]
 }

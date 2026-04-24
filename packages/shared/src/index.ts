@@ -3,6 +3,7 @@ export type { UserRole, User, UserFarmRole, CreateUserInput, LoginInput, AuthTok
 export type { Company, Farm, Zone, Pen } from './types/farm.js';
 export type { AnimalType, VaccineType, FeedType, DiseaseType } from './types/config.js';
 export { createAnimalSchema, updateAnimalSchema, createBatchSchema, updateAnimalStatusSchema, recordWeightSchema } from './validators/animal-validators.js';
+export { createVaccinationSchema, updateVaccinationSchema } from './validators/vaccination-validators.js';
 export { canTransition, TRANSITIONS, TERMINAL_STATUSES } from './validators/animal-status.js';
 export { loginSchema, createUserSchema, updateUserSchema } from './validators/user-validators.js';
 export {

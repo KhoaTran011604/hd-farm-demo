@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart3, Bird, Boxes, Wheat } from 'lucide-react';
+import { UpcomingVaccinationsWidget } from '@/components/dashboard/upcoming-vaccinations-widget';
 
 const STAT_ITEMS = [
   { key: 'animals', icon: Bird },
@@ -31,6 +32,10 @@ export default async function DashboardPage(): Promise<React.JSX.Element> {
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <UpcomingVaccinationsWidget />
       </div>
     </div>
   );

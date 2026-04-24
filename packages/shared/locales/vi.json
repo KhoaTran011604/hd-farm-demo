@@ -176,7 +176,33 @@
   "alerts": {
     "title": "Cảnh báo",
     "noAlerts": "Không có cảnh báo — tất cả vật nuôi đều khỏe mạnh.",
-    "subtitle": "{count} vật nuôi cần chú ý"
+    "subtitle": "{count} vật nuôi cần chú ý",
+    "upcomingVaccinations": "Tiêm chủng sắp đến hạn",
+    "noUpcomingVaccinations": "Không có lịch tiêm chủng trong 7 ngày tới.",
+    "dueDate": "Đến hạn {date}",
+    "dueToday": "Đến hạn hôm nay",
+    "dueTomorrow": "Đến hạn ngày mai",
+    "viewAll": "Xem tất cả"
+  },
+  "vaccination": {
+    "title": "Tiêm chủng",
+    "recordVaccination": "Ghi nhận tiêm chủng",
+    "noRecords": "Chưa có hồ sơ tiêm chủng.",
+    "loadMore": "Tải thêm",
+    "vaccineType": "Loại vaccine",
+    "batchNumber": "Số lô vaccine",
+    "vaccinatedAt": "Ngày tiêm",
+    "nextDueAt": "Lần tiêm tiếp theo",
+    "notes": "Ghi chú",
+    "batchPlaceholder": "VD: LOT-2024-001",
+    "notesPlaceholder": "Ghi chú tuỳ chọn...",
+    "created": "Đã ghi nhận tiêm chủng",
+    "updated": "Đã cập nhật tiêm chủng",
+    "deleted": "Đã xóa hồ sơ tiêm chủng",
+    "confirmDelete": "Xóa hồ sơ tiêm chủng này?",
+    "chooseVaccineType": "Chọn loại vaccine",
+    "nextDueAutoFill": "Tự động từ khoảng cách tiêm",
+    "today": "Hôm nay"
   },
   "pens": {
     "title": "Chuồng",

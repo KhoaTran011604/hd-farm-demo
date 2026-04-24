@@ -45,7 +45,7 @@ Row-based: company → farm → zone → pen → animal. JWT scoped with `compan
 | 04  | [Web Admin - Auth + Animal Management](./phase-04-web-admin-animal.md)    | 3    | Complete |
 | 05  | [Mobile App Foundation + QR Scanner](./phase-05-mobile-foundation.md)     | 4    | Pending |
 | 06  | [Health Status + Quick Actions](./phase-06-health-quick-actions.md)       | 2    | Complete |
-| 07  | [Vaccination System + Alerts](./phase-07-vaccination-alerts.md)           | 2    | Pending |
+| 07  | [Vaccination System + Alerts](./phase-07-vaccination-alerts.md)           | 2    | Complete |
 
 ### Phase 2 — Advanced (~25 days)
 

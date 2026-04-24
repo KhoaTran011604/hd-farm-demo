@@ -4,6 +4,197 @@ All notable changes to the HD-FARM livestock management platform are documented 
 
 ---
 
+## [Phase 07 - Vaccination Alerts] — 2026-04-23
+
+### Added
+
+#### Vaccination Management System
+
+##### API Endpoints
+- **POST /vaccinations**: Create vaccination record (role-gated: admin/manager)
+  - Request: `{ animalId, vaccineTypeId, vaccinatedAt, nextDueAt }`
+  - Validator: `createVaccinationSchema` (ISO date format YYYY-MM-DD)
+  - Response: Created vaccination object with generated ID
+
+- **GET /animals/:id/vaccinations**: Retrieve vaccination history (cursor pagination)
+  - Query params: `limit=20&cursor=<uuid>`
+  - Response: `{ data: [...], meta: { count, nextCursor, hasMore } }`
+  - Ordered by vaccinatedAt descending
+
+- **PATCH /vaccinations/:id**: Update vaccination record (role-gated: admin/manager)
+  - Request: `{ vaccinatedAt?, nextDueAt? }`
+  - Validator: `updateVaccinationSchema` (partial update)
+  - Returns: Updated vaccination object
+
+- **DELETE /vaccinations/:id**: Soft delete vaccination record (role-gated: admin/manager)
+  - Sets deleted_at timestamp
+  - Record remains in audit trail
+
+##### Alerts API
+- **GET /alerts/upcoming-vaccinations**: Query upcoming vaccinations
+  - Query params: `days=30&farmId=<uuid>` (both optional; days defaults to 30)
+  - SQL computed field: `COALESCE(next_due_at, vaccinated_at + INTERVAL '${intervalDays} days', NOW())`
+  - Ensures never-vaccinated animals appear in alerts (fallback to NOW())
+  - Returns: `{ data: [{...}], meta: { count } }`
+  - Grouped by animal with due date in ascending order
+
+##### Shared Validators
+- **createVaccinationSchema**: Validates POST /vaccinations
+  - `animalId`: UUID (required)
+  - `vaccineTypeId`: UUID (required)
+  - `vaccinatedAt`: ISO string YYYY-MM-DD (required)
+  - `nextDueAt`: ISO string YYYY-MM-DD (optional; auto-computed if omitted)
+
+- **updateVaccinationSchema**: Validates PATCH /vaccinations/:id
+  - `vaccinatedAt`: ISO string YYYY-MM-DD (optional)
+  - `nextDueAt`: ISO string YYYY-MM-DD (optional)
+  - Allows partial updates without re-validating entire record
+
+#### Web UI Components
+
+##### VaccinationTab
+- Displays vaccination history timeline (infinite scroll)
+- Vaccine type name, date administered, next due date
+- Status badge: "Overdue", "Due Soon", "On Schedule"
+- Sorted by most recent first
+- Click to expand full record details
+
+##### VaccinationDialog
+- **GenericForm** wrapper for create/edit modes
+- Auto-computes `nextDueAt` based on:
+  - Vaccination date + vaccine type interval (from config)
+  - Formula: `vaccinatedAt + vaccineType.intervalDays`
+- Form fields:
+  - Vaccine type (searchable select)
+  - Vaccination date (date picker, default today)
+  - Next due date (auto-filled, user-editable)
+- Success toast notification on save
+- Cache invalidation triggers full history refetch
+
+##### UpcomingVaccinationsWidget
+- Dashboard widget showing upcoming vaccinations (next 7 days)
+- Count badge with alert color (red if overdue)
+- Quick link to Alerts screen
+
+#### Mobile UI Components
+
+##### VaccinationForm
+- **GenericForm** wrapper for create/edit
+- Chip selector for vaccine type (pre-populated from config)
+- Pre-fill mode: if editing existing vaccination, auto-loads all fields
+- **Live autoNextDue preview** via `useWatch` hook:
+  - Watches `vaccinatedAt` and `vaccineTypeId` changes
+  - Real-time calculation: `new Date(vaccinatedAt) + vaccineType.intervalDays`
+  - User can override computed date if needed
+- Vaccine name display below chip
+- ISO date format enforced (YYYY-MM-DD)
+
+##### Alerts Screen
+- Redesigned to show upcoming vaccinations grouped by time window:
+  - **Today**: Vaccinations due today
+  - **Tomorrow**: Due tomorrow
+  - **This Week**: Due within next 7 days
+- Each group shows:
+  - Animal tag + name
+  - Vaccine type
+  - Days until due (red if overdue)
+- Pull-to-refresh support
+- Tap animal → navigate to animal detail with VaccinationTab expanded
+
+#### Query & Cache Management
+
+##### Centralized Query Keys (apps/web/queries/keys.ts)
+- `vaccinations.all`: Base key for all vaccination queries
+- `vaccinations.list`: List queries (pagination)
+- `vaccinations.byAnimal(animalId)`: Animal-specific vaccination history
+- `alerts.all`: Base key for alerts
+- `alerts.upcoming`: Upcoming vaccinations alert group
+
+##### Mutation Cache Invalidation
+- **POST /vaccinations**: Invalidates `[...alerts.all]` prefix
+  - Ensures upcoming alerts refresh immediately
+- **PATCH /vaccinations/:id**: Invalidates specific animal's history + alerts
+- **DELETE /vaccinations/:id**: Invalidates alerts + history
+
+#### TypeScript & Compilation
+- All new endpoints export TypeScript types from `shared` package
+- Vaccination generic types support generic hooks with proper inference
+- Type-safe vaccine config lookups (vaccineType ID → interval days)
+- 0 TypeScript compilation errors across:
+  - `packages/shared`
+  - `apps/api`
+  - `apps/web`
+  - `apps/mobile`
+
+#### Database Schema
+- **vaccinations table** (if not already present from Phase 06):
+  - id (UUID primary key)
+  - animal_id (FK to animals)
+  - vaccine_type_id (FK to vaccine_types)
+  - vaccinated_at (date)
+  - next_due_at (date, nullable)
+  - deleted_at (soft delete timestamp)
+  - created_at, updated_at
+  - Indices: (animal_id), (vaccine_type_id), (next_due_at)
+
+### Modified Files
+
+**Backend (apps/api/src)**
+- `routes/vaccinations.ts`: New vaccination route module (POST, GET, PATCH, DELETE)
+- `routes/alerts.ts`: Extended with GET /alerts/upcoming-vaccinations endpoint
+- `services/vaccinations.service.ts`: New service for vaccination CRUD + soft delete
+- `services/alerts.service.ts`: Extended with upcoming vaccination calculation
+- `server.ts`: Registered new vaccination routes
+
+**Web (apps/web/src)**
+- `queries/vaccinations/queries.ts`: Vaccination list + history queries (cursor pagination)
+- `queries/vaccinations/mutations.ts`: Create, update, delete mutations
+- `components/animals/VaccinationTab.tsx`: New tab component for vaccination timeline
+- `components/animals/VaccinationDialog.tsx`: New form dialog (GenericForm wrapper)
+- `components/dashboard/UpcomingVaccinationsWidget.tsx`: Dashboard widget
+- `app/(dashboard)/alerts/page.tsx`: Redesigned alerts screen (upcoming vaccinations grouped)
+
+**Mobile (apps/mobile/src)**
+- `queries/vaccinations/queries.ts`: Vaccination history queries
+- `queries/vaccinations/mutations.ts`: Create, update, delete mutations
+- `components/forms/VaccinationForm.tsx`: New form component (GenericForm wrapper)
+- `screens/AlertsScreen.tsx`: Redesigned to show grouped upcoming vaccinations
+- `components/VaccinationCard.tsx`: New card component for vaccination timeline items
+
+**Shared (packages/shared)**
+- `validators/vaccinations.ts`: New file with `createVaccinationSchema` + `updateVaccinationSchema`
+- `types/vaccinations.ts`: Type definitions for Vaccination, VaccinationType
+- `types/api-responses.ts`: Extended with VaccinationResponse type
+
+### Success Validation
+
+- ✓ Vaccination CRUD endpoints functional (POST, GET, PATCH, DELETE)
+- ✓ Role-based access control enforced (admin/manager only for write operations)
+- ✓ Cursor pagination working on GET /animals/:id/vaccinations
+- ✓ Alerts API computes due dates correctly (COALESCE logic captures never-vaccinated)
+- ✓ Web VaccinationTab displays history with auto-computed next due date
+- ✓ Mobile VaccinationForm shows live preview of next due date via useWatch
+- ✓ Alerts screen grouped by Today/Tomorrow/This Week
+- ✓ Query keys centralized in both web and mobile apps
+- ✓ Mutation cache invalidation using alerts.all prefix
+- ✓ TypeScript compilation 0 errors across all 4 packages
+- ✓ All validators enforce ISO date format (YYYY-MM-DD)
+
+### Compile Status
+
+- 0 TypeScript errors (packages/shared, apps/api, apps/web, apps/mobile)
+- All new endpoints properly typed
+- Generic hooks correctly infer types from API responses
+
+### Known Limitations & Follow-ups
+
+- **Batch Vaccination** (Phase 08+): Single animal vaccination only; batch mark functionality pending UI implementation
+- **Vaccination Reminder Notifications** (Phase 3+): Push notifications not yet wired
+- **Historical Trends** (Phase 12+): Vaccination compliance reports pending dashboard implementation
+- **Vaccine Supply Tracking** (Future): Vaccine inventory management out of scope
+
+---
+
 ## [Phase 5 - Mobile App Foundation + QR Scanner] — 2026-04-22
 
 ### Added
@@ -682,6 +873,7 @@ All endpoints return:
 
 ---
 
-**Version:** 1.0  
-**Last Updated:** 2026-04-22  
+**Version:** 1.1  
+**Last Updated:** 2026-04-23  
 **Maintained By:** Project Manager
+**Phase 07 Added:** 2026-04-23

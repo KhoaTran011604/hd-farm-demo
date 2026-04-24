@@ -8,12 +8,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/animals/status-badge';
 import { HealthTab } from '@/components/animals/health-tab';
+import { VaccinationTab } from '@/components/animals/vaccination-tab';
 import { StatusChangeDialog } from '@/components/animals/status-change-dialog';
 import { formatDate, formatDateTime } from '@/lib/utils';
 import type { AnimalRow } from '@/lib/animal-types';
 
 const PLACEHOLDER_TABS = [
-  { value: 'vaccination', phase: 7 },
   { value: 'disease', phase: 8 },
   { value: 'feeding', phase: 10 },
   { value: 'reproduction', phase: 11 },
@@ -38,6 +38,7 @@ export function AnimalTabs({ animal }: AnimalTabsProps): React.JSX.Element {
         <TabsList className="mb-4 h-auto flex-wrap gap-1">
           <TabsTrigger value="overview">{tTabs('overview')}</TabsTrigger>
           <TabsTrigger value="health">{tTabs('health')}</TabsTrigger>
+          <TabsTrigger value="vaccination">{tTabs('vaccination')}</TabsTrigger>
           {PLACEHOLDER_TABS.map((t) => (
             <TabsTrigger key={t.value} value={t.value}>
               {tTabs(t.value)}
@@ -75,6 +76,10 @@ export function AnimalTabs({ animal }: AnimalTabsProps): React.JSX.Element {
 
         <TabsContent value="health">
           <HealthTab animalId={animal.id} />
+        </TabsContent>
+
+        <TabsContent value="vaccination">
+          <VaccinationTab animalId={animal.id} />
         </TabsContent>
 
         {PLACEHOLDER_TABS.map((t) => (

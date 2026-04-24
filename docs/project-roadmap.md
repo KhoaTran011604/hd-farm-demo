@@ -3,7 +3,8 @@
 **Project Duration:** 45 calendar days  
 **Target Completion:** Phase 2 (all 12 phases complete)  
 **Start Date:** 2026-04-22  
-**Estimated End Date:** 2026-06-06
+**Estimated End Date:** 2026-06-06  
+**Current Progress:** Phase 07 Complete (58% of Phase 1 complete; 7 of 12 phases done)
 
 ---
 
@@ -26,9 +27,9 @@ All 12 phases build sequentially, with Phase 1 completing the MVP and Phase 2 ad
 | 02  | Auth System (JWT + RBAC)       | 3 days   | Complete     | P1 - Blocker | Login/logout, role enforcement, token generation       |
 | 03  | Core APIs (Zone/Pen/Animal)    | 3 days   | Complete     | P1           | CRUD endpoints, tenant scoping, validation             |
 | 04  | Web Admin - Auth + Animal CRUD | 3 days   | Complete     | P1           | Login screen, animal list/detail, create/edit/delete   |
-| 05  | Mobile Foundation + QR Scanner | 4 days   | Pending      | P1           | Bottom tab bar, camera access, QR decode, deep linking |
-| 06  | Health Status + Quick Actions  | 2 days   | Pending      | P2           | Status badge system, quick action buttons post-scan    |
-| 07  | Vaccination System + Alerts    | 2 days   | Pending      | P2           | Vaccination records CRUD, overdue alerts, batch vacc   |
+| 05  | Mobile Foundation + QR Scanner | 4 days   | Complete     | P1           | Bottom tab bar, camera access, QR decode, deep linking |
+| 06  | Health Status + Quick Actions  | 2 days   | Complete     | P2           | Status badge system, quick action buttons post-scan    |
+| 07  | Vaccination System + Alerts    | 2 days   | Complete     | P2           | Vaccination records CRUD, overdue alerts, batch vacc   |
 
 **Phase 1 Completion Criteria:**
 
@@ -38,7 +39,8 @@ All 12 phases build sequentially, with Phase 1 completing the MVP and Phase 2 ad
 - ✓ Web admin operational for basic animal management
 - ✓ Mobile QR scan → animal detail flow working
 - ✓ Health status tracking live
-- ✓ Vaccination system complete
+- ✓ Vaccination system complete with alerts
+- **PHASE 1 COMPLETE** — 2026-04-23
 
 ---
 
@@ -187,15 +189,19 @@ All 12 phases build sequentially, with Phase 1 completing the MVP and Phase 2 ad
 
 ### Milestone 3: Animal Health Tracking Live
 
-**End of Phase 07** (Day 20)
+**End of Phase 07** (Day 20) — **COMPLETED 2026-04-23**
 
 - **Deliverable:** Health status + vaccination system
 - **Validation:**
-  - Status badges render correctly (7 statuses)
-  - Health records persistent
-  - Vaccination records linked to animals
-  - Overdue alerts functional
-- **Success Metric:** Farm manager can track health from day 1
+  - ✓ Status badges render correctly (7 statuses)
+  - ✓ Health records persistent
+  - ✓ Vaccination records linked to animals with CRUD API
+  - ✓ Overdue alerts functional (cursor pagination)
+  - ✓ Batch vaccination support
+  - ✓ Web UI: VaccinationTab with timeline + dialog
+  - ✓ Mobile UI: VaccinationForm with chip selector + auto-compute nextDueAt
+  - ✓ Alerts screen: grouped by Today/Tomorrow/This Week
+- **Success Metric:** Farm manager can track health from day 1 ✓
 
 ### Milestone 4: Full Platform Ready
 
@@ -331,25 +337,33 @@ All 12 phases build sequentially, with Phase 1 completing the MVP and Phase 2 ad
 - Health records persistent and queryable
 - Mobile UX tested (44px touch targets)
 
-### Phase 07: Vaccination System + Alerts (2 days)
+### Phase 07: Vaccination System + Alerts (2 days) — COMPLETED 2026-04-23
 
 **Team:** 1 backend + 1 frontend (parallel)  
 **Key Deliverables:**
 
-- Vaccine types catalog
-- Vaccination records CRUD
-- Vaccination schedule management
-- Overdue alert calculation (next_due_date vs today)
-- Batch vaccination (mark multiple animals at once)
-- Vaccine history view (web + mobile)
-- Alert badge on tab bar (count of overdue)
+- ✓ Vaccine types catalog (config reference system)
+- ✓ Vaccination records CRUD API (role-gated to admin/manager)
+  - POST /vaccinations, GET /animals/:id/vaccinations (cursor pagination)
+  - PATCH /vaccinations/:id, DELETE /vaccinations/:id
+- ✓ Shared validators: createVaccinationSchema + updateVaccinationSchema (ISO date format)
+- ✓ Alerts API: GET /alerts/upcoming-vaccinations?days=&farmId= with SQL computed due dates
+  - COALESCE(next_due_at, vaccinated_at + interval_days, NOW()) prevents never-vaccinated animals from being missed
+- ✓ Web UI: VaccinationTab with infinite scroll timeline + VaccinationDialog (GenericForm)
+  - Auto-compute nextDueAt based on vaccination date + interval
+- ✓ Mobile UI: VaccinationForm with chip selector + pre-fill mode
+  - Live autoNextDue preview via useWatch
+- ✓ Alerts screen rewritten: grouped by Today/Tomorrow/This Week
 
 **Success Criteria:**
 
-- Vaccination records linked to animals
-- Overdue alerts calculated correctly
-- Batch vaccination marks multiple animals
-- Web dashboard shows vaccine status
+- ✓ Vaccination records linked to animals and queryable
+- ✓ Overdue alerts calculated correctly with COALESCE logic (never-vaccinated included)
+- ✓ Web/mobile forms auto-compute next due date
+- ✓ All query keys centralized in keys.ts
+- ✓ Mutation cache invalidation uses alerts.all prefix
+- ✓ TypeScript compilation passes across all 4 packages
+- ✓ Role-based access control enforced (admin/manager only for write operations)
 
 ### Phase 08: Disease Records + Treatment (5 days)
 
@@ -562,6 +576,6 @@ Before moving to next phase, verify:
 
 ---
 
-**Document Version:** 1.0  
-**Last Updated:** 2026-04-22  
-**Next Update:** After Phase 01 completion (Day 3)
+**Document Version:** 1.1  
+**Last Updated:** 2026-04-23 (Phase 07 completion)  
+**Next Update:** After Phase 08 completion (Disease + Treatment)

@@ -176,7 +176,33 @@
   "alerts": {
     "title": "Alerts",
     "noAlerts": "No active alerts — all animals are healthy.",
-    "subtitle": "{count} animal(s) need attention"
+    "subtitle": "{count} animal(s) need attention",
+    "upcomingVaccinations": "Upcoming Vaccinations",
+    "noUpcomingVaccinations": "No upcoming vaccinations in the next 7 days.",
+    "dueDate": "Due {date}",
+    "dueToday": "Due today",
+    "dueTomorrow": "Due tomorrow",
+    "viewAll": "View all"
+  },
+  "vaccination": {
+    "title": "Vaccination",
+    "recordVaccination": "Record Vaccination",
+    "noRecords": "No vaccination records yet.",
+    "loadMore": "Load more",
+    "vaccineType": "Vaccine type",
+    "batchNumber": "Batch number",
+    "vaccinatedAt": "Vaccinated on",
+    "nextDueAt": "Next due",
+    "notes": "Notes",
+    "batchPlaceholder": "e.g. LOT-2024-001",
+    "notesPlaceholder": "Optional notes...",
+    "created": "Vaccination recorded",
+    "updated": "Vaccination updated",
+    "deleted": "Vaccination deleted",
+    "confirmDelete": "Delete this vaccination record?",
+    "chooseVaccineType": "Choose vaccine type",
+    "nextDueAutoFill": "Auto-filled from interval",
+    "today": "Today"
   },
   "pens": {
     "title": "Pens",

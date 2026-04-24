@@ -7,7 +7,7 @@
 
 ## Overview
 - **Priority**: P1
-- **Status**: Pending
+- **Status**: Complete
 - **Effort**: 2 days
 - **Description**: Vaccination records CRUD + upcoming-vaccination alerts. Web: timeline tab + dashboard widget. Mobile: Alerts screen with pre-fill form.
 
@@ -33,6 +33,7 @@
 - **Mobile**:
   - Alerts screen — list of upcoming vaccinations, tap → pre-fill form
   - Vaccination quick form
+  - Animal detail → "Tiêm" quick action button → open VaccinationForm (no pre-fill)
 
 ### Non-Functional
 - Alerts query must use indexes — `vaccination_records(animal_id, vaccine_type_id, given_at DESC)`
@@ -73,6 +74,7 @@ apps/mobile/components/quickForms/VaccinationForm.tsx
 - `apps/web/app/(dashboard)/animals/[id]/page.tsx` — wire Vaccination tab
 - `apps/web/app/(dashboard)/page.tsx` — add widget
 - `apps/mobile/app/(tabs)/alerts.tsx` — implement
+- `apps/mobile/app/animals/[id].tsx` — wire "Tiêm" quick action button to VaccinationForm modal
 
 ## Implementation Steps
 
@@ -105,16 +107,17 @@ apps/mobile/components/quickForms/VaccinationForm.tsx
 10. **Compile + test with seed data**
 
 ## Todo List
-- [ ] Vaccinations CRUD (API)
-- [ ] Alerts query + route
-- [ ] Shared Yup validator
-- [ ] Web VaccinationTab (timeline)
-- [ ] Web VaccinationDialog with auto next_due
-- [ ] Web Dashboard alert widget
-- [ ] Mobile Alerts screen
-- [ ] Mobile VaccinationForm with pre-fill
-- [ ] Seed: add 3 vaccinations + 2 overdue to test alerts
-- [ ] Compile + test
+- [x] Vaccinations CRUD (API)
+- [x] Alerts query + route
+- [x] Shared Yup validator
+- [x] Web VaccinationTab (timeline)
+- [x] Web VaccinationDialog with auto next_due
+- [x] Web Dashboard alert widget
+- [x] Mobile Alerts screen
+- [x] Mobile VaccinationForm with pre-fill
+- [x] Mobile animal detail — wire "Tiêm" quick action to VaccinationForm
+- [x] Seed: add 3 vaccinations + 2 overdue to test alerts
+- [x] Compile + test
 
 ## Success Criteria
 - Creating vaccination auto-sets next_due_at when interval defined
@@ -131,6 +134,36 @@ apps/mobile/components/quickForms/VaccinationForm.tsx
 - Only vet + manager can create/edit/delete vaccinations
 - Worker can view only
 - Alert scope respects farm access
+
+## Completion Summary
+
+### API Implementation
+- Vaccination CRUD service + routes (POST, GET, PATCH, DELETE)
+- Upcoming vaccinations alert service + route with SQL using COALESCE triple fallback for never-vaccinated animals
+- Routes properly secured: vet + manager write; all roles read
+
+### Shared Code
+- Yup validators: createVaccinationSchema, updateVaccinationSchema with YYYY-MM-DD date format validation
+- i18n keys for vaccination + alerts in en.json and vi.json
+- Centralized query keys in `apps/web/queries/keys.ts` and `apps/mobile/queries/keys.ts`
+
+### Web Implementation
+- VaccinationTab component with infinite scroll (paginated list of vaccination records)
+- VaccinationDialog component using GenericForm for CRUD operations
+- UpcomingVaccinationsWidget on dashboard showing 7-day upcoming vaccinations
+- Integrated into animal-tabs and dashboard page
+- Query hooks: vaccinations/queries.ts (infinite), vaccinations/mutations.ts (create/update/delete), alerts/queries.ts
+
+### Mobile Implementation
+- VaccinationForm with pre-fill support and live autoNextDue calculation via useWatch
+- Alerts screen rewritten to show upcoming vaccinations grouped by due date
+- Query hooks: vaccinations/mutations.ts, alerts/queries.ts
+- Integrated with alert tap-to-form flow
+
+### Code Quality
+- All compiled successfully
+- Follows development rules: centralized keys, GenericForm/Table usage, mutation callbacks, TS generics
+- Proper error handling and security checks
 
 ## Next Steps
 - Phase 08 adds Disease + Treatment (similar pattern)

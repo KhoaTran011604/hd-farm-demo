@@ -28,4 +28,14 @@ export const queryKeys = {
     tasks: ['dashboard', 'tasks'] as const,
     overview: ['dashboard', 'overview'] as const,
   },
+  vaccinations: {
+    byAnimal: (animalId: string) => ['vaccinations', 'animal', animalId] as const,
+  },
+  config: {
+    vaccineTypes: ['config', 'vaccine-types'] as const,
+  },
+  alerts: {
+    all: ['alerts'] as const,
+    upcomingVaccinations: (days?: number) => ['alerts', 'upcoming-vaccinations', days] as const,
+  },
 } as const;

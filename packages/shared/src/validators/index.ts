@@ -1,4 +1,5 @@
 export { createAnimalSchema, updateAnimalSchema, createBatchSchema, updateAnimalStatusSchema } from './animal-validators.js';
+export { createVaccinationSchema, updateVaccinationSchema } from './vaccination-validators.js';
 export { loginSchema, createUserSchema, updateUserSchema } from './user-validators.js';
 export {
   createAnimalTypeSchema, updateAnimalTypeSchema,

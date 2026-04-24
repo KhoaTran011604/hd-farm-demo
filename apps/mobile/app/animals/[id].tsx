@@ -9,10 +9,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { WeighForm } from '@/components/quick-forms/weigh-form';
 import { StatusChangeForm } from '@/components/quick-forms/status-change-form';
+import { VaccinationForm } from '@/components/quick-forms/vaccination-form';
 import { useAnimalDetailQuery } from '@/queries/animals/queries';
 import type { HealthStatus } from '@hd-farm/shared';
 
-type QuickAction = 'weigh' | 'status' | null;
+type QuickAction = 'weigh' | 'status' | 'vaccinate' | null;
 
 function FieldRow({ label, value }: { label: string; value: string }) {
   return (
@@ -52,6 +53,7 @@ export default function AnimalDetailScreen() {
     const messages: Record<NonNullable<QuickAction>, string> = {
       weigh: 'Đã ghi nhận cân nặng',
       status: 'Đã cập nhật trạng thái',
+      vaccinate: 'Đã ghi nhận mũi tiêm',
     };
     if (action) Alert.alert('Thành công', messages[action]);
   };
@@ -109,7 +111,12 @@ export default function AnimalDetailScreen() {
               onPress={() => setActiveAction('status')}
               style={styles.actionBtn}
             />
-            <Button label="Tiêm" variant="secondary" onPress={() => {}} style={styles.actionBtn} disabled />
+            <Button
+              label="Tiêm"
+              variant="secondary"
+              onPress={() => setActiveAction('vaccinate')}
+              style={styles.actionBtn}
+            />
           </View>
         </Card>
       </ScrollView>
@@ -137,6 +144,19 @@ export default function AnimalDetailScreen() {
           animalId={animal.id}
           currentStatus={animal.status as HealthStatus}
           onSuccess={() => handleSuccess('status')}
+          onError={handleError}
+        />
+      </QuickActionModal>
+
+      {/* Vaccination modal */}
+      <QuickActionModal
+        visible={activeAction === 'vaccinate'}
+        title="Ghi nhận tiêm vaccine"
+        onClose={() => setActiveAction(null)}
+      >
+        <VaccinationForm
+          animalId={animal.id}
+          onSuccess={() => handleSuccess('vaccinate')}
           onError={handleError}
         />
       </QuickActionModal>
